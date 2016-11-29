@@ -1,0 +1,123 @@
+# Global .gitignore
+#
+# Maintain compatibility with .cvsignore (used by rsync and cvs)
+#
+
+# ----------------------------------------------------------------------------
+# Binary
+# ----------------------------------------------------------------------------
+
+*.com
+*.dll
+*.exe
+*.o
+*.so
+*.class
+*.pyc
+
+# ----------------------------------------------------------------------------
+# Archives
+# ----------------------------------------------------------------------------
+
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# ----------------------------------------------------------------------------
+# OSX
+# ----------------------------------------------------------------------------
+
+._*
+.AppleDouble
+.DS_Store
+.DocumentRevisions-V100
+.LSOverride
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.fseventsd
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ----------------------------------------------------------------------------
+# Windows
+# ----------------------------------------------------------------------------
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ----------------------------------------------------------------------------
+# Linux
+# ----------------------------------------------------------------------------
+
+# backups
+*~
+# temporary files which can be created if a process still has a handle open of
+# a deleted file
+.fuse_hidden*
+# KDE directory preferences
+.directory
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# ----------------------------------------------------------------------------
+# Tags
+# ----------------------------------------------------------------------------
+
+# Ignore tags created by etags, ctags, gtags (GNU global) and cscope
+TAGS
+.TAGS
+!TAGS/
+tags
+.tags
+!tags/
+gtags.files
+GTAGS
+GRTAGS
+GPATH
+cscope.files
+cscope.out
+cscope.in.out
+cscope.po.out
+
+# ----------------------------------------------------------------------------
+# VCS
+# ----------------------------------------------------------------------------
+
+.git/
+.hg/
+.svn/
+*.diff
+*.patch
+
+# ----------------------------------------------------------------------------
+# Editors
+# ----------------------------------------------------------------------------
+
+*.orig
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.tmproj
+*.tmproject
+tmtags
+
+# ----------------------------------------------------------------------------
+# real junk, temp files
+# ----------------------------------------------------------------------------
+
+.sass-cache/
+*.rbc

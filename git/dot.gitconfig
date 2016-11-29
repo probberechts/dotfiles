@@ -1,0 +1,122 @@
+# Global gitconfig
+
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+
+    # `git remote prune origin`: remove remote-tracking branches that were deleted from the remote repo
+    # `git gc`: cleanup unnecessary files and optimize the local repository
+    trim = !git remote prune origin && git gc
+    # `git clean -df`: remove untracked files and directories from the working tree
+    # `git stash clear`: remove all stashed states
+    cleanup = !git clean -df && git stash clear
+
+    # Add all untracked, remove deleted
+    all = add -A
+
+    # Use the last commit message and amend your stuff
+    amend = commit --amend -C HEAD
+
+    # Show list of files in a conflict state.
+    conflicts = !git ls-files -u | awk '{print $4}' | sort -u
+
+    # Add untracked, remove deleted, and show status
+    adda = !git add -A && git status
+
+    # Show list of contributors sorted by line count
+    contributors = --no-pager shortlog -s -n
+
+    # Delete all local branches that have been merged into HEAD.
+    delete-local-merged = branch -d `git branch --merged | grep -v '^*' | tr -d '\n'`
+
+    # Undo your last commit, but don't throw away your changes
+    undo = reset --soft HEAD^
+
+    # Fetch a repository ($1) and checkout its ref ($2) HEAD
+    # Use: `git browse https://github.com/necolas/dotfiles <commit-ish>`
+    browse = !bash -c 'git fetch $1 ${2:-HEAD} && git checkout FETCH_HEAD' -
+
+    # Diff what is staged for the next commit
+    diffc = diff --cached
+    # Diff overview
+    diffst = diff --stat
+
+    # Custom graph log (append any tree-ish)
+    graph = log --pretty=nice --date-order --graph
+    # Custom graph log for all branches
+    grapha = log --pretty=nice --date-order --graph --all
+
+    # Custom pretty log
+    logp = log --pretty=nice --date-order
+
+    # Diffstat log
+    logst = log --stat
+    # Short format diffstat log
+    logsf = log --stat --format=oneline --abbrev-commit
+
+    # Fetch and checkout a GitHub Pull Request from a remote (defaults to `origin`)
+    # Use: `git gh-pr 123` or `git gh-pr 123 upstream`
+    gh-pr = !bash -c 'git fetch -fu ${2:-origin} refs/pull/$1/head:gh-pr/$1 && git checkout gh-pr/$1' -
+
+    # Find out who is currently active on the repository
+    # Displays committers in descending order of number of commits
+    who = shortlog --numbered --summary --email --no-merges --since="3 months"
+
+[color]
+    branch      = auto
+    diff        = auto
+    grep        = auto
+    interactive = auto
+    status      = auto
+    ui          = auto
+    pager       = true
+
+# Repo settings ----------------------------------------------------------------
+[commit]
+    template = "~/.dotfiles/git/commit-template"
+
+[core]
+    excludesfile = ~/.dotfiles/git/dot.gitignore
+    commentchar = ";"
+
+[push]
+    default = simple
+
+[credential]
+    helper = osxkeychain
+
+# Programs ---------------------------------------------------------------------
+[gui]
+    commitmsgwidth = 80
+    diffcontext = 10
+
+[difftool]
+    prompt = false
+
+[mergetool]
+    prompt = false
+
+[pager]
+    status = true
+
+[pretty]
+    # tut: http://gitimmersion.com/lab_10.html
+    # ref: http://linux.die.net/man/1/git-log
+    # Result: <short-sha> <commit-message> (<pointer-names>) -- <commit-author-name>; <relative-time>
+    nice = "%C(yellow)%h%C(reset) %C(white)%s%C(cyan)%d%C(reset) -- %an; %ar"
+
+# User defaults (may be overridden by local)------------------------------------
+[credential]
+    username = "probberechts"
+
+[user]
+    name  = "Pieter Robberechts"
+    email = "pieter_robberechts@msn.com"
+
+# Local ------------------------------------------------------------------------
+[include]
+  path = "~/.dotfiles/local/gitconfig"
+
+# vim: ft=gitconfig :

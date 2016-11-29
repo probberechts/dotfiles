@@ -1,0 +1,4 @@
+vim/.tmp/
+vim/autoload/plug.vim
+vim/plug/
+vim/vendor/

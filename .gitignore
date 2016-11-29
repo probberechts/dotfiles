@@ -1,0 +1,27 @@
+# managed
+!tmux/plugins/tpm
+tmux/plugins/*
+
+# secrets
+local/
+logs/
+ssh/id_*
+ssh/known_hosts
+
+# symlink
+irssi/config
+
+# deprecated
+z/.z
+z/.z.*
+zsh/antibody
+
+# cache + logs
+.bash_history
+.lesshst
+.zcache
+.zcompdump*
+.zhistory
+.zsh_history
+.zshrc.zwc
+*.log

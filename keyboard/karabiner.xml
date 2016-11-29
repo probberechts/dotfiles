@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<root>
+  <item>
+      <name>Remap Caps Lock to Hyper with Escape on tap</name>
+      <appendix>OS X doesn't have a Hyper. This maps caps lock (actually F19) to Control + Shift + Option + Command, unless you tap it. Then it sends Escape.</appendix>
+
+      <identifier>caps_lock_to_hyper_or_escape</identifier>
+
+      <autogen>
+          --KeyOverlaidModifier--
+          KeyCode::F19,
+
+          KeyCode::COMMAND_L,
+          ModifierFlag::OPTION_L | ModifierFlag::SHIFT_L | ModifierFlag::CONTROL_L,
+          KeyCode::ESCAPE
+      </autogen>
+  </item>
+  <item>
+      <name>Tap shift to move over words</name>
+      <appendix>Shift keys move the cursor one word forward or backward when pressed alone. When used with other keys they act as normal shifts.</appendix>
+      <identifier>private.shifts_to_forward_backward_word</identifier>
+
+      <autogen>--KeyOverlaidModifier-- KeyCode::SHIFT_R, ModifierFlag::SHIFT_R | ModifierFlag::NONE, KeyCode::SHIFT_R, KeyCode::CURSOR_RIGHT, ModifierFlag::OPTION_L</autogen>
+      <autogen>--KeyOverlaidModifier-- KeyCode::SHIFT_L, ModifierFlag::SHIFT_L | ModifierFlag::NONE, KeyCode::SHIFT_L, KeyCode::CURSOR_LEFT, ModifierFlag::OPTION_L</autogen>
+
+  </item>
+</root>
