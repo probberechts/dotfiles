@@ -1,4 +1,4 @@
-# .dotfiles/shell/dotfiles.bash
+# .dotfiles/shell/dotfiles.sh
 #
 # Update dotfiles and provide instructions for updating the system
 # THIS FILE IS SOURCED to give access to current shell
@@ -46,8 +46,8 @@ dko::dotfiles::__usage() {
 }
 
 dko::dotfiles::__reload() {
-  . "${DOTFILES}/shell/dotfiles.bash" \
-    && dko::status "Reloaded shell/dotfiles.bash"
+  . "${DOTFILES}/shell/dotfiles.sh" \
+    && dko::status "Reloaded shell/dotfiles.sh"
 }
 
 dko::dotfiles::__update() {
@@ -70,7 +70,8 @@ dko::dotfiles::__update() {
 
 dko::dotfiles::__update_zplug() {
   dko::status "Updating zplug"
-  ( cd "${ZPLUG_HOME}" || { dko::err "No \$ZPLUG_HOME" && exit 1; }
+  [ -n "$ZPLUG_HOME" ] || { dko::err "No \$ZPLUG_HOME. Activate the zsh shell to update zplug." && exit 1; }
+  ( cd "${ZPLUG_HOME}" || { dko::err "\$ZPLUG_HOME directory not found" && exit 1; }
     git pull || exit 1
     git log --no-merges --abbrev-commit --oneline ORIG_HEAD..
     dko::status "Restart the shell to ensure a clean zplug init"
