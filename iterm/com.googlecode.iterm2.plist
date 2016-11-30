@@ -13595,11 +13595,11 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>330 300 620 392 0 0 1280 777 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>264 222 796 473 0 0 1280 800 </string>
+	<string>198 202 796 473 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 408 650 367 0 0 1280 777 </string>
+	<string>0 102 1242 667 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>284 137 717 459 0 0 1280 777 </string>
+	<string>156 367 570 347 0 0 1280 777 </string>
 	<key>NeverWarnAboutShortLivedSessions_E9D786C3-0BBE-4E13-95DC-BC461D625BFD</key>
 	<true/>
 	<key>NeverWarnAboutShortLivedSessions_E9D786C3-0BBE-4E13-95DC-BC461D625BFD_selection</key>
@@ -14452,7 +14452,7 @@
 			<key>Tags</key>
 			<array/>
 			<key>Terminal Type</key>
-			<string>xterm-256color</string>
+			<string>xterm-256color-italic</string>
 			<key>Thin Strokes</key>
 			<integer>1</integer>
 			<key>Transparency</key>
@@ -14516,6 +14516,8 @@
 	<false/>
 	<key>PasteFromClipboard</key>
 	<false/>
+	<key>PasteTabToStringTabStopSize</key>
+	<integer>4</integer>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
@@ -14568,7 +14570,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2016-11-28T22:03:14Z</date>
+	<date>2016-11-30T07:37:04Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
