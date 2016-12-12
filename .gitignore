@@ -5,8 +5,8 @@ tmux/plugins/*
 # secrets
 local/
 logs/
-ssh/id_*
-ssh/known_hosts
+ssh/*
+!ssh/config
 
 # symlink
 irssi/config
