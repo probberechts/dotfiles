@@ -39,9 +39,6 @@ __symlink() {
   #ssh
   dko::symlink ssh                                  .ssh
 
-  #beets
-  dko::symlink beets                                .config/beets
-
   #keyboard
   dko::symlink keyboard/hammerspoon.lua             .hammerspoon/init.lua
 

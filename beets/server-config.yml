@@ -1,35 +1,29 @@
 # Beets configuration --------------------------------------------------------
 
-directory: /Volumes/MUSIC/
-library: /Volumes/MUSIC/library.blb
+directory: /mnt/data/Documents/Music/library/
+library: /mnt/data/Documents/Music/library.db
 
 import:
     # write metadata to music files
     write: yes
-
-    # copy imported files from source to the music directory
-    move: no
-    copy: yes
-    delete: no
-
+    # move imported files from source to the music directory
+    move: yes
     # use auto-tagging where possible
-    # do not require confirmation on strong matches
     autotag: yes
+    # do not require confirmation on strong matches
     timid: no
-
+    # controls whether interrupted imports should be resumed
     resume: ask
+    # don't record which directories are already imported
     incremental: no
-    none_rec_action: ask
-    log:
-
-    quiet: no  # enable with command line option
+    # skip album in quiet mode when there is no strong recommendation
     quiet_fallback: skip
+    # default action when selecting an action for a given match
     default_action: apply
-
-    singletons: no
-    languages: []
+    # a list of locale names to search for preferred aliases
+    languages: ['nl', 'en']
+    # show detailed information about each match it finds
     detail: no
-    flat: no
 
 # use the release-date of the original (first) release of an album?
 original_date: no
@@ -43,9 +37,6 @@ clutter: ["Thumbs.DB", ".DS_Store", "*.m3u", ".pls", "*.jpg"]
 
 # files/directories matching one of these patterns are ignored during import
 ignore: [".*", "*~", "System Volume Information"]
-
-# use the older ID3v2.3 standard
-id3v23: yes
 
 
 # Paths ----------------------------------------------------------------------
@@ -125,8 +116,8 @@ match:
         track_length: 2.0
         track_id: 5.0
     preferred:
-        countries: []
-        media: []
+        countries: ['BE', 'GB|UK', 'US']
+        media: ['CD']
         original_year: no
     ignored: []
     track_length_grace: 10
@@ -144,8 +135,7 @@ plugins: [
     scrub,
     missing,
     duplicates,
-    web,
-    idInTitle
+    web
 ]
 pluginpath:
   - ~/.dotfiles/beets
@@ -154,7 +144,7 @@ pluginpath:
 # Plugins Config -------------------------------------------------------------
 
 convert:
-    auto: yes
+    auto: no
     copy_album_art: yes
     never_convert_lossy_files: yes
     format: flac
@@ -166,9 +156,6 @@ convert:
 lyrics:
     auto: yes
     fallback: ''
-
-echonest:
-    auto: no
 
 lastgenre:
     fallback: ''
@@ -184,11 +171,6 @@ fetchart:
 embedart:
     auto: yes
     maxwidth: 300
-
-replaygain:
-    auto: yes
-    overwrite: yes
-    albumgain: yes
 
 scrub:
     auto: yes
