@@ -1,109 +1,87 @@
-# Pure
-# by Sindre Sorhus
-# https://github.com/sindresorhus/pure
-# translated to bash by Rodrigo Moyle
-# https://github.com/rodrigorm
-# MIT License
+#
+# Clean and minimalistic Bash prompt
+# Author: Artem Sapegin, sapegin.me
+# 
+# Inspired by: https://github.com/sindresorhus/pure & https://github.com/dreadatour/dotfiles/blob/master/.bash_profile
+#
+# Notes:
+# - $local_username - username you don’t want to see in the prompt - can be defined in ~/.bashlocal : `local_username="admin"`
+# - Colors ($RED, $GREEN) - defined in ../tilde/bash_profile.bash
+#
 
-# turns seconds into human readable time
-# 165392 => 1d 21h 56m 32s
-prompt_pure_human_time() {
-	local tmp=$1
-	local days=$(( tmp / 60 / 60 / 24 ))
-	local hours=$(( tmp / 60 / 60 % 24 ))
-	local minutes=$(( tmp / 60 % 60 ))
-	local seconds=$(( tmp % 60 ))
-	(( $days > 0 )) && echo -n "${days}d "
-	(( $hours > 0 )) && echo -n "${hours}h "
-	(( $minutes > 0 )) && echo -n "${minutes}m "
-	echo "${seconds}s"
+
+# User color
+case $(id -u) in
+	0) user_color="$RED" ;;  # root
+	*) user_color="$GREEN" ;;
+esac
+
+# Symbols
+prompt_symbol="❯"
+prompt_clean_symbol="☀ "
+prompt_dirty_symbol="☂ "
+prompt_venv_symbol="☁ "
+
+function prompt_command() {
+	# Local or SSH session?
+	local remote=
+	[ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] && remote=1
+
+	# Git branch name and work tree status (only when we are inside Git working tree)
+	local git_prompt=
+	if [[ "true" = "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]]; then
+		# Branch name
+		local branch="$(git symbolic-ref HEAD 2>/dev/null)"
+		branch="${branch##refs/heads/}"
+
+		# Working tree status (red when dirty)
+		local dirty=
+		# Modified files
+		git diff --no-ext-diff --quiet --exit-code --ignore-submodules 2>/dev/null || dirty=1
+		# Untracked files
+		[ -z "$dirty" ] && test -n "$(git status --porcelain)" && dirty=1
+
+		# Format Git info
+		if [ -n "$dirty" ]; then
+			git_prompt=" $RED$prompt_dirty_symbol$branch$NOCOLOR"
+		else
+			git_prompt=" $GREEN$prompt_clean_symbol$branch$NOCOLOR"
+		fi
+	fi
+
+	# Virtualenv
+	local venv_prompt=
+	if [ -n "$VIRTUAL_ENV" ]; then
+	    venv_prompt=" $BLUE$prompt_venv_symbol$(basename $VIRTUAL_ENV)$NOCOLOR"
+	fi
+
+	# Only show username if not default
+	local user_prompt=
+	[ "$USER" != "$local_username" ] && user_prompt="$user_color$USER$NOCOLOR"
+
+	# Show hostname inside SSH session
+	local host_prompt=
+	[ -n "$remote" ] && host_prompt="@$YELLOW$HOSTNAME$NOCOLOR"
+
+	# Show delimiter if user or host visible
+	local login_delimiter=
+	[ -n "$user_prompt" ] || [ -n "$host_prompt" ] && login_delimiter=":"
+
+	# Format prompt
+	first_line="$user_prompt$host_prompt$login_delimiter$WHITE\w$NOCOLOR$git_prompt$venv_prompt"
+	# Text (commands) inside \[...\] does not impact line length calculation which fixes stange bug when looking through the history
+	# $? is a status of last command, should be processed every time prompt prints
+	second_line="\`if [ \$? = 0 ]; then echo \[\$CYAN\]; else echo \[\$RED\]; fi\`\$prompt_symbol\[\$NOCOLOR\] "
+	PS1="\n$first_line\n$second_line"
+
+	# Multiline command
+	PS2="\[$CYAN\]$prompt_symbol\[$NOCOLOR\] "
+
+	# Terminal title
+	local title="$(basename "$PWD")"
+	[ -n "$remote" ] && title="$title \xE2\x80\x94 $HOSTNAME"
+	echo -ne "\033]0;$title"; echo -ne "\007"
 }
 
-# fastest possible way to check if repo is dirty
-prompt_pure_git_dirty() {
-	# check if we're in a git repo
-	command git rev-parse --is-inside-work-tree &>/dev/null || return
-	# check if it's dirty
-	[[ "$PURE_GIT_UNTRACKED_DIRTY" == 0 ]] && local umode="-uno" || local umode="-unormal"
-	command test -n "$(git status --porcelain --ignore-submodules ${umode})"
-
-	(($? == 0)) && echo ' ±'
-}
-
-# displays the exec time of the last command if set threshold was exceeded
-prompt_pure_cmd_exec_time() {
-	local stop=$SECONDS
-	local start=${cmd_timestamp:-$stop}
-	local elapsed=$(($stop-$start))
-	(($elapsed > ${PURE_CMD_MAX_EXEC_TIME:=5})) && prompt_pure_human_time $elapsed
-}
-
-prompt_pure_preexec() {
-	# don't cause a preexec for $PROMPT_COMMAND
-	[ "$BASH_COMMAND" = "$PROMPT_COMMAND" ] && return
-
-	cmd_timestamp=${cmd_timestamp:-$SECONDS}
-
-	local cwd=$(pwd | sed "s|^${HOME}|~|")
-	local this_command=$(HISTTIMEFORMAT= history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//");
-
-	# shows the current dir and executed command in the title when a process is active
-	echo -en "\e]0;"
-	echo -nE "${cwd}: ${this_command}"
-	echo -en "\a"
-}
-
-# string length ignoring ansi escapes
-prompt_pure_string_length() {
-	local str=$(echo -E "${1}" | sed 's/\\\e\[\([0-9]\+;\)\?[0-9]\+m\|\\n//g')
-	echo ${#str}
-}
-
-prompt_pure_precmd() {
-	local cwd=$(pwd | sed "s|^${HOME}|~|")
-
-	# shows the full path in the title
-	echo -en "\e]0;${cwd}\a"
-
-	local prompt_pure_preprompt="\n\e[0;34m${cwd} \e[0;37m$(__git_ps1 "%s")$(prompt_pure_git_dirty) $prompt_pure_username\e[0m \e[0;33m$(prompt_pure_cmd_exec_time)\e[0m"
-	echo -e $prompt_pure_preprompt
-
-	# check async if there is anything to pull
-	(( ${PURE_GIT_PULL:-1} )) && ({
-		# check if we're in a git repo
-		command git rev-parse --is-inside-work-tree &>/dev/null &&
-		# check check if there is anything to pull
-		command git fetch &>/dev/null &&
-		# check if there is an upstream configured for this branch
-		command git rev-parse --abbrev-ref @'{u}' &>/dev/null && {
-			local arrows=''
-			(( $(command git rev-list --right-only --count HEAD...@'{u}' 2>/dev/null) > 0 )) && arrows='⇣'
-			(( $(command git rev-list --left-only --count HEAD...@'{u}' 2>/dev/null) > 0 )) && arrows+='⇡'
-			echo -en "\e7\e[A\e[1G\e[$(prompt_pure_string_length "$prompt_pure_preprompt")C\e[0;36m${arrows}\e[0m\e8"
-		}
-	} &)
-
-	# reset value since `preexec` isn't always triggered
-	unset cmd_timestamp
-}
-
-prompt_pure_exit_color() {
-	[[ "$?" = '0' ]] && echo -e "\e[0;37m" || echo -e "\e[0;31m"
-}
-
-prompt_pure_setup() {
-	# prevent percentage showing up
-	# if output doesn't end with a newline
-	export PS2=''
-
-	export PROMPT_COMMAND='prompt_pure_precmd'
-	trap 'prompt_pure_preexec' DEBUG
-
-	# show username@host if logged in through SSH
-	[[ "$SSH_CONNECTION" != '' ]] && prompt_pure_username="${USER}@${HOSTNAME} "
-
-	# prompt turns red if the previous command didn't exit with 0
-	PS1='\[$(prompt_pure_exit_color)\]❯\[\e[0m\] '
-}
-
-prompt_pure_setup "$@"
+# Show awesome prompt only if Git is istalled
+command -v git >/dev/null 2>&1 && PROMPT_COMMAND=prompt_command

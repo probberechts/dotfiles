@@ -52,9 +52,6 @@ if type _git &>/dev/null && [ -f /usr/local/etc/bash_completion.d/git-completion
   complete -o default -o nospace -F _git g;
 fi
 
-# WP-CLI Bash completions
-dko::source "${WP_CLI_CONFIG_PATH}/vendor/wp-cli/wp-cli/utils/wp-completion.bash"
-
 # ==============================================================================
 # Plugins
 # ==============================================================================
