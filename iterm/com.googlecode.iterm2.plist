@@ -13595,9 +13595,9 @@
 	<key>NSWindow Frame SUUpdateAlert</key>
 	<string>330 300 620 392 0 0 1280 777 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>198 202 796 473 0 0 1280 777 </string>
+	<string>198 294 918 381 0 0 1280 800 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 102 1242 667 0 0 1280 777 </string>
+	<string>0 230 934 539 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>156 367 570 347 0 0 1280 777 </string>
 	<key>NeverWarnAboutShortLivedSessions_E9D786C3-0BBE-4E13-95DC-BC461D625BFD</key>
@@ -13960,13 +13960,13 @@
 				<key>Alpha Component</key>
 				<real>1</real>
 				<key>Blue Component</key>
-				<real>0.43921568989753723</real>
+				<real>0.75075572729110718</real>
 				<key>Color Space</key>
 				<string>Calibrated</string>
 				<key>Green Component</key>
-				<real>0.38823530077934265</real>
+				<real>0.69948333501815796</real>
 				<key>Red Component</key>
-				<real>0.36078432202339172</real>
+				<real>0.66978925466537476</real>
 			</dict>
 			<key>Guid</key>
 			<string>E9D786C3-0BBE-4E13-95DC-BC461D625BFD</string>
@@ -14570,7 +14570,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2016-11-30T07:37:04Z</date>
+	<date>2016-12-08T10:17:29Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
@@ -14629,7 +14629,7 @@
 	<key>iTerm Version</key>
 	<string>3.0.12</string>
 	<key>kCPKSelectionViewPreferredModeKey</key>
-	<integer>0</integer>
+	<integer>7</integer>
 	<key>kCPKSelectionViewShowHSBTextFieldsKey</key>
 	<false/>
 </dict>
