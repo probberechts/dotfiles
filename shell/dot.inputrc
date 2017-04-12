@@ -54,8 +54,13 @@ set visible-stats on
 # Keys
 # ============================================================================
 
-"\e[1;5D": backward-word
-"\e[1;5C": forward-word
+# Configure option + right arrow to move forward one word in iTerm2
+# https://www.gnu.org/software/bash/manual/bashref.html#Commands-For-Moving
+"\e\e[C": forward-word
+
+# Configure option + left arrow to move backward one word in iTerm2
+# https://www.gnu.org/software/bash/manual/bashref.html#Commands-For-Moving
+"\e\e[D": backward-word
 
 # Use the text that has already been typed as the prefix for searching through
 # commands (i.e. more intelligent Up/Down behavior)

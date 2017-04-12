@@ -261,6 +261,41 @@ if dko#IsPlugged('jspc.vim')
 endif
 
 " ============================================================================
+" Completion Plugin: deoplete-padawan
+" ============================================================================
+
+if dko#IsPlugged('vim-javacomplete2')
+  augroup dkocompletion
+    autocmd FileType java setlocal omnifunc=javacomplete#Complete
+  augroup END
+endif
+
+" ============================================================================
+" Completion Plugin: phpcomplete.vim
+" Don't need to check exists since an older one comes with vimruntime.
+" This is the worst one, moves the cursor, reads tags files
+" ============================================================================
+
+if dko#IsPlugged('phpcomplete.vim')
+  " Settings are read when phpcomplete#CompletePHP is called
+  let g:phpcomplete_parse_docblock_comments = 1
+
+  " phpcomplete and universal-ctags suck
+  " These two options essentially disable ctag searching for vars and
+  " namespaces. Works, for now, though.
+  "
+  " @see https://github.com/shawncplus/phpcomplete.vim/wiki/Getting-better-tags
+  " @see https://github.com/universal-ctags/ctags/issues/815
+  " @see https://github.com/shawncplus/phpcomplete.vim/issues/89
+  " @see https://github.com/shawncplus/phpcomplete.vim/search?q=ctags&type=Issues&utf8=%E2%9C%93
+  " let g:phpcomplete_search_tags_for_variables = 0
+  " let g:phpcomplete_min_num_of_chars_for_namespace_completion = 999
+
+  autocmd dkocompletion FileType php
+        \ setlocal completefunc=phpcomplete#CompletePHP
+endif
+
+" ============================================================================
 " Deoplete
 " ============================================================================
 

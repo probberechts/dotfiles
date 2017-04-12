@@ -2,7 +2,7 @@
 
 There’s no place like ~/
 
-![screenshot](https://dl.dropboxusercontent.com/u/46352089/dotfiles.png)
+![screenshot](https://cloud.githubusercontent.com/assets/2175271/24098259/e9eabf7a-0d69-11e7-8124-b168869e5ebc.png)
 
 ### How to install
 

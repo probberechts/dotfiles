@@ -1,5 +1,6 @@
 KeepAlive yes
 ServerALiveInterval 60
+UseKeychain yes
 
 Host *.kuleuven.be
      User r0296915
