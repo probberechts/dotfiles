@@ -50,8 +50,16 @@ export CVSIGNORE="${DOTFILES}/git/.gitignore"
 # editor
 # ----------------------------------------------------------------------------
 
-export EDITOR="vim"
-export VISUAL="gvim"
+EDITOR="$(command -v vim)"
+
+# we have gvim, not in an SSH term, and the X11 display number is under 10
+if command -v gvim >/dev/null 2>&1 \
+&& [ "$SSH_TTY$DISPLAY" = "${DISPLAY#*:[1-9][0-9]}" ]; then
+  export VISUAL="$(command -v gvim) -f"
+  SUDO_EDITOR="$VISUAL"
+else
+  SUDO_EDITOR="$EDITOR"
+fi
 
 # ----------------------------------------------------------------------------
 # pager
