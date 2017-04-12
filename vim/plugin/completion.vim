@@ -3,9 +3,38 @@
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
+augroup dkocompletion
+  autocmd!
+augroup END
+
 " ============================================================================
 " Deoplete
 " ============================================================================
+
+" ----------------------------------------------------------------------------
+" Conditionally disable deoplete
+" For JS files, deoplete-ternjs looks for .tern-project from the file dir
+" upwards. If editing a file in a directory that doesn't exist (e.g. NetRW or
+" creating by doing `e newdir/newfile.js`) disable deoplete until the file is
+" written (which will create the directory automatically thanks to vim-easydir)
+" ----------------------------------------------------------------------------
+
+function! s:disableDeopleteIfNoDir()
+  if !isdirectory(expand('%:h'))
+    let b:deoplete_disable_auto_complete = 1
+    let b:dko_enable_deoplete_on_save = 1
+  endif
+endfunction
+
+function! s:enableDeopleteOnWriteDir()
+  if get(b:, 'dko_enable_deoplete_on_save', 0) && isdirectory(expand('%:h'))
+    let b:deoplete_disable_auto_complete = 0
+    let b:dko_enable_deoplete_on_save = 0
+  endif
+endfunction
+
+autocmd dkocompletion BufNewFile    *.js  call s:disableDeopleteIfNoDir()
+autocmd dkocompletion BufWritePost  *.js  call s:enableDeopleteOnWriteDir()
 
 " ----------------------------------------------------------------------------
 " Regexes to use completion engine
@@ -171,6 +200,9 @@ endif
 " ============================================================================
 
 if executable('tern')
+  " No reason to use javascriptcomplete when tern is available
+  call s:Exclude('javascript', 'javascriptcomplete#CompleteJS')
+
   " Settings common to deoplete-ternjs (vim var read via python) and
   " tern_for_vim
   " @see https://github.com/carlitux/deoplete-ternjs/blob/5500ae246aa1421a0e578c2c7e1b00d858b2fab2/rplugin/python3/deoplete/sources/ternjs.py#L70-L75
