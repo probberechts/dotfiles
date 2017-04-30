@@ -27,6 +27,7 @@ source "${DOTFILES}/shell/aliases.sh"    # aliases
 # This also adds completions based on global nvm->npm packages
 source "${DOTFILES}/shell/python.sh"
 source "${DOTFILES}/shell/node.sh"
+source "${DOTFILES}/shell/ruby.sh"
 
 export DKO_SOURCE="${DKO_SOURCE} }"
 
