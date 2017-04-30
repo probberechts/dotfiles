@@ -104,24 +104,6 @@ function! s:PickJavascriptMakers() abort
   endif
 endfunction
 
-" Use with my tern-lint fork
-" https://github.com/davidosomething/tern-lint/tree/format-vim
-" let s:tern_pattern = '\([^:]\+:\)\([^:]\+\)\(.*\)'
-" let s:tern_replace = '\=submatch(1) . byte2line(submatch(2)) . submatch(3) . " [tern-lint]"'
-" let s:tern_mapexpr = 'substitute('
-"       \.   'v:val, '
-"       \.   "'" . s:tern_pattern . "', "
-"       \.   "'" . s:tern_replace . "', "
-"       \.   "''"
-"       \. ')'
-" let g:neomake_javascript_ternlint_maker = {
-"       \   'exe':          'tern-lint',
-"       \   'args':         ['--format=vim'],
-"       \   'mapexpr':      s:tern_mapexpr,
-"       \   'errorformat':  '%f:%l: %trror: %m,'
-"       \                 . '%f:%l: %tarning: %m',
-"       \ }
-
 " Run these makers by default on :Neomake
 let g:neomake_javascript_enabled_makers =
       \ executable('eslint') ? ['eslint'] : []
@@ -147,25 +129,23 @@ let s:local_jshint = {
       \   'exe':   'node_modules/.bin/jshint',
       \ }
 
-" let s:local_ternlint = {
-"       \   'ft':    'javascript',
-"       \   'maker': 'ternlint',
-"       \   'exe':   'node_modules/.bin/tern-lint',
-"       \   'when':  '!empty(dkoproject#GetFile(''.tern-project''))',
-"       \ }
+let s:local_ternlint = {
+      \   'ft':    'javascript',
+      \   'maker': 'ternlint',
+      \   'exe':   'node_modules/.bin/tern-lint',
+      \   'when':  '!empty(dkoproject#GetFile(''.tern-project''))',
+      \ }
 
 autocmd dkoneomake FileType javascript
       \ call s:AddLocalMaker(s:local_eslint)
       \| call s:AddLocalMaker(s:local_jscs)
       \| call s:AddLocalMaker(s:local_jshint)
+      \| call s:AddLocalMaker(s:local_ternlint)
       \| call s:PickJavascriptMakers()
 
 " ----------------------------------------------------------------------------
 " Markdown and Pandoc
 " ----------------------------------------------------------------------------
-
-" Pandoc copies markdown settings as of
-" https://github.com/neomake/neomake/commit/795e82629d6d44295b83bc4fa0014440eae148c7
 
 " Only use markdownlint, not mdl
 let g:neomake_markdown_enabled_makers =
@@ -226,54 +206,6 @@ let g:neomake_python_pylint_args = [
       \   '--reports=no',
       \   '--disable=locally-disabled',
       \ ]
-
-" ----------------------------------------------------------------------------
-" Sass: sasslint
-" ----------------------------------------------------------------------------
-
-function! s:SetSasslintRc() abort
-  let l:sasslint_maker = neomake#GetMaker('sasslint', 'scss')
-  let l:sasslint_args = get(
-        \ g:, 'neomake_scss_sasslint_args',
-        \ l:sasslint_maker.args)
-
-  " Use local config if exists
-  let l:config = dkoproject#GetFile('.sass-lint.yml')
-
-  " Fall back to my global config
-  if empty(l:config)
-    let l:config = glob(expand('$DOTFILES/sasslint/.sass-lint.yml'))
-  endif
-
-  let b:neomake_scss_sasslint_args =
-        \ l:sasslint_args + ['--config=' . l:config]
-endfunction
-
-let s:local_sasslint = {
-      \   'ft':     'scss',
-      \   'maker':  'sasslint',
-      \   'exe':    'node_modules/.bin/sass-lint',
-      \ }
-
-function! s:PickScssMakers() abort
-  if empty(dkoproject#GetFile('.scss-lint.yml')) | return
-  endif
-
-  " Only if scss-lint is executable (globally or locally)
-  if !dko#IsMakerExecutable('scsslint') | return
-  endif
-
-  " Remove sasslint from enabled makers, use only scsslint
-  let b:neomake_scss_enabled_makers = filter(
-        \   copy(get(b:, 'neomake_scss_enabled_makers', [])),
-        \   "v:val !~? 'sasslint'"
-        \ )
-endfunction
-
-autocmd dkoneomake FileType scss
-      \ call s:SetSasslintRc()
-      \| call s:AddLocalMaker(s:local_sasslint)
-      \| call s:PickScssMakers()
 
 " ============================================================================
 " Should we :Neomake?
