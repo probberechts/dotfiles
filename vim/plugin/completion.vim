@@ -8,6 +8,18 @@ augroup dkocompletion
 augroup END
 
 " ============================================================================
+" Filename completion
+" ============================================================================
+
+" useful for filename completion relative to current buffer path
+if exists('+autochdir')
+  autocmd dkocompletion InsertEnter *
+        \ let b:save_cwd = getcwd() | set autochdir
+  autocmd dkocompletion InsertLeave *
+        \ set noautochdir | execute 'cd' fnameescape(b:save_cwd)
+endif
+
+" ============================================================================
 " Deoplete
 " ============================================================================
 
@@ -38,7 +50,7 @@ autocmd dkocompletion BufWritePost  *.js  call s:enableDeopleteOnWriteDir()
 
 " ----------------------------------------------------------------------------
 " Regexes to use completion engine
-" See plugins sections too (e.g. jspc)
+" See plugins sections too (e.g. phpcomplete and jspc)
 " ----------------------------------------------------------------------------
 
 let s:REGEX = {}
@@ -67,6 +79,10 @@ let s:PY3REGEX.css_value      = ': \w*'
 " single quote escaped as ''
 " literal parentheses escaped as \(
 let s:PY3REGEX.parameter = '\.\w+\('''
+
+" For phpcomplete.vim
+let s:PY3REGEX.member = '->\w*'
+let s:PY3REGEX.static = s:PY3REGEX.word . '::\w*'
 
 " ----------------------------------------------------------------------------
 " Deoplete -- if any of these match what you're typing, deoplete will collect
@@ -156,19 +172,22 @@ let s:omnifuncs = {
 "
 " @param {String} ft
 " @param {String} funcname
+" @return {String[]} omnifunc list for the ft
 function! s:Include(ft, funcname) abort
-  call insert(s:omnifuncs[a:ft], a:funcname)
+  return insert(s:omnifuncs[a:ft], a:funcname)
 endfunction
 
 " Exclude an omnifunc from deoplete aggregation
 "
 " @param {String} ft
 " @param {String} funcname
+" @return {String[]} omnifunc list for the ft
 function! s:Exclude(ft, funcname) abort
-  call remove(
-        \   s:omnifuncs[a:ft],
-        \   index(s:omnifuncs[a:ft], a:funcname)
-        \ )
+  let l:index = index(s:omnifuncs[a:ft], a:funcname)
+  if l:index >= 0
+    return remove(s:omnifuncs[a:ft], l:index)
+  endif
+  return s:omnifuncs[a:ft]
 endfunction
 
 " Trigger deoplete aggregated omnifunc when matching this regex
@@ -237,7 +256,6 @@ if executable('tern')
   " Don't close tern after 5 minutes, helps speed up deoplete completion if
   " they manage to share the instance
   let g:tern#arguments = [ '--persistent' ]
-
 endif
 
 " ============================================================================
@@ -261,38 +279,12 @@ if dko#IsPlugged('jspc.vim')
 endif
 
 " ============================================================================
-" Completion Plugin: deoplete-padawan
+" Completion Plugin: vim-javacomplete2
 " ============================================================================
 
 if dko#IsPlugged('vim-javacomplete2')
-  augroup dkocompletion
-    autocmd FileType java setlocal omnifunc=javacomplete#Complete
-  augroup END
-endif
-
-" ============================================================================
-" Completion Plugin: phpcomplete.vim
-" Don't need to check exists since an older one comes with vimruntime.
-" This is the worst one, moves the cursor, reads tags files
-" ============================================================================
-
-if dko#IsPlugged('phpcomplete.vim')
-  " Settings are read when phpcomplete#CompletePHP is called
-  let g:phpcomplete_parse_docblock_comments = 1
-
-  " phpcomplete and universal-ctags suck
-  " These two options essentially disable ctag searching for vars and
-  " namespaces. Works, for now, though.
-  "
-  " @see https://github.com/shawncplus/phpcomplete.vim/wiki/Getting-better-tags
-  " @see https://github.com/universal-ctags/ctags/issues/815
-  " @see https://github.com/shawncplus/phpcomplete.vim/issues/89
-  " @see https://github.com/shawncplus/phpcomplete.vim/search?q=ctags&type=Issues&utf8=%E2%9C%93
-  " let g:phpcomplete_search_tags_for_variables = 0
-  " let g:phpcomplete_min_num_of_chars_for_namespace_completion = 999
-
-  autocmd dkocompletion FileType php
-        \ setlocal completefunc=phpcomplete#CompletePHP
+  let g:JavaComplete_ClosingBrace = 0
+  let g:JavaComplete_ShowExternalCommandsOutput = 1
 endif
 
 " ============================================================================
@@ -316,10 +308,7 @@ if dko#IsPlugged('deoplete.nvim')
   " Sources for engine based omni-completion (ignored if match s:omni_only)
   " --------------------------------------------------------------------------
 
-  call dko#InitDict('g:deoplete#omni#functions')
-  " Not extending, instead pluck first item from list since deoplete only
-  " supports one omnifunc
-  call extend(g:deoplete#omni#functions, map(copy(s:omnifuncs), 'v:val[0]'))
+  let g:deoplete#omni#functions = s:omnifuncs
 
   " --------------------------------------------------------------------------
   " Input patterns
