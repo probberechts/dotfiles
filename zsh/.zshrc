@@ -20,13 +20,13 @@ source "${DOTFILES}/shell/before.sh"
 # Changing Directories
 setopt AUTO_PUSHD                     # pushd instead of cd
 setopt PUSHD_IGNORE_DUPS
-setopt PUSHD_SILENT                   # don't show stack after cd
+setopt PUSHD_SILENT                   # do not show stack after cd
 setopt PUSHD_TO_HOME                  # go home if no d specified
 
 # Completion
 setopt AUTO_LIST                      # list completions
 setopt AUTO_MENU                      # TABx2 to start a tab complete menu
-setopt NO_COMPLETE_ALIASES            # don't expand aliases before completion
+setopt NO_COMPLETE_ALIASES            # do not expand aliases before completion
 setopt LIST_PACKED                    # variable column widths
 
 # Expansion and Globbing
@@ -35,7 +35,7 @@ setopt EXTENDED_GLOB                  # like ** for recursive dirs
 # History
 setopt APPEND_HISTORY                 # append instead of overwrite file
 setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_SPACE              # don't save in history if space prefixed
+setopt HIST_IGNORE_SPACE              # do not save in history if space prefixed
 setopt HIST_REDUCE_BLANKS
 setopt HIST_VERIFY                    # verify when using history cmds/params
 
@@ -49,7 +49,7 @@ setopt CORRECT
 # Job Control
 setopt CHECK_JOBS                     # prompt before exiting shell with bg job
 setopt LONGLISTJOBS                   # display PID when suspending bg as well
-setopt NO_HUP                         # don't kill bg processes
+setopt NO_HUP                         # do not kill bg processes
 
 # Prompting
 
@@ -238,29 +238,6 @@ alias rm="nocorrect rm"
 alias mkdir="nocorrect mkdir"
 
 # ============================================================================
-# hooks
-# ============================================================================
-
-# Auto-detect .nvmrc and run nvm use
-# Updated to only trigger nvm use if there's actually a different version
-__auto_nvm_use() {
-  local node_version="$(nvm version)"
-  local nvmrc=$(nvm_find_nvmrc)
-  local nvmrc_node_version="N/A"
-  [ -n "$nvmrc" ] && nvmrc_node_version="$(nvm version "$(< $nvmrc)")"
-  if [ "$nvmrc_node_version" != "N/A" ] && [ "$nvmrc_node_version" != "$node_version" ]; then
-    nvm use
-    return $?
-  elif [ "$node_version" != "$(nvm version default)" ]; then
-    nvm use default
-    return $?
-  fi
-  #[[ -f ".nvmrc" && -r ".nvmrc" ]] && nvm use
-}
-# NVM loaded in shell/before.sh -> shell/node.sh
-dko::has "nvm" && add-zsh-hook chpwd __auto_nvm_use
-
-# ============================================================================
 # Completion settings
 # ============================================================================
 
@@ -346,3 +323,5 @@ if [[ "$PROFILE_STARTUP" == true ]]; then
 fi
 
 export DKO_SOURCE="${DKO_SOURCE} }"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

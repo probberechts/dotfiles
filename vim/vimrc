@@ -481,29 +481,32 @@ let g:netrw_browsex_viewer = has('mac') ? 'open' : 'xdg-open'
 " Plugins: load - called when vim-plug available
 " ----------------------------------------------------------------------------
 
-function! s:LoadPlugins()
-  let s:use_colorv    = 0 && (has('python') || has('python3'))
+function! PlugIf(condition, ...) abort
+  let l:enabled = a:condition ? {} : { 'on': [], 'for': [] }
+  return a:0 ? extend(l:enabled, a:000[0]) : l:enabled
+endfunction
 
+function! s:LoadPlugins()
   " Notes on adding plugins:
   " - Absolutely do not use 'for' if the plugin provides an `ftdetect/`
-
-  " ==========================================================================
-  " Plug: Async processes
-  " ==========================================================================
-
-  Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 
   " ========================================================================
   " Plug: Colorscheme
   " ========================================================================
 
-  Plug 'atelierbram/Base2Tone-vim'
-  Plug 'rakr/vim-one'
-  Plug 'w0ng/vim-hybrid'
-  Plug 'chriskempson/base16-vim'
+  let l:truecolor = has('nvim') || has('gui_running') || has('termguicolors')
+  Plug 'rakr/vim-one', PlugIf(l:truecolor)
+  Plug 'arcticicestudio/nord-vim'
+
+  " ==========================================================================
+  " Plug: Embedded filetype support
+  " ==========================================================================
+
+  " determine inline embedded filetypes
+  Plug 'Shougo/context_filetype.vim'
 
   " ========================================================================
-  " Plug: File system
+  " Plug: File system, ctags
   " ========================================================================
 
   " creates dir if new file in new dir
@@ -521,9 +524,6 @@ function! s:LoadPlugins()
     Plug '~/.fzf'
     Plug 'junegunn/fzf.vim'
   endif
-
-  " `:Bufferize messages` to get messages (or any :command) in a new buffer
-  Plug 'AndrewRadev/bufferize.vim', { 'on': ['Bufferize'] }
 
   " Perform git operations within a Vim session
   Plug 'lambdalisue/vim-gita', { 'on': ['Gita'] }
@@ -790,6 +790,9 @@ function! s:LoadPlugins()
   " Distraction-free writing
   Plug 'junegunn/goyo.vim', { 'on': ['Goyo'] }
 
+  " Personal wiki
+  Plug 'vimwiki/vimwiki'
+
   " ========================================================================
   " Language: Python
   " ========================================================================
@@ -837,10 +840,7 @@ function! s:LoadPlugins()
   " ----------------------------------------
 
   " Hex (et al) color highlighting
-  if s:use_colorv | Plug 'Rykka/colorv.vim'
-  else | Plug 'ap/vim-css-color'
-  "else | Plug 'chrisbra/Colorizer'
-  endif
+  Plug 'ap/vim-css-color'
 
   " Omnicompletion
   Plug 'othree/csscomplete.vim'

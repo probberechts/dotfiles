@@ -17,8 +17,9 @@ setlocal textwidth=78
 setlocal colorcolumn=+3
 
 " too slow
-"setlocal complete+=kspell
-
-" Always start in display movement mode for markdown
+"setlocal complete+=kspell" Always start in display movement mode for markdown
 silent! call dkomovemode#setByDisplay()
 
+if dko#IsPlugged('vim-pandoc')
+  execute dko#MapAll({ 'key': '<F2>', 'command': 'TOC' })
+endif

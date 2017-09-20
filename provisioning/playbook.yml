@@ -1,0 +1,56 @@
+- name:       Development environment
+  hosts:      127.0.0.1
+  connection: local
+
+  vars:
+    home_path:     '{{ lookup("env", "HOME") }}'
+    dotfiles_path: '{{ home_path }}/.dotfiles'
+    is_ci:         'lookup("env", "CI") | bool'
+
+  environment:
+    PATH: '/usr/local/bin:{{ anyenv.dir }}/bin:{{ anyenv.envs_dir }}/rbenv/shims:{{ anyenv.envs_dir }}/ndenv/shims:{{ anyenv.envs_dir }}/pyenv/shims:{{ lookup("env", "PATH") }}'
+
+  roles:
+    #  basic
+    #-----------------------------------------------
+    - role: anyenv
+      tags: ['basic', 'anyenv']
+    - role: link
+      tags: ['basic', 'link']
+    - role: ssh
+      tags: ['basic', 'ssh']
+
+    #  install
+    #-----------------------------------------------
+    - role: homebrew
+      tags: ['install', 'homebrew']
+    - role: mas
+      tags: ['install', 'mas']
+
+    #  lang
+    #-----------------------------------------------
+    - role: ruby
+      tags: ['lang', 'ruby']
+    - role: nodejs
+      tags: ['lang', 'nodejs']
+    - role: python
+      tags: ['lang', 'python']
+
+    #  app
+    #-----------------------------------------------
+    - role: fzf
+      tags: ['app', 'fzf']
+    - role: vim
+      tags: ['app', 'vim']
+
+
+    #  system
+    #-----------------------------------------------
+    - role: osx
+      tags: ['system', 'osx']
+    - role: zsh
+      tags: ['system', 'zsh']
+    - role: hosts
+      tags: ['system', 'hosts']
+    - role: keyboard
+      tags: ['system', 'keyboard']

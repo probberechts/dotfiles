@@ -1,0 +1,48 @@
+- name: install dependency
+  homebrew:
+    name:  '{{ item }}'
+    state: present
+  with_items:
+    - lua
+    - luajit
+
+- name: install vim
+  homebrew:
+    name:            vim
+    state:           latest
+    install_options: '--without-nls --with-override-system-vi --with-lua --with-luajit --with-python3'
+
+- name: install neovim
+  homebrew:
+    name:  neovim
+    state: latest
+
+- name: install Redis
+  homebrew:
+    name: redis
+    state: present
+
+- name: start Redis
+  command: |
+    bash -lc 'brew services start redis'
+
+- name: set up a virtualenv for neovim
+  block:
+    - name: get python3 version
+      command: |
+        bash -lc 'pyenv versions | egrep -o "3.([0-9]{1,}\.)+[0-9]{1,}" | head -1 || true'
+      register: python3_version
+
+    - name: create virtualenv
+      command: |
+        bash -lc 'pyenv virtualenv {{ python.versions[0] | quote }} neovim3'
+      args:
+        creates: '{{ anyenv.envs_dir }}/pyenv/versions/neovim3' 
+
+    - name: install python dependencies
+      pip: 
+        name: '{{ item }}'
+        virtualenv: '{{ anyenv.envs_dir }}/pyenv/versions/neovim3' 
+      with_items:
+        - neovim
+        - jedi

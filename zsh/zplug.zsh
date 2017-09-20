@@ -33,8 +33,8 @@ zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-completions"
 
 # Pure prompt
-zplug "mafredri/zsh-async", on:sindresorhus/pure
-zplug "sindresorhus/pure", use:pure.zsh
+zplug "mafredri/zsh-async"
+zplug "sindresorhus/pure", use:pure.zsh, as:theme
 
 # ----------------------------------------------------------------------------
 # LAST, these call "compdef" so must be run after compinit, enforced by defer

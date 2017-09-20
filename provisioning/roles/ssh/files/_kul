@@ -1,0 +1,18 @@
+Host *.kuleuven.be
+     User r0296915
+     IdentityFile ~/.ssh/keys/id_rsa
+
+Host kulgateway
+     HostName st.cs.kuleuven.be
+     User r0296915
+     IdentityFile ~/.ssh/keys/id_rsa
+
+Host gent
+     User r0296915
+     IdentityFile ~/.ssh/keys/id_rsa
+     ProxyCommand ssh -A -q kulgateway nc -q0 gent.cs.kotnet.kuleuven.be 22
+
+Host kotgent
+     HostName gent.cs.kotnet.kuleuven.be
+     User r0296915
+     IdentityFile ~/.ssh/keys/id_rsa

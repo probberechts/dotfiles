@@ -49,7 +49,6 @@ alias pg_stop="pg_ctl -D /usr/local/var/postgres stop -s -m fast"
 alias countTex="clear;texcount -total -q -col -sum *.tex"
 
 # bin
-alias u="dko::dotfiles"
 alias grep="grep --color=auto"
 alias ag="ag --hidden --smart-case --one-device --path-to-ignore \"\${DOTFILES}/ag/dot.ignore\""
 alias today="date +%d-%m-%Y"

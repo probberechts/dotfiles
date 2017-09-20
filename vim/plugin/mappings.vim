@@ -219,7 +219,7 @@ nnoremap  <Leader>j   VjgJl
 " Clean up whitespace
 " ----------------------------------------------------------------------------
 
-nnoremap  <Leader>ws  :<C-U>call dkowhitespace#clean()<CR>
+nnoremap  <Leader>wsd  :<C-U>call dkowhitespace#clean()<CR>
 
 " ----------------------------------------------------------------------------
 " Horizontal rule

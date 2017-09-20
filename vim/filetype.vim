@@ -52,12 +52,6 @@ augroup filetypedetect
         \ BRANCH_DESCRIPTION
         \ setfiletype gitbranchdescription.markdown
 
-  " pre Vim 7.4.480 - md is modula2
-  " post Vim 7.4.480 - md is markdown
-  autocmd! BufNewFile,BufRead *.md
-        \ setfiletype markdown
-        \| call s:BindPreview()
-
   autocmd! BufNewFile,BufRead
         \ .babelrc,.bowerrc,.jshintrc
         \ setfiletype json

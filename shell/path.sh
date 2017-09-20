@@ -47,6 +47,17 @@ dko::add_paths() {
 }
 
 PATH="$(dko::add_paths)"
+
+
+# ==============================================================================
+# Anyenv
+# ==============================================================================
+
+export ANYENV_ROOT="${HOME}/.anyenv"
+export PATH="${ANYENV_ROOT}/bin:${PATH}"
+[ -d "${ANYENV_ROOT}" ] && eval "$(anyenv init -)"
+
+
 export PATH
 
 # vim: ft=sh :

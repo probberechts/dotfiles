@@ -1,0 +1,18 @@
+- set_fact:
+    hosts: {}
+
+- name: install spotify blocklist
+  blockinfile:
+    path: /etc/hosts
+    block: "{{ lookup('file', 'spotify_ad_block.txt') }}"
+    marker: "# {mark} SPOTIFY BLOCKLIST"
+    insertafter: "EOF"
+  become: yes
+
+- name: flush local DNS cache (1/2)
+  command: dscacheutil -flushcache
+  become: yes
+
+- name: flush local DNS cache (2/2)
+  command: killall -HUP mDNSResponder
+  become: yes

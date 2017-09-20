@@ -154,6 +154,40 @@ function hs.window.centerWithFullHeight(win)
   win:setFrame(f)
 end
 
+-- +-----------------+
+-- |      |          |
+-- | HERE |          |
+-- |      |          |
+-- +-----------------+
+function hs.window.left40(win)
+  local f = win:frame()
+  local screen = win:screen()
+  local max = screen:frame()
+
+  f.x = max.x
+  f.y = max.y
+  f.w = max.w * 0.4
+  f.h = max.h
+  win:setFrame(f)
+end
+
+-- +-----------------+
+-- |      |          |
+-- |      |   HERE   |
+-- |      |          |
+-- +-----------------+
+function hs.window.right60(win)
+  local f = win:frame()
+  local screen = win:screen()
+  local max = screen:frame()
+
+  f.x = max.w * 0.4
+  f.y = max.y
+  f.w = max.w * 0.6
+  f.h = max.h
+  win:setFrame(f)
+end
+
 function hs.window.nextScreen(win)
   local currentScreen = win:screen()
   local allScreens = hs.screen.allScreens()
@@ -183,6 +217,8 @@ end
 --   . => send window to the lower right quarter of the screen
 --   return => make window full screen
 --   n => send window to the next monitor
+--   left => send window to the monitor on the left (if there is one)
+--   right => send window to the monitor on the right (if there is one)
 --------------------------------------------------------------------------------
 
 windowLayoutMode = hs.hotkey.modal.new({}, 'F16')
@@ -197,55 +233,71 @@ windowLayoutMode.exited = function()
 end
 
 -- Bind the given key to call the given function and exit WindowLayout mode
-function windowLayoutMode.bindWithAutomaticExit(mode, key, fn)
-  mode:bind({}, key, function()
+function windowLayoutMode.bindWithAutomaticExit(mode, modifiers, key, fn)
+  mode:bind(modifiers, key, function()
     mode:exit()
     fn()
   end)
 end
 
-windowLayoutMode:bindWithAutomaticExit('return', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'return', function()
   hs.window.focusedWindow():maximize()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('space', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'space', function()
   hs.window.focusedWindow():centerWithFullHeight()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('h', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'h', function()
   hs.window.focusedWindow():left()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('j', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'j', function()
   hs.window.focusedWindow():down()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('k', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'k', function()
   hs.window.focusedWindow():up()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('l', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'l', function()
   hs.window.focusedWindow():right()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('i', function()
+windowLayoutMode:bindWithAutomaticExit({'shift'}, 'h', function()
+  hs.window.focusedWindow():left40()
+end)
+
+windowLayoutMode:bindWithAutomaticExit({'shift'}, 'l', function()
+  hs.window.focusedWindow():right60()
+end)
+
+windowLayoutMode:bindWithAutomaticExit({}, 'i', function()
   hs.window.focusedWindow():upLeft()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('o', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'o', function()
   hs.window.focusedWindow():upRight()
 end)
 
-windowLayoutMode:bindWithAutomaticExit(',', function()
+windowLayoutMode:bindWithAutomaticExit({}, ',', function()
   hs.window.focusedWindow():downLeft()
 end)
 
-windowLayoutMode:bindWithAutomaticExit(';', function()
+windowLayoutMode:bindWithAutomaticExit({}, '.', function()
   hs.window.focusedWindow():downRight()
 end)
 
-windowLayoutMode:bindWithAutomaticExit('n', function()
+windowLayoutMode:bindWithAutomaticExit({}, 'n', function()
   hs.window.focusedWindow():nextScreen()
+end)
+
+windowLayoutMode:bindWithAutomaticExit({}, 'right', function()
+  hs.window.focusedWindow():moveOneScreenEast()
+end)
+
+windowLayoutMode:bindWithAutomaticExit({}, 'left', function()
+  hs.window.focusedWindow():moveOneScreenWest()
 end)
 
 -- Use Control+s to toggle WindowLayout Mode

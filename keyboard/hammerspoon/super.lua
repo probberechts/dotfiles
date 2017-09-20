@@ -5,7 +5,7 @@ local message = require('status-message')
 -- If 's' and 'd' are *both* pressed within this time period, consider this to
 -- mean that they've been pressed simultaneously, and therefore we should enter
 -- Super Duper Mode.
-local MAX_TIME_BETWEEN_SIMULTANEOUS_KEY_PRESSES = 0.02 -- 200 milliseconds
+local MAX_TIME_BETWEEN_SIMULTANEOUS_KEY_PRESSES = 0.02 -- 20 milliseconds
 
 local superDuperMode = {
   statusMessage = message.new('(S)uper (D)uper Mode'),
@@ -157,8 +157,8 @@ superDuperModeTabNavKeyListener = eventtap.new({ eventTypes.keyDown }, function(
 
   local charactersToKeystrokes = {
     u = { {'cmd'}, '1' },          -- go to first tab
-    i = { {'cmd', 'shift'}, 'left' }, -- go to previous tab
-    o = { {'cmd', 'shift'}, 'right' }, -- go to next tab
+    i = { {'cmd', 'shift'}, '[' }, -- go to previous tab
+    o = { {'cmd', 'shift'}, ']' }, -- go to next tab
     p = { {'cmd'}, '9' },          -- go to last tab
   }
   local keystroke = charactersToKeystrokes[event:getCharacters()]

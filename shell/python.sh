@@ -18,17 +18,11 @@ export PYLINTHOME="${XDG_CONFIG_HOME}/pylint"
 # pyenv for multiple Python binaries
 # ==============================================================================
 
-export PYENV_ROOT="${HOME}/.local/pyenv"
-export PATH="${PYENV_ROOT}/bin:${PATH}"
-dko::has "pyenv" && eval "$(pyenv init -)"
 dko::has "pyenv-virtualenv-init" && eval "$(pyenv virtualenv-init -)"
 
 # ==============================================================================
 # VirtualEnv for python package isolation
 # ==============================================================================
-
-# Default virtualenv
-export WORKON_HOME="${HOME}/.local/virtualenv"
 
 # Disable auto-add virtualenv name to prompt
 export VIRTUAL_ENV_DISABLE_PROMPT=1

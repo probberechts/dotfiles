@@ -15,8 +15,8 @@ import:
     # use auto-tagging where possible
     # do not require confirmation on strong matches
     autotag: yes
-    timid: no
 
+    timid: no
     resume: ask
     incremental: no
     none_rec_action: ask
@@ -136,7 +136,6 @@ plugins: [
     convert,
     importfeeds,
     lyrics,
-    echonest,
     fetchart,
     embedart,
     lastgenre,

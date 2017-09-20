@@ -9,14 +9,8 @@ There’s no place like ~/
 Clone and run the symlink script.
 
 ```sh
-git clone --recurse-submodules https://github.com/probberechts/dotfiles.git ~/.dotfiles
-~/.dotfiles/bootstrap/symlink.sh
+$ bash <(curl -L https://raw.githubusercontent.com/probberechts/dotfiles/master/up)
 ```
-
-### How to update
-
-The sourced `dko::dotfiles::main()` function is available as the alias `u`.
-Use `u` without arguments for usage.
 
 ### Acknowledgements
 
@@ -24,6 +18,8 @@ Inspiration and code was taken from many sources, including:
 
 * [@davidosomething](https://github.com/davidosomething) (David O'Trakoun)
   [https://github.com/davidosomething/dotfiles](https://github.com/davidosomething/dotfiles)
+* [@creasty](https://github.com/creasty) (Yuki Iwanaga)
+  [https://github.com/creasty/dotfiles](https://github.com/creasty/dotfiles)
 * [@necolas](https://github.com/necolas) (Nicolas Gallagher)
   [https://github.com/necolas/dotfiles](https://github.com/necolas/dotfiles)
 * [@mathiasbynens](https://github.com/mathiasbynens) (Mathias Bynens)

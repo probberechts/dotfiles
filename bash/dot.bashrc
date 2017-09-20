@@ -72,4 +72,7 @@ source "${DOTFILES}/shell/after.sh"
 dko::source "${DOTFILES}/local/bashrc"
 
 export DKO_SOURCE="${DKO_SOURCE} }"
+
 # vim: syn=sh :
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash

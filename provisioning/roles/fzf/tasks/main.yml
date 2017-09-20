@@ -1,0 +1,20 @@
+- set_fact:
+    fzf: {}
+
+- name: remove ~/.fzf
+  file:
+    dest:  '{{ fzf.dir || ~/.fzf }}'
+    state: absent
+  when: is_ci
+
+- name: fetch fzf repo
+  git:
+    repo: https://github.com/junegunn/fzf.git
+    dest: '{{ fzf.dir }}'
+    depth: 1
+  when: fzf.dir
+  register: update_fzf
+
+- name: run install script
+  command: '{{ fzf.dir }}/install --key-bindings --completion --no-update-rc'
+  when: update_fzf.changed
