@@ -4,4 +4,3 @@ TCPKeepAlive yes
 StrictHostKeyChecking no
 UserKnownHostsFile /dev/null
 LogLevel ERROR
-UseKeychain yes

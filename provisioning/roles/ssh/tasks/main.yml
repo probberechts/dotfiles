@@ -14,6 +14,7 @@
     dest: '{{ home_path }}/.ssh/config.d/'
     mode: 0600
   with_fileglob:
+    - '{{ ansible_distribution }}'
     - '_*'
 
 - name: assemble config.d

@@ -1,18 +1,43 @@
-Host *.kuleuven.be
+##############################################################################
+# Computerlab
+# Download keys from https://www.cs.kuleuven.be/restricted/computerklas/
+##############################################################################
+
+Host *.cs.kotnet.kuleuven.be
      User r0296915
-     IdentityFile ~/.ssh/keys/id_rsa
+     IdentityFile ~/.ssh/keys/id_rsa_sol
 
 Host kulgateway
      HostName st.cs.kuleuven.be
      User r0296915
-     IdentityFile ~/.ssh/keys/id_rsa
+     IdentityFile ~/.ssh/keys/id_rsa_sol
 
 Host gent
-     User r0296915
-     IdentityFile ~/.ssh/keys/id_rsa
      ProxyCommand ssh -A -q kulgateway nc -q0 gent.cs.kotnet.kuleuven.be 22
+     User r0296915
+     IdentityFile ~/.ssh/keys/id_rsa_sol
 
 Host kotgent
      HostName gent.cs.kotnet.kuleuven.be
      User r0296915
-     IdentityFile ~/.ssh/keys/id_rsa
+     IdentityFile ~/.ssh/keys/id_rsa_sol
+
+##############################################################################
+# CS
+##############################################################################
+
+Host *.cs.kuleuven.be
+    User pieterr
+
+Host cs
+    HostName ssh.cs.kuleuven.be
+    User pieterr
+
+Host spock
+    HostName spock.cs.kuleuven.be
+    User pieterr
+
+Host repo
+    HostName scm.cs.kuleuven.be
+    Port 8022
+    User Pieter.Robberechts

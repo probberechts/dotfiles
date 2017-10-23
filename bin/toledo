@@ -1,6 +1,0 @@
-#!/bin/sh
-url="https://cygnus.cc.kuleuven.be/webapps/tol-whatsrecent-bb_bb60/rs/s/users/q0444309/events/?signature=9Jb8b9SZ3iKJ%2FDZ2ZYkVrKdHu9U%3D&view=atom"
-curl --silent "$url" | grep -E '(title>|description>)' | \
-sed -n '4,$p' | \
-sed -e 's/<title>//' -e 's/<\/title>//' -e 's/<description>/   /' \
--e 's/<\/description>//'

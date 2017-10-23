@@ -797,7 +797,8 @@ function! s:LoadPlugins()
   " Language: Python
   " ========================================================================
 
-  Plug 'hynek/vim-python-pep8-indent'
+  Plug 'tell-k/vim-autopep8'
+  Plug 'heavenshell/vim-pydocstring'
   Plug 'raimon49/requirements.txt.vim'
 
   " ========================================================================

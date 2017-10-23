@@ -1,4 +1,8 @@
-host github.com
+##############################################################################
+# GitHub
+##############################################################################
+
+Host github.com
     HostName github.com
-    IdentityFile ~/.ssh/keys/id_rsa
+    IdentityFile ~/.ssh/id_rsa
     User probberechts

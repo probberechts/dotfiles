@@ -1,0 +1,52 @@
+#!/bin/sh
+
+EXT=html
+PANDOC="pandoc -f markdown+hard_line_breaks+lists_without_preceding_blankline 
+        --smart --filter pandoc-citeproc 
+        --bibliography=\"$HOME/Documents/PhD/Literature/library.bib\""
+
+if [ "$2" ]; then
+  EXT=${2#*.}
+fi
+
+echo "Extension = $EXT"
+
+if [ "$EXT" == "pdf" ]; then
+  # HEAD=/Users/wannes/share/markdown/header_pandoc.tex.inc
+  OUTTMP=/tmp/mkd.tex
+  OUT=/tmp/mkd.pdf
+  $PANDOC -o $OUTTMP -s $1 --listings
+  (cd /tmp; pdflatex $OUTTMP)
+  open $OUT
+elif [ "$EXT" == "rtf" ]; then
+  OUT=/tmp/mkd.rtf
+  $PANDOC -o $OUT -s $1
+  open $OUT
+elif [ "$EXT" == "html" ]; then
+  OUT=/tmp/mkd.html
+  #CSS=/Users/wannes/share/markdown/style_gollum_pandoc.css
+  # INHEAD=/Users/wannes/share/markdown/inheader_articlecls.html.inc
+  # HEAD=/Users/wannes/share/markdown/header_articlecls.html.inc
+  # BODY=/Users/wannes/share/markdown/footer_articlecls.html.inc
+  echo pandoc -o $OUT -t html5 -s $1
+  $PANDOC -o $OUT -t html5 -s $1
+  open $OUT
+else
+  echo "Output type not suported: $EXT"
+fi
+
+: << 'END_OF_DOCS'
+
+# USAGE
+
+   markdown inputfile [outputfile]
+
+# OUTPUTFILE
+
+Outputfile recognized extensions
+
+   .html
+   .pdf
+   .rtf
+
+END_OF_DOCS
