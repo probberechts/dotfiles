@@ -19,7 +19,27 @@ alias pyg="pygmentize -O style=rrt -f console256 -g"
 alias g='git'
 
 # shorter todo
-alias t='todo.sh -d ~/.dotfiles/todo/todo.cfg'
+alias in='task add +in'
+tickle () {
+    deadline=$1
+    shift
+    in +tickle wait:$deadline $@
+}
+alias tick=tickle
+alias think='tickle +1d'
+alias rnd='task add +rnd +next +@computer +@online'
+webpage_title (){
+    wget -qO- "$*" | hxselect -s '\n' -c  'title' 2>/dev/null
+}
+read_and_review (){
+    link="$1"
+    title=$(webpage_title $link)
+    echo $title
+    descr="\"Read and review: $title\""
+    id=$(task add +next +rnr "$descr" | sed -n 's/Created task \(.*\)./\1/p')
+    task "$id" annotate "$link"
+}
+alias rnr=read_and_review
 
 # Open file in existing MacVim window
 alias gvim="open -a MacVim"
