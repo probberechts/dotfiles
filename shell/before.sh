@@ -24,6 +24,7 @@ source "${DOTFILES}/shell/aliases.sh"    # aliases
 # ==============================================================================
 
 source "${DOTFILES}/shell/python.sh"
+source "${DOTFILES}/shell/haskell.sh"
 
 export DKO_SOURCE="${DKO_SOURCE} }"
 
