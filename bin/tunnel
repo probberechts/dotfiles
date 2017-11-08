@@ -1,0 +1,16 @@
+#!/bin/sh
+
+usage() {
+  echo "Creates a tunnel through SSH"
+  echo "Usage: tunnel <remote port> <ssh host> <local port>"
+}
+
+[ $# -lt 2 ] && usage && exit 1
+
+PORT="$1"
+SSH_HOST="$2"
+SSH_PORT="$3"
+
+ssh -N -f -L "$SSH_PORT":localhost:"$PORT" "$SSH_HOST"
+
+# vi:syntax=sh
