@@ -67,6 +67,7 @@ homebrew:
     - nmap            # Port scanning utility for large networks
     - pandoc          # Swiss-army knife of markup format conversion
     - pandoc-citeproc # Library and executable for using citeproc with pandoc
+    - parallel        # Shell command parallelization utility
     - redis           # Persistent key-value database, with built-in net interface
     - task            # Feature-rich console based todo list manager
     - tmux            # Terminal multiplexer
