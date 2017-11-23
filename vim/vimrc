@@ -41,12 +41,13 @@ set modeline
 
 set pastetoggle=<F12>
 
-if empty($SSH_CONNECTION) && has('clipboard')
-  set clipboard^=unnamed                 " Use vim global clipboard register
+if has('clipboard')
+  set clipboard=unnamed                 " Use vim global clipboard register
   if has('unnamedplus') || has('nvim')  " Use system clipboard register
-    set clipboard^=unnamedplus
+    set clipboard+=unnamedplus
   endif
 endif
+
 
 " ----------------------------------------------------------------------------
 " Display
@@ -555,6 +556,9 @@ function! s:LoadPlugins()
   " Add file manip commands like Remove, Move, Rename, SudoWrite
   Plug 'tpope/vim-eunuch'
 
+  " Run tests
+  Plug 'janko-m/vim-test'
+
   " ========================================================================
   " Plug: Input, syntax, spacing
   " ========================================================================
@@ -791,9 +795,10 @@ function! s:LoadPlugins()
   " Language: Python
   " ========================================================================
 
-  Plug 'tell-k/vim-autopep8'
+  Plug 'kh3phr3n/python-syntax'
   Plug 'heavenshell/vim-pydocstring'
   Plug 'raimon49/requirements.txt.vim'
+  Plug 'lambdalisue/vim-pyenv', { 'for': [ 'python' ] }
 
   " ========================================================================
   " Language: Ruby, rails

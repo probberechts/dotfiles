@@ -20,12 +20,12 @@ alias g='git'
 
 # shorter todo
 alias in='task add +in'
-tickle () {
-    deadline=$1
-    shift
-    in +tickle wait:$deadline $@
-}
-alias tick=tickle
+# tickle () {
+#     deadline=$1
+#     shift
+#     in +tickle wait:$deadline $@
+# }
+# alias tick=tickle
 alias think='tickle +1d'
 alias rnd='task add +rnd +next +@computer +@online'
 webpage_title (){

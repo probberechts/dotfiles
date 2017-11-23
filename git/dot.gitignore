@@ -72,6 +72,8 @@ $RECYCLE.BIN/
 .directory
 # Linux trash folder which might appear on any partition or disk
 .Trash-*
+# NFS client "delete on later close"
+.nfs*
 
 # ----------------------------------------------------------------------------
 # Tags

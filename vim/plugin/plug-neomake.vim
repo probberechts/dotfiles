@@ -11,8 +11,8 @@ augroup END
 " Map
 " ============================================================================
 
-execute dko#MapAll({ 'key': '<F6>', 'command': 'Neomake' })
-execute dko#MapAll({ 'key': '<F7>', 'command': 'Neomake!' })
+execute dko#MapAll({ 'key': '<F7>', 'command': 'Neomake' })
+execute dko#MapAll({ 'key': '<F8>', 'command': 'Neomake!' })
 
 " ============================================================================
 " Output
@@ -195,7 +195,7 @@ autocmd dkoneomake FileType
 " ----------------------------------------------------------------------------
 
 let g:neomake_python_enabled_makers = [
-      \   'python', 'pep8', 'pyflakes', 'pylint'
+      \   'python', 'pylint', 'pydocstyle'
       \ ]
 
 " Add disable to defaults
@@ -204,6 +204,7 @@ let g:neomake_python_pylint_args = [
       \   '--output-format=text',
       \   '--msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}"',
       \   '--reports=no',
+      \   '--rcfile='+$PYLINTRC, 
       \   '--disable=locally-disabled',
       \ ]
 

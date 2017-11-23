@@ -5,5 +5,10 @@
 setlocal softtabstop=4
 setlocal tabstop=4
 setlocal shiftwidth=4
+
 " Autoformat with '=' according to PEP8 guidelines
-set equalprg=autopep8\ -
+set equalprg=yapf
+
+" Sort imports
+nnoremap <Leader>i :!isort %<CR><CR>
+
