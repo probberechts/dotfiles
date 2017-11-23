@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+GITIT_HOME="$HOME/Notes"
+GITIT="$HOME/.cabal/bin/gitit"
+
+case "$1" in
+  start)
+    cd ${GITIT_HOME} && ${GITIT} -f my.conf &
+    ;;
+  stop)
+    killall gitit
+    ;;
+  *) echo "Usage: $0 {start|stop}" >&2; exit 1 ;;
+esac
+
+exit 0
