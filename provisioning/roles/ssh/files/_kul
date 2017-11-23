@@ -41,3 +41,12 @@ Host repo
     HostName scm.cs.kuleuven.be
     Port 8022
     User Pieter.Robberechts
+
+##############################################################################
+# pinac
+##############################################################################
+
+Host pinac*
+  HostName %h.cs.kuleuven.be
+  User pieterr
+
