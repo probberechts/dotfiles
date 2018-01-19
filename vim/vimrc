@@ -527,7 +527,7 @@ function! s:LoadPlugins()
   endif
 
   " Perform git operations within a Vim session
-  Plug 'lambdalisue/vim-gina', { 'on': ['Gina'] }
+  Plug 'lambdalisue/gina.vim', { 'on': ['Gina'] }
 
   " gK to lookup documentation
   Plug 'keith/investigate.vim'
@@ -735,6 +735,7 @@ function! s:LoadPlugins()
 
   Plug 'othree/yajs.vim'
       \| Plug 'othree/javascript-libraries-syntax.vim'
+  Plug 'mxw/vim-jsx'
 
   " ----------------------------------------
   " Features
@@ -763,7 +764,7 @@ function! s:LoadPlugins()
   endif
 
   " Parameter completion (in or after ' or "), bound to user complete
-  Plug 'othree/jspc.vim'
+  " Plug 'othree/jspc.vim'
 
   " ========================================================================
   " Language: Latex
@@ -795,10 +796,12 @@ function! s:LoadPlugins()
   " Language: Python
   " ========================================================================
 
-  Plug 'kh3phr3n/python-syntax'
-  Plug 'heavenshell/vim-pydocstring'
+  Plug 'kh3phr3n/python-syntax', { 'for': 'python' }
+  Plug 'google/yapf', { 'rtp': 'plugins/vim', 'for': 'python' }
+  Plug 'fisadev/vim-isort', { 'for': 'python' }
+  Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
   Plug 'raimon49/requirements.txt.vim'
-  Plug 'lambdalisue/vim-pyenv', { 'for': [ 'python' ] }
+  Plug 'lambdalisue/vim-pyenv', { 'for': 'python' }
 
   " ========================================================================
   " Language: Ruby, rails

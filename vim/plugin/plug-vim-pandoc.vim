@@ -20,6 +20,6 @@ let g:pandoc#syntax#codeblocks#embeds#langs = [
       \   'vim',
       \ ]
 
-let g:pandoc#biblio#bibs = ['~/Documents/PhD/Literature/library.bib']
+let g:pandoc#biblio#bibs = ['~/.pandoc/default.bib']
 
 let g:pandoc#toc#close_after_navigating = 0

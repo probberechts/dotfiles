@@ -5,10 +5,12 @@ augroup END
 
 setlocal nonumber
 setlocal norelativenumber
-set foldcolumn=5
-set columns=85
+setlocal foldcolumn=5
+setlocal columns=85
 
-setlocal formatoptions=antw
+" setlocal formatoptions=antw
+setlocal formatoptions+=tcqln
+setlocal formatlistpat=^\\s*\\d\\+\\.\\s\\+\\\|^[-*+]\\s\
 setlocal textwidth=80
 setlocal wrapmargin=0
 

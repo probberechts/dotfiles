@@ -44,6 +44,6 @@ augroup dkovimfiler
   autocmd FileType vimfiler
         \ nmap <buffer> q <Plug>(vimfiler_close)
   autocmd FileType vimfiler
-        \ set nonumber |
-        \ set norelativenumber
+        \ setlocal nonumber |
+        \ setlocal norelativenumber
 augroup END

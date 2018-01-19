@@ -7,8 +7,12 @@ setlocal tabstop=4
 setlocal shiftwidth=4
 
 " Autoformat with '=' according to PEP8 guidelines
-set equalprg=yapf
+setlocal equalprg=yapf
+
+" Auto format
+map <buffer> <C-Y> :call yapf#YAPF()<cr>
+imap <buffer> <C-Y> <c-o>:call yapf#YAPF()<cr>
 
 " Sort imports
-nnoremap <Leader>i :!isort %<CR><CR>
-
+let g:vim_isort_python_version = 'python3'
+map <buffer> <C-I> :py3 isort_file()<cr>
