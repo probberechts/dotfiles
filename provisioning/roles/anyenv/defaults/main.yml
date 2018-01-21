@@ -1,0 +1,5 @@
+---
+anyenv:
+  dir:         '{{ ansible_env.HOME }}/.anyenv'
+  plugins_dir: '{{ ansible_env.HOME }}/.anyenv/plugins'
+  envs_dir:    '{{ ansible_env.HOME }}/.anyenv/envs'

@@ -1,7 +1,5 @@
-- set_fact:
-    link: {}
-
-- name: allocate parent directories
+---
+- name: dotfiles | allocate parent directories
   file:
     dest:    '{{ home_path }}/{{ item }}'
     state:   directory
@@ -11,7 +9,7 @@
   when: item != ""
   with_items: '{{ link.values() | map("dirname") | unique | list }}'
 
-- name: check destinations
+- name: dotfiles | check destinations
   stat:
     path: '{{ home_path }}/{{ item.value }}'
   loop_control:
@@ -19,7 +17,7 @@
   with_dict: '{{ link }}'
   register: dest_stat
 
-- name: create backup files
+- name: dotfiles | create backup files
   command: |
     mv -f \
       {{ home_path | quote }}/{{ item.item.value | quote }} \
@@ -29,7 +27,7 @@
     label: '{{ item.item.value }}'
   with_items: '{{ dest_stat.results }}'
 
-- name: create symlinks
+- name: dotfiles | create symlinks
   file:
     src:   '{{ dotfiles_path }}/{{ item.key }}'
     dest:  '{{ home_path }}/{{ item.value }}'

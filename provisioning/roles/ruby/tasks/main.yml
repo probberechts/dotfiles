@@ -1,30 +1,28 @@
-- set_fact:
-    ruby: {}
-
-- name: check rbenv
+---
+- name: ruby | check rbenv
   command: |
     bash -lc 'which rbenv'
   register: which_rbenv
   ignore_errors: yes
 
-- name: install rbenv
+- name: ruby | install rbenv
   command: |
     bash -lc 'anyenv install rbenv'
   when: which_rbenv.rc > 0
 
-- name: install plugins
+- name: ruby | install plugins
   git:
     repo: 'https://github.com/{{ item }}.git'
     dest: '{{ ruby.plugins_dir }}/{{ item.split("/")[1] }}'
   with_items: '{{ ruby.plugins }}'
   when: ruby.plugins_dir and ruby.plugins
 
-- name: get installed versions
+- name: ruby | get installed versions
   command: |
     bash -lc 'rbenv versions'
   register: installed_versions
 
-- name: install dependency
+- name: ruby | install dependency
   homebrew:
     name:  '{{ item }}'
     state: present
@@ -33,17 +31,17 @@
     - openssl
     - readline
 
-- name: get openssl dir
+- name: ruby | get openssl dir
   command: |
     brew --prefix openssl
   register: openssl_dir
 
-- name: get readline dir
+- name: ruby | get readline dir
   command: |
     brew --prefix readline
   register: readline_dir
 
-- name: install ruby
+- name: ruby | install ruby
   command: |
     bash -lc 'rbenv install {{ item | quote }}'
   environment:
@@ -52,7 +50,7 @@
     ruby.versions and installed_versions.stdout.find(item) == -1
   with_items: '{{ ruby.versions }}'
 
-- name: set global ruby
+- name: ruby | set global ruby
   command: |
     bash -lc 'rbenv global {{ ruby.versions[0] | quote }}'
   when: ruby.versions

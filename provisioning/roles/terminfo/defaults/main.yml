@@ -1,0 +1,3 @@
+---
+terminfo:
+  path: '{{ ansible_env.HOME }}/.terminfo'

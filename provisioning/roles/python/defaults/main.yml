@@ -1,0 +1,9 @@
+---
+python:
+  versions:
+    - '3.6.2'
+    - '2.7.13'
+  plugins_dir: '{{ anyenv.envs_dir }}/pyenv/plugins'
+  plugins:
+    - pyenv/pyenv-virtualenv
+  packages:

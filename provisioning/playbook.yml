@@ -15,8 +15,8 @@
     #-----------------------------------------------
     - role: anyenv
       tags: ['basic', 'anyenv']
-    - role: link
-      tags: ['basic', 'link']
+    - role: dotfiles 
+      tags: ['basic', 'dotfiles']
     - role: ssh
       tags: ['basic', 'ssh']
 
@@ -24,8 +24,6 @@
     #-----------------------------------------------
     - role: homebrew
       tags: ['install', 'homebrew']
-    - role: mas
-      tags: ['install', 'mas']
 
     #  lang
     #-----------------------------------------------
@@ -43,14 +41,15 @@
     - role: vim
       tags: ['app', 'vim']
 
-
     #  system
     #-----------------------------------------------
     - role: osx
       tags: ['system', 'osx']
-    - role: zsh
-      tags: ['system', 'zsh']
+    - role: shell
+      tags: ['system', 'shell']
     - role: hosts
       tags: ['system', 'hosts']
     - role: keyboard
       tags: ['system', 'keyboard']
+    - role: terminfo
+      tags: ['system', 'terminfo']

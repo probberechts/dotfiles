@@ -1,36 +1,34 @@
-- set_fact:
-    anyenv: {}
-
-- name: remove ~/.anyenv
+---
+- name: anyenv | remove ~/.anyenv
   file:
     dest:  '{{ anyenv.dir || ~/.anyenv }}'
     state: absent
   when: is_ci
 
-- name: fetch anyenv repo
+- name: anyenv | fetch anyenv repo
   git:
     repo: https://github.com/riywo/anyenv
     dest: '{{ anyenv.dir }}'
     depth: 1
   when: anyenv.dir
 
-- name: create plugins dir
+- name: anyenv | create plugins dir
   file:
     dest:  '{{ anyenv.plugins_dir }}'
     state: directory
   when: anyenv.plugins_dir
 
-- name: fetch anyenv update repo
+- name: anyenv | fetch anyenv-update repo
   git:
     repo: https://github.com/znz/anyenv-update.git
     dest: '{{ anyenv.plugins_dir }}/anyenv-update'
   when: anyenv.plugins_dir
 
-- name: Add profile settings for anyenv
-  lineinfile: >
-    dest="{{ home_path }}/.profile"
-    line="{{ item }}"
-    create=yes
+- name: anyenv | add profile settings for anyenv
+  lineinfile:
+    dest: "{{ home_path }}/.profile"
+    create: yes
+    line: "{{ item }}"
   with_items:
-    - "export PATH=\"$HOME/.anyenv/bin:$PATH\""
-    - "eval \"$(anyenv init -)\""
+    - 'export PATH="{{ anyenv.dir }}/bin:$PATH"'
+    - 'eval "$(anyenv init -)"'

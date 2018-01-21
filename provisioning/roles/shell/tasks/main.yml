@@ -1,9 +1,9 @@
-- name: install zsh
+- name: shell | install zsh
   homebrew:
     name:  zsh
     state: present
 
-- name: search zsh bin path
+- name: shell | search zsh bin path
   command: |
     which zsh
   register: which_zsh
@@ -12,13 +12,13 @@
 - debug:
     msg: '{{ which_zsh.stdout }}'
 
-- name: add zsh to /etc/shells
+- name: shell | add zsh to /etc/shells
   lineinfile:
     dest: /etc/shells
     line: '{{ which_zsh.stdout }}'
   become: yes
 
-- name: change login shell to zsh
+- name: shell | change login shell to zsh
   command: |
     chpass -s '{{ which_zsh.stdout }}'
   register: chpass_result

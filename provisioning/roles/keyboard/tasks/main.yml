@@ -1,12 +1,10 @@
-- set_fact:
-    keyboard: {}
-
-- name: fetch cask
+---
+- name: keyboard | install homebrew cask
   homebrew_tap:
     tap:   caskroom/cask
     state: present
 
-- name: install Karabiner and Hammerspoon
+- name: keyboard | install Karabiner and Hammerspoon
   homebrew_cask:
     name: '{{ item }}'
     state: present
@@ -14,7 +12,7 @@
     - 'karabiner-elements'
     - 'hammerspoon'
 
-- name: create symlinks for config files
+- name: keyboard | create symlinks for config files
   file:
     src:   '{{ dotfiles_path }}/{{ item.key }}'
     dest:  '{{ home_path }}/{{ item.value }}'
@@ -26,33 +24,33 @@
     keyboard/hammerspoon:                 .hammerspoon
     keyboard/karabiner/karabiner.json:    .config/karabiner/karabiner.json
 
-- name: disable dock icon for Hammerspoon
+- name: keyboard | disable dock icon for Hammerspoon
   osx_defaults:
     domain: org.hammerspoon.Hammerspoon
     key:    MJShowDockIconKey
     type:   bool
     value:  false
 
-- name: restart affected app (1/2)
+- name: keyboard | restart affected app (1/2)
   shell: killall {{ item }} || true
   with_items:
     - 'Karabiner-Elements'
     - 'Hammerspoon'
   changed_when: False
 
-- name: restart affected app (2/2)
+- name: keyboard | restart affected app (2/2)
   shell: open /Applications/{{ item }}.app
   with_items:
     - 'Karabiner-Elements'
     - 'Hammerspoon'
   changed_when: False
  
-- name: find the current login items
+- name: keyboard | find the current login items
   shell: osascript -e 'tell application "System Events" to get the name of every login item' | sed $'s/, /\\\n/g'
   register: existing_login_items
   changed_when: False
 
-- name: start Karabiner and Hammerspoon at login
+- name: keyboard | start Karabiner and Hammerspoon at login
   command: osascript -e 'tell application "System Events" to make login item at end with properties {path:"/Applications/{{ item }}.app", hidden:true}'
   with_items:
     - 'Karabiner-Elements'
@@ -60,5 +58,5 @@
   when: "item not in existing_login_items.stdout_lines"
   changed_when: "item not in existing_login_items.stdout_lines"
 
-- name: display post install message
+- name: keyboard | display post install message
   debug: msg="Done! Remember to enable Accessibility for Hammerspoon."

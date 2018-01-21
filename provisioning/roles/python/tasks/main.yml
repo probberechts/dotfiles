@@ -1,42 +1,35 @@
-- set_fact:
-    python: {}
-
-- name: check pyenv
+---
+- name: python | check pyenv
   command: |
     bash -lc 'which pyenv'
   register: which_pyenv
   ignore_errors: yes
 
-- name: install pyenv
+- name: python | install pyenv
   command: |
     bash -lc 'anyenv install pyenv'
   when: which_pyenv.rc > 0
 
-- name: install plugins
+- name: python | install plugins
   git:
     repo: 'https://github.com/{{ item }}.git'
     dest: '{{ python.plugins_dir }}/{{ item.split("/")[1] }}'
   with_items: '{{ python.plugins }}'
   when: python.plugins_dir and python.plugins
 
-- name: get installed versions
+- name: python | get installed versions
   command: |
     bash -lc 'pyenv versions'
   register: installed_versions
 
-- name: install python
+- name: python | install python
   command: |
     bash -lc 'pyenv install {{ item | quote }}'
   when: |
     python.versions and installed_versions.stdout.find(item) == -1
   with_items: '{{ python.versions }}'
 
-- name: set global python
-  command: |
-    bash -lc 'pyenv global {{ python.versions[0] | quote }}'
-  when: python.versions
-
-- name: rehash
+- name: python | rehash
   shell: |
     if [ -f "$DOTSHIM_FILE" ]; then
       rm -f "$DOTSHIM_FILE"
@@ -45,12 +38,12 @@
   environment:
     DOTSHIM_FILE: '{{ anyenv.envs_dir }}/pyenv/.pyenv-shim'
 
-- name: install packages
-  pip:
-    name:               '{{ item.name | default(item) }}'
-    extra_args:         '{{ item.extra_args | default("") }}'
-    state:              latest
-    virtualenv_command: pyenv
-  become: yes
-  with_items: '{{ python.packages }}'
+- name: python | install packages
+  include: install_packages.yml version={{item}}
+  with_items: '{{ python.versions }}'
   when: python.packages
+
+- name: python | set global python
+  command: |
+    bash -lc 'pyenv global {{ python.versions[0] | quote }}'
+  when: python.versions

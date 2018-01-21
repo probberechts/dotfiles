@@ -1,4 +1,5 @@
-- name: install dependency
+---
+- name: vim | install dependency
   homebrew:
     name:  '{{ item }}'
     state: present
@@ -6,27 +7,27 @@
     - lua
     - luajit
 
-- name: install vim
+- name: vim | install vim
   homebrew:
     name:            vim
     state:           latest
     install_options: '--without-nls --with-override-system-vi --with-lua --with-luajit --with-python3'
 
-- name: install neovim
+- name: vim | install neovim
   homebrew:
     name:  neovim
     state: latest
 
-- name: install Redis
+- name: vim | install Redis
   homebrew:
     name: redis
     state: present
 
-- name: start Redis
+- name: vim | start Redis
   command: |
     bash -lc 'brew services start redis'
 
-- name: set up a virtualenv for neovim
+- name: vim | set up a virtualenv for neovim
   block:
     - name: get python3 version
       command: |

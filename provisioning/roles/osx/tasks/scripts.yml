@@ -1,17 +1,17 @@
-- name: reload quicklook
+- name: osx | reload quicklook
   command: |
     qlmanage -r
 
-- name: disable the sound effects on boot
+- name: osx | disable the sound effects on boot
   command: |
     nvram SystemAudioVolume='%00'
   become: yes
 
-- name: show the ~/Library folder
+- name: osx | show the ~/Library folder
   command: |
     chflags nohidden ~/Library
 
-- name: restart affected app
+- name: osx | restart affected app
   shell: killall {{ item }} || true
   with_items:
     - Dock
