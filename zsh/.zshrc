@@ -313,6 +313,7 @@ fi
 # After
 # ============================================================================
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source "${DOTFILES}/shell/after.sh"
 dko::source "${DOTFILES}/local/zshrc"
 
@@ -323,5 +324,3 @@ if [[ "$PROFILE_STARTUP" == true ]]; then
 fi
 
 export DKO_SOURCE="${DKO_SOURCE} }"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

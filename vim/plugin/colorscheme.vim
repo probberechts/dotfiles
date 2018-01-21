@@ -21,6 +21,7 @@ if dko#IsPlugged('vim-one')
   " endif
 
   set background=dark " for the dark version
+  let g:one_allow_italics = 1
   " set background=light " for the light version
   silent! colorscheme one
 

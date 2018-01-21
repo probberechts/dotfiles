@@ -146,11 +146,11 @@ check_xcode_license_approved() {
 }
 
 fix_permission() {
-  [ -d /usr/local ] || mkdir -p /usr/local
-  [ "$(stat -f '%Su' /usr/local)" = "$(whoami)" ] && return  # GNU: stat -c '%U'
+  [ -d $(brew --prefix) ] || mkdir -p $(brew --prefix)
+  [ "$(brew --prefix | stat -f '%Su')" = "$(whoami)" ] && return  # GNU: stat -c '%U'
 
-  echo 'Fixing permission of /usr/local...'
-  sudo chown -R $(whoami) /usr/local
+  echo 'Fixing permission of $(brew --prefix)...'
+  sudo chown -R $(whoami) $(brew --prefix)/*
   echo 'done'
 }
 
