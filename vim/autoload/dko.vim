@@ -320,3 +320,42 @@ function! dko#GetFunctionInfo() abort
         \ }
 
 endfunction
+
+" ============================================================================
+" Toggle prose writing mode
+" ============================================================================
+
+function! dko#WordProcessorMode() abort
+  " Always start in display movement mode for prose
+  silent! call dkomovemode#setByDisplay()
+
+  if has('conceal')
+    let b:indentLine_ConcealOptionSet=1 " Don't let indentLine overwrite us.
+    setlocal concealcursor=nc
+  endif
+  setlocal spell spelllang=en
+  setlocal wrap linebreak nolist
+  setlocal textwidth=0 wrapmargin=0
+  setlocal formatoptions-=t
+  setlocal nonumber norelativenumber
+
+  " C-g u sets an undo point, so this has the effect of letting me type for
+  " a while and have undo just revert one sentence at a time, instead of
+  " everything I've typed since entering insert mode.
+  inoremap . .<C-g>u
+  inoremap ! !<C-g>u
+  inoremap ? ?<C-g>u
+  inoremap : :<C-g>u
+
+  map <leader>g :Goyo<CR>:GitGutterToggle<CR>
+
+  " Ideally would keep 'list' set, and restrict 'listchars' to just show
+  " whitespace errors, but 'listchars' is global and I don't want to go through
+  " the hassle of saving and restoring.
+  if has('autocmd')
+    autocmd BufWinEnter <buffer> match Error /\s\+$/
+    autocmd InsertEnter <buffer> match Error /\s\+\%#\@<!$/
+    autocmd InsertLeave <buffer> match Error /\s\+$/
+    autocmd BufWinLeave <buffer> call clearmatches()
+  endif
+endfunction

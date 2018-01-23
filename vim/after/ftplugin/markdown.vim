@@ -6,19 +6,10 @@
 " This is run AFTER after/ftplugin/html.vim
 " It needs to explicitly override anything there
 "
-
-setlocal nomodeline
-setlocal expandtab
-setlocal spell
-
-" Override pandoc
-setlocal textwidth=78
-" the line will be right after column 80, &tw+3
-setlocal colorcolumn=+3
+silent! call dko#WordProcessorMode()
 
 " too slow
-"setlocal complete+=kspell" Always start in display movement mode for markdown
-silent! call dkomovemode#setByDisplay()
+"setlocal complete+=kspell
 
 if dko#IsPlugged('vim-pandoc')
   execute dko#MapAll({ 'key': '<F2>', 'command': 'TOC' })
