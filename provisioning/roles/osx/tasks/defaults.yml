@@ -312,13 +312,6 @@
     type:   bool
     value:  true
 
-- name: finder | don't create desktop
-  osx_defaults:
-    domain: com.apple.finder
-    key:    CreateDesktop
-    type:   bool
-    value:  false
-
 - name: finder | display line numbers and wrap text
   osx_defaults:
     domain: org.n8gray.QLColorCode
