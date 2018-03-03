@@ -8,7 +8,6 @@ fzf:
 
 homebrew:
   repositories:
-    - homebrew/science
     - homebrew/services
 
   applications:
@@ -29,7 +28,7 @@ homebrew:
     - transmission
     - vlc
     - xquartz
-    - betterzipql
+    - betterzip
     - qlcolorcode
     - qlimagesize
     - qlmarkdown
