@@ -143,8 +143,8 @@
   osx_defaults:
     domain: com.apple.driver.AppleBluetoothMultitouch.trackpad
     key: Clicking
-    type: bool
-    value: true
+    type: int
+    value: 1
 
 - name: trackpad | tap to click (2/3)
   osx_defaults:
@@ -238,7 +238,7 @@
 # Screen                                                                      #
 ###############################################################################
 
-- name: screenshot | save to the desktop
+- name: screenshot | save to the 
   osx_defaults:
     domain: com.apple.screencapture
     key:    location
@@ -275,7 +275,7 @@
     domain: com.apple.finder
     key:    ShowStatusBar
     type:   bool
-    value:  true
+    value:  false
 
 - name: finder | show path bar
   osx_defaults:
