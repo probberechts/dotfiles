@@ -3,13 +3,12 @@
   command: |
     bash -lc 'pyenv global {{ version | quote }}'
 
-- name: python | activate python {{ version }}
+- name: python | install default packages in python {{ version }} environment
   pip:
     name:               '{{ package.name | default(package) }}'
     extra_args:         '{{ package.extra_args | default("") }}'
     state:              latest
     virtualenv_command: pyenv
-  become: yes
   with_items: '{{ python.packages }}'
   when: python.packages
   loop_control:

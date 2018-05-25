@@ -1,8 +1,6 @@
 ---
 - name: keyboard | install homebrew cask
-  homebrew_tap:
-    tap:   caskroom/cask
-    state: present
+  homebrew: name=cask state=present
 
 - name: keyboard | install Karabiner and Hammerspoon
   homebrew_cask:
