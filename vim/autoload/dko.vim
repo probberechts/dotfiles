@@ -1,3 +1,4 @@
+scriptencoding utf-8
 " autoload/dko.vim
 "
 " vimrc and debugging helper funtions
@@ -358,4 +359,28 @@ function! dko#WordProcessorMode() abort
     autocmd InsertLeave <buffer> match Error /\s\+$/
     autocmd BufWinLeave <buffer> call clearmatches()
   endif
+endfunction
+
+" ============================================================================
+" Override default `foldtext()`, which produces something like:
+"
+"   +---  2 lines: source $HOME/.vim/pack/bundle/opt/vim-pathogen/autoload/pathogen.vim--------------------------------
+"
+" Instead returning:
+"
+"   »··[2ℓ]··: source $HOME/.vim/pack/bundle/opt/vim-pathogen/autoload/pathogen.vim···································
+"
+" Shamelessly stolen from Wincent
+"
+" ============================================================================
+
+let s:middot='·'
+let s:raquo='»'
+let s:small_l='ℓ'
+
+function! dko#foldtext() abort
+  let l:lines='[' . (v:foldend - v:foldstart + 1) . s:small_l . ']'
+  let l:first=substitute(getline(v:foldstart), '\v *', '', '')
+  let l:dashes=substitute(v:folddashes, '-', s:middot, 'g')
+  return s:raquo . s:middot . s:middot . l:lines . l:dashes . ': ' . l:first
 endfunction

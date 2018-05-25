@@ -42,6 +42,7 @@ if dko#IsPlugged('vimtex')
   let g:vimtex_index_show_help = 0
   let g:vimtex_index_split_pos = 'vert rightbelow'
   let g:vimtex_toc_show_numbers = 0
+  let g:vimtex_fold_enabled =1
 
   let g:vimtex_quickfix_ignored_warnings = [
         \ 'Underfull',
@@ -49,12 +50,18 @@ if dko#IsPlugged('vimtex')
         \ 'specifier changed to',
       \ ]
 
-  let g:vimtex_view_general_viewer
-        \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
-  let g:vimtex_view_general_options = '-r @line @pdf @tex'
+  if executable('okular')
+    let g:vimtex_view_general_viewer = 'okular'
+    let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+    let g:vimtex_view_general_options_latexmk = '--unique'
+  elseif executable('/Applications/Skim.app/Contents/SharedSupport/displayline')
+    let g:vimtex_view_general_viewer
+          \ = '/Applications/Skim.app/Contents/SharedSupport/displayline'
+    let g:vimtex_view_general_options = '-r @line @pdf @tex'
+    let g:vimtex_latexmk_callback_hooks = ['UpdateSkim']
+  endif
 
   " This adds a callback hook that updates Skim after compilation
-  let g:vimtex_latexmk_callback_hooks = ['UpdateSkim']
   function! UpdateSkim(status)
     if !a:status | return | endif
 

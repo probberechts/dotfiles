@@ -259,6 +259,11 @@ set nofoldenable
 set foldcolumn=2
 set foldlevel=99                      " show all folds by default
 set foldlevelstart=99                 " show all folds by default
+if has('windows')
+  set fillchars=vert:┃              " BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
+  set fillchars+=fold:·             " MIDDLE DOT (U+00B7, UTF-8: C2 B7)
+endif
+set foldtext=dko#foldtext()
 
 " ----------------------------------------------------------------------------
 " Trailing whitespace
@@ -282,7 +287,7 @@ set listchars+=nbsp:⣿
 " ----------------------------------------------------------------------------
 
 " Note this is += since fillchars was defined in the window config
-set fillchars+=diff:⣿
+" set fillchars+=diff:⣿
 set diffopt=vertical                  " Use in vertical diff mode
 set diffopt+=filler                   " blank lines to keep sides aligned
 set diffopt+=iwhite                   " Ignore whitespace changes
@@ -791,6 +796,12 @@ function! s:LoadPlugins()
 
   " Personal wiki
   Plug 'vimwiki/vimwiki'
+
+  " Check for grammar errors
+  Plug 'rhysd/vim-grammarous'
+
+  " Detect frequent word repetition
+  Plug 'dbmrq/vim-ditto'
 
   " ========================================================================
   " Language: Python

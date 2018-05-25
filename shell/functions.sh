@@ -201,9 +201,9 @@ zipit() {
 # start up an http server on :8000
 pyserve() {
   case "$(python --version 2>&1)" in
-      *" 3."*)  xterm "python3 -m http.server"
+      *" 3."*)  python3 -m http.server
                 ;;
-      *)        xterm "python -m SimpleHTTPServer"
+      *)        python -m SimpleHTTPServer
                 ;;
   esac
 }

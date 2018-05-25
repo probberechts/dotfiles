@@ -195,7 +195,7 @@ autocmd dkoneomake FileType
 " ----------------------------------------------------------------------------
 
 let g:neomake_python_enabled_makers = [
-      \   'python', 'pylint', 'pydocstyle'
+      \   'python', 'pylint', 'pydocstyle', 'flake8'
       \ ]
 
 " Add disable to defaults
