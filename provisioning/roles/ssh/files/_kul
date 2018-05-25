@@ -4,22 +4,22 @@
 ##############################################################################
 
 Host *.cs.kotnet.kuleuven.be
-     User r0296915
+     User u0116427
      IdentityFile ~/.ssh/keys/id_rsa_sol
 
 Host kulgateway
      HostName st.cs.kuleuven.be
-     User r0296915
+     User u0116427
      IdentityFile ~/.ssh/keys/id_rsa_sol
 
 Host gent
      ProxyCommand ssh -A -q kulgateway nc -q0 gent.cs.kotnet.kuleuven.be 22
-     User r0296915
+     User u0116427
      IdentityFile ~/.ssh/keys/id_rsa_sol
 
 Host kotgent
      HostName gent.cs.kotnet.kuleuven.be
-     User r0296915
+     User u0116427
      IdentityFile ~/.ssh/keys/id_rsa_sol
 
 ##############################################################################
