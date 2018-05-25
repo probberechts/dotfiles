@@ -6,9 +6,6 @@ setlocal softtabstop=4
 setlocal tabstop=4
 setlocal shiftwidth=4
 
-" Autoformat with '=' according to PEP8 guidelines
-setlocal equalprg=yapf
-
 " Auto format
 map <buffer> <C-Y> :call yapf#YAPF()<cr>
 imap <buffer> <C-Y> <c-o>:call yapf#YAPF()<cr>
@@ -16,3 +13,6 @@ imap <buffer> <C-Y> <c-o>:call yapf#YAPF()<cr>
 " Sort imports
 let g:vim_isort_python_version = 'python3'
 map <buffer> <C-I> :py3 isort_file()<cr>
+
+" Pydocstring
+nmap <silent> <C-K> <Plug>(pydocstring)
