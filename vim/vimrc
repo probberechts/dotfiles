@@ -526,9 +526,8 @@ function! s:LoadPlugins()
   " ========================================================================
 
   " Disabled on regular vim since it needs a terminal
-  if has('nvim') && isdirectory(expand('~/.fzf'))
-    Plug '~/.fzf'
-    Plug 'junegunn/fzf.vim'
+  if has('nvim')
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   endif
 
   " Perform git operations within a Vim session
