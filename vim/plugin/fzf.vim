@@ -198,19 +198,6 @@ command! FZFSpecs
 " @see https://github.com/junegunn/fzf.vim#advanced-customization
 " ----------------------------------------------------------------------------
 
-" FZFGrepper! settings
-let s:grepper_full = fzf#vim#with_preview(
-      \   { 'dir': s:GetRoot() },
-      \   'up:60%'
-      \ )
-
-" FZFGrepper settings
-let s:grepper_half = fzf#vim#with_preview(
-      \   { 'dir': s:GetRoot() },
-      \   'right:50%',
-      \   '?'
-      \ )
-
 if dko#GetGrepper().command ==# 'rg'
   command! -bang -nargs=* FZFGrepper
         \ call fzf#vim#grep(
@@ -219,7 +206,8 @@ if dko#GetGrepper().command ==# 'rg'
         \     . '--ignore-file "${DOTFILES}/ag/dot.ignore" '
         \     . shellescape(<q-args>),
         \   1,
-        \   <bang>0 ? s:grepper_full : s:grepper_half,
+        \   <bang>0 ? fzf#vim#with_preview({ 'dir': s:GetRoot() }, 'up:60%')
+        \           : fzf#vim#with_preview({ 'dir': s:GetRoot() }, 'right:50%', '?'),
         \   <bang>0
         \ )
 elseif dko#GetGrepper().command ==# 'ag'
@@ -231,7 +219,8 @@ elseif dko#GetGrepper().command ==# 'ag'
         \ call fzf#vim#ag(
         \   <q-args>,
         \   s:ag_options,
-        \   <bang>0 ? s:grepper_full : s:grepper_half,
+        \   <bang>0 ? fzf#vim#with_preview({ 'dir': s:GetRoot() }, 'up:60%')
+        \           : fzf#vim#with_preview({ 'dir': s:GetRoot() }, 'right:50%', '?'),
         \   <bang>0
         \ )
 else
@@ -239,7 +228,8 @@ else
         \ call fzf#vim#grep(
         \   'git grep --line-number ' . shellescape(<q-args>),
         \   1,
-        \   <bang>0 ? s:grepper_full : s:grepper_half,
+        \   <bang>0 ? fzf#vim#with_preview({ 'dir': s:GetRoot() }, 'up:60%')
+        \           : fzf#vim#with_preview({ 'dir': s:GetRoot() }, 'right:50%', '?'),
         \   <bang>0
         \ )
 endif
@@ -248,22 +238,10 @@ endif
 " Files from project root
 " ----------------------------------------------------------------------------
 
-" FZFProject! settings
-let s:project_full = fzf#vim#with_preview(
-      \   {},
-      \   'up:60%'
-      \ )
-
-" FZFProject settings
-let s:project_half = fzf#vim#with_preview(
-      \   {},
-      \   'right:50%',
-      \   '?'
-      \ )
-
 command! -bang FZFProject
       \ call fzf#vim#files(
       \   s:GetRoot(),
-      \   <bang>0 ? s:project_full : s:project_half,
+      \   <bang>0 ? fzf#vim#with_preview({}, 'up:60%')
+      \           : fzf#vim#with_preview({}, 'right:50%', '?'),
       \   <bang>0
       \ )
