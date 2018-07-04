@@ -1,12 +1,22 @@
 " ftplugin/tex.vim
 "
 
-setlocal formatoptions=1
-setlocal spell spelllang=en_gb
-setlocal wrap
-
 " Always start in display movement mode for tex
-silent! call dkomovemode#setByDisplay()
+" silent! call dkomovemode#setByDisplay()
+silent! call dko#WordProcessorMode()
+
+" Conceal
+setlocal conceallevel=2
+setlocal concealcursor=nvc
+let g:tex_conceal="adgms"
+
+" Fold
+setlocal foldmethod=expr
+setlocal foldexpr=vimtex#fold#level(v:lnum)
+setlocal foldtext=dko#foldtext()
+
+" No limit for syntax highlighting
+setlocal synmaxcol=0
 
 " Reformat lines (getting the spacing correct) {{{
 fun! TeX_fmt()

@@ -29,3 +29,6 @@ else
   silent! colorscheme darkblue
 
 endif
+
+
+highlight Folded      gui=italic  guifg=Grey90      guibg=NONE
