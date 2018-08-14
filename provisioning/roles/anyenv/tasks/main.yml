@@ -18,6 +18,12 @@
     state: directory
   when: anyenv.plugins_dir
 
+- name: anyenv | create envs dir
+  file:
+    dest:  '{{ anyenv.envs_dir }}'
+    state: directory
+  when: anyenv.envs_dir
+
 - name: anyenv | fetch anyenv-update repo
   git:
     repo: https://github.com/znz/anyenv-update.git

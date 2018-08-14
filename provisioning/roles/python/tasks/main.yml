@@ -1,13 +1,11 @@
 ---
 - name: python | check pyenv
-  command: |
-    bash -lc 'which pyenv'
+  shell: which pyenv
   register: which_pyenv
   ignore_errors: yes
 
 - name: python | install pyenv
-  command: |
-    bash -lc 'anyenv install pyenv'
+  shell: anyenv install pyenv
   when: which_pyenv.rc > 0
 
 - name: python | install plugins
@@ -18,13 +16,15 @@
   when: python.plugins_dir and python.plugins
 
 - name: python | get installed versions
-  command: |
-    bash -lc 'pyenv versions'
+  shell: pyenv versions
   register: installed_versions
 
 - name: python | install python
-  command: |
-    bash -lc 'pyenv install {{ item | quote }}'
+  shell: pyenv install {{ item | quote }}
+  args:
+    executable: /bin/bash
+  environment:
+    PYTHON_CONFIGURE_OPTS: --enable-shared
   when: |
     python.versions and installed_versions.stdout.find(item) == -1
   with_items: '{{ python.versions }}'
@@ -34,16 +34,28 @@
     if [ -f "$DOTSHIM_FILE" ]; then
       rm -f "$DOTSHIM_FILE"
     fi
-    bash -lc 'pyenv rehash'
+    pyenv rehash
   environment:
     DOTSHIM_FILE: '{{ anyenv.envs_dir }}/pyenv/.pyenv-shim'
 
-- name: python | install packages
-  include: install_packages.yml version={{item}}
-  with_items: '{{ python.versions }}'
+- name: python | check pipsi
+  shell: which pipsi
+  register: which_pipsi
+  ignore_errors: yes
+
+- name: python | install pipsi
+  shell: curl -s https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python - --no-modify-path
+  environment:
+    PYENV_VERSION: system
+  when: which_pipsi.rc > 0
+
+- name: python | install global CLI tools
+  shell: pipsi install '{{ package.name | default(package) }}'
+  with_items: '{{ python.packages }}'
   when: python.packages
+  loop_control:
+    loop_var: package
 
 - name: python | set global python
-  command: |
-    bash -lc 'pyenv global {{ python.versions[0] | quote }}'
+  shell: pyenv global {{ python.versions[0] | quote }}
   when: python.versions

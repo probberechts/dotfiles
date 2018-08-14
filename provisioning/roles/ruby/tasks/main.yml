@@ -30,16 +30,30 @@
     - ruby-build
     - openssl
     - readline
+  when: ansible_distribution == 'MacOSX'
 
 - name: ruby | get openssl dir
   command: |
     brew --prefix openssl
   register: openssl_dir
+  when: ansible_distribution == 'MacOSX'
+
+- name: ruby | get openssl dir
+  shell: |
+    openssl version -a | sed -n -e 's/^OPENSSLDIR: //p' | tr -d '"'
+  register: openssl_dir
+  when: ansible_distribution == 'Ubuntu'
 
 - name: ruby | get readline dir
   command: |
     brew --prefix readline
   register: readline_dir
+  when: ansible_distribution == 'MacOSX'
+
+- name: ruby | get readline dir
+  set_fact:
+    readline_dir: /usr/include/readline
+  when: ansible_distribution == 'Ubuntu'
 
 - name: ruby | install ruby
   command: |

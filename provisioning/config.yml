@@ -110,9 +110,6 @@ python:
   packages:
     - prospector
     - Pygments
-    - beets
-    - requests
-    - pylast
 
 ruby:
   versions:
