@@ -55,7 +55,7 @@ PATH="$(dko::add_paths)"
 
 export ANYENV_ROOT="${HOME}/.anyenv"
 export PATH="${ANYENV_ROOT}/bin:${PATH}"
-[ -d "${ANYENV_ROOT}" ] && eval "$(anyenv init -)"
+[ -d "${ANYENV_ROOT}" ] && eval "$(anyenv init - $SHELL)"
 
 
 export PATH
