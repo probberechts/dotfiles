@@ -12,7 +12,8 @@ let g:vimfiler_safe_mode_by_default = 0
 " Default was all dot files. Overriding with just these:
 let g:vimfiler_ignore_pattern = 
       \ '^\%(\.git\|\.idea\|\.DS_Store\|\.vagrant\|\.stversions\|\.tmp'
-      \ .'\|node_modules\|.*\.pyc\|.*\.class\|.*\.egg-info\|__pycache__\)$'
+      \ .'\|node_modules\|.*\.pyc\|.*\.class\|.*\.egg-info\|\.pytest_cache'
+      \ .'\|__pycache__\)$'
 
 " ============================================================================
 " Symbol setup

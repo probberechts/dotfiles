@@ -1,0 +1,31 @@
+# ~/.config/direnv/direnvrc: Global configuration for direnv to make it compliant
+# with pyenv -- see https://direnv.net/
+#
+# Adapted from
+#  - https://github.com/direnv/direnv/wiki/Python#-pyenv and
+#  - https://github.com/direnv/direnv/wiki/Python#-virtualenvwrapper
+#
+# use a certain pyenv version
+use_python() {
+    if [ -n "$(which pyenv)" ]; then
+        local pyversion=$1
+        pyenv local ${pyversion}
+    fi
+}
+
+layout_virtualenv() {
+    local pyversion=$1
+    local pvenv=$2
+    if [ -n "$(which pyenv virtualenv)" ]; then
+        pyenv virtualenv --quiet ${pyversion} ${pvenv}-${pyversion}
+    fi
+    pyenv local --unset
+}
+
+layout_activate() {
+    if [ -n "$(which pyenv)" ]; then
+        source $(pyenv root)/versions/$1/bin/activate
+    fi
+}
+
+# vim: ft=sh :

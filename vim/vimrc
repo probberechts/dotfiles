@@ -519,7 +519,7 @@ function! s:LoadPlugins()
   Plug 'dockyard/vim-easydir'
 
   " manages tag files
-  Plug 'ludovicchabant/vim-gutentags'
+  " Plug 'ludovicchabant/vim-gutentags'
 
   " ========================================================================
   " Plug: Commands

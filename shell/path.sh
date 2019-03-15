@@ -57,6 +57,11 @@ export ANYENV_ROOT="${HOME}/.anyenv"
 export PATH="${ANYENV_ROOT}/bin:${PATH}"
 [ -d "${ANYENV_ROOT}" ] && eval "$(anyenv init - $SHELL)"
 
+# ==============================================================================
+# direnv
+# ==============================================================================
+
+[ -x "$(command -v direnv)" ] && eval "$(direnv hook $SHELL)"
 
 export PATH
 

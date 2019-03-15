@@ -60,6 +60,7 @@ homebrew:
     - name: universal-ctags/universal-ctags/universal-ctags
       state: head
     - curl            # Get a file from an HTTP, HTTPS or FTP server
+    - direnv          # An environment switcher for the shell
     - findutils       # Collection of GNU find, xargs, and locate
     - gawk            # GNU awk utility
     - git             # Distributed revision control system
@@ -84,6 +85,7 @@ link:
   bash/dot.bash_profile:                .bash_profile
   bash/dot.bashrc:                      .bashrc
   ctags/dot.ctags:                      .ctags
+  direnv/direnvrc:                      .config/direnv/direnvrc
   git/dot.gitconfig:                    .config/git/config
   git/dot.gitignore:                    .config/git/ignore
   tmux/tmux.conf:                       .tmux.conf
