@@ -53,6 +53,7 @@
   shell: pipsi install '{{ package.name | default(package) }}'
   with_items: '{{ python.packages }}'
   when: python.packages
+  ignore_errors: yes
   loop_control:
     loop_var: package
 

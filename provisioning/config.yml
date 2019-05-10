@@ -110,7 +110,7 @@ python:
     - pyenv/pyenv-virtualenv
 
   packages:
-    - prospector
+    # - prospector
     - Pygments
 
 ruby:
