@@ -64,13 +64,16 @@ alias root="sudo -s"
 alias se="sudo -e"
 
 # editor
-alias e="vim"
+alias e="nvim"
 alias ehosts="se /etc/hosts"
 alias etmux="e \"\${DOTFILES}/tmux/tmux.conf\""
 alias evr="e \"\${VIM_DOTFILES}/vimrc\""
 alias eze="e \"\${ZDOTDIR}/.zshenv\""
 alias ezp="e \"\${ZDOTDIR}/zplug.zsh\""
 alias ezr="e \"\${ZDOTDIR}/.zshrc\""
+
+# direnv
+alias tmux='direnv exec / tmux'
 
 # ============================================================================
 

@@ -1,31 +1,55 @@
 # ~/.config/direnv/direnvrc: Global configuration for direnv to make it compliant
 # with pyenv -- see https://direnv.net/
-#
-# Adapted from
-#  - https://github.com/direnv/direnv/wiki/Python#-pyenv and
-#  - https://github.com/direnv/direnv/wiki/Python#-virtualenvwrapper
-#
-# use a certain pyenv version
-use_python() {
-    if [ -n "$(which pyenv)" ]; then
-        local pyversion=$1
-        pyenv local ${pyversion}
+
+use_pyenv() {
+  # use pyenv and venv (falling back to virtualenv for Python < 3.3) to create
+  # and load a virtual environment under $PWD/.direnv/python-$python_version
+  unset PYENV_VERSION
+  # Because each python version is prepended to the PATH, add them in reverse order
+  for ((j = $#; j >= 1; j--)); do
+    local python_version=${!j}
+    local pyenv_python=$(pyenv root)/versions/${python_version}/bin/python
+    if [[ ! -x "$pyenv_python" ]]; then
+      log_error "Error: $pyenv_python can't be executed."
+      return 1
     fi
+
+    unset PYTHONHOME
+    local ve=$($pyenv_python -c "import pkgutil; print('venv' if pkgutil.find_loader('venv') else ('virtualenv' if pkgutil.find_loader('virtualenv') else ''))")
+
+    case $ve in
+      "venv")
+        VIRTUAL_ENV=$(direnv_layout_dir)/python-$python_version
+        export VIRTUAL_ENV
+        if [[ ! -d $VIRTUAL_ENV ]]; then
+          $pyenv_python -m venv "$VIRTUAL_ENV"
+        fi
+        PATH_add "$VIRTUAL_ENV"/bin
+        ;;
+      "virtualenv")
+        layout_python "$pyenv_python"
+        ;;
+      *)
+        log_error "Error: neither venv nor virtualenv are available to ${pyenv_python}."
+        return 1
+        ;;
+    esac
+
+    # e.g. Given "use pyenv 3.6.9 2.7.16", PYENV_VERSION becomes "3.6.9:2.7.16"
+    [[ -z "$PYENV_VERSION" ]] && PYENV_VERSION=$python_version || PYENV_VERSION="${python_version}:$PYENV_VERSION"
+  done
+
+  export PYENV_VERSION
 }
 
-layout_virtualenv() {
-    local pyversion=$1
-    local pvenv=$2
-    if [ -n "$(which pyenv virtualenv)" ]; then
-        pyenv virtualenv --quiet ${pyversion} ${pvenv}-${pyversion}
-    fi
-    pyenv local --unset
-}
+use_nvm() {
+  local node_version=$1
 
-layout_activate() {
-    if [ -n "$(which pyenv)" ]; then
-        source $(pyenv root)/versions/$1/bin/activate
-    fi
+  nvm_sh=~/.nvm/nvm.sh
+  if [[ -e $nvm_sh ]]; then
+    source $nvm_sh
+    nvm use $node_version
+  fi
 }
 
 # vim: ft=sh :

@@ -726,6 +726,7 @@ function! s:LoadPlugins()
   " ========================================================================
 
     Plug 'elzr/vim-json'
+    Plug 'maksimr/vim-jsbeautify'
 
   " provides coffee ft
   " Plug 'kchmck/vim-coffee-script'
