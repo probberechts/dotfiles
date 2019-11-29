@@ -38,16 +38,16 @@
   environment:
     DOTSHIM_FILE: '{{ anyenv.envs_dir }}/pyenv/.pyenv-shim'
 
-- name: python | check pipsi
-  shell: which pipsi
-  register: which_pipsi
+- name: python | check pipx
+  shell: which pipx
+  register: which_pipx
   ignore_errors: yes
 
-- name: python | install pipsi
-  shell: curl -s https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python - --no-modify-path
+- name: python | install pipx
+  shell: python3 -m pip install --user pipx
   environment:
     PYENV_VERSION: system
-  when: which_pipsi.rc > 0
+  when: which_pipx.rc > 0
 
 - name: python | install global CLI tools
   shell: pipsi install '{{ package.name | default(package) }}'
