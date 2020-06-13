@@ -1,0 +1,10 @@
+---
+- name: ruby | get openssl dir
+  shell: |
+    openssl version -a | sed -n -e 's/^O
+  register: openssl_dir
+  when: ansible_distribution == 'Ubuntu'
+
+- name: ruby | get readline dir
+  set_fact:
+    readline_dir: /usr/include/readline

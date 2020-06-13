@@ -1,17 +1,8 @@
 ---
 - name: vim | install dependency
   homebrew:
-    name:  '{{ item }}'
+    name: ['lua', 'luajit']
     state: present
-  with_items:
-    - lua
-    - luajit
-
-- name: vim | install vim
-  homebrew:
-    name:            vim
-    state:           latest
-    install_options: '--without-nls --with-override-system-vi --with-lua --with-luajit --with-python3'
 
 - name: vim | install neovim
   homebrew:
@@ -42,8 +33,5 @@
 
     - name: install python dependencies
       pip: 
-        name: '{{ item }}'
+        name: ['neovim', 'jedi']
         virtualenv: '{{ anyenv.envs_dir }}/pyenv/versions/neovim3' 
-      with_items:
-        - neovim
-        - jedi

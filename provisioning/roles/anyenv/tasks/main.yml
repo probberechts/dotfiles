@@ -3,7 +3,7 @@
   file:
     dest:  '{{ anyenv.dir || ~/.anyenv }}'
     state: absent
-  when: is_ci
+  when: is_ci|bool
 
 - name: anyenv | fetch anyenv repo
   git:

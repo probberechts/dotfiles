@@ -11,14 +11,11 @@ homebrew:
     - homebrew/services
 
   applications:
-    - android-file-transfer
     - appcleaner
     - basictex
-    - caffeine
     - calibre
     - cyberduck
     - dropbox
-    - flux
     - gimp
     - google-chrome
     - hammerspoon
@@ -26,7 +23,6 @@ homebrew:
     - karabiner-elements
     - lastpass
     - selfcontrol
-    - spotify
     - superduper
     - the-unarchiver
     - transmission
@@ -34,7 +30,6 @@ homebrew:
     - vlc
     - xquartz
     - zotero
-    - betterzipql
     - qlcolorcode
     - qlimagesize
     - qlmarkdown
@@ -74,6 +69,7 @@ homebrew:
     - pandoc-citeproc # Library and executable for using citeproc with pandoc
     - parallel        # Shell command parallelization utility
     - redis           # Persistent key-value database, with built-in net interface
+    - readline
     - tmux            # Terminal multiplexer
     - tree            # Display directories as trees (with optional color/HTML output)
     - wget            # Internet file retriever
@@ -95,13 +91,13 @@ link:
 
 nodejs:
   versions:
-    - '6.11.2'
+    - '12.18.0'
 
   packages:
 
 python:
   versions:
-    - '3.6.2'
+    - '3.8.3'
     - '2.7.13'
 
   plugins_dir: '{{ anyenv.envs_dir }}/pyenv/plugins'
@@ -115,7 +111,7 @@ python:
 
 ruby:
   versions:
-    - '2.4.1'
+    - '2.7.1'
 
   plugins_dir: '{{ anyenv.envs_dir }}/rbenv/plugins'
 

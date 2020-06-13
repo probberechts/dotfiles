@@ -1,0 +1,15 @@
+- name: ruby | install dependency
+  homebrew:
+    name:  ['ruby-build', 'openssl', 'readline']
+    state: present
+  when: ansible_distribution == 'MacOSX'
+
+- name: ruby | get openssl dir
+  command: |
+    brew --prefix openssl
+  register: openssl_dir
+
+- name: ruby | get readline dir
+  command: |
+    brew --prefix readline
+  register: readline_dir
