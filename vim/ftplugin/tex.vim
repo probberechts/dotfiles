@@ -5,6 +5,8 @@
 " silent! call dkomovemode#setByDisplay()
 silent! call dko#WordProcessorMode()
 
+let g:tex_flavor = 'latex'
+
 " Conceal
 setlocal conceallevel=2
 setlocal concealcursor=nvc
@@ -49,12 +51,19 @@ nmap W :call TeX_fmt()<CR>
 if dko#IsPlugged('vimtex')
   execute dko#MapAll({ 'key': '<F2>', 'command': 'VimtexTocToggle' })
 
-  let g:vimtex_index_show_help = 0
-  let g:vimtex_index_split_pos = 'vert rightbelow'
-  let g:vimtex_toc_show_numbers = 0
-  let g:vimtex_fold_enabled =1
+  " TOC settings
+  let g:vimtex_toc_config = {
+      \ 'name' : 'TOC',
+      \ 'layers' : ['content', 'todo', 'include'],
+      \ 'resize' : 1,
+      \ 'split_width' : 50,
+      \ 'todo_sorted' : 0,
+      \ 'show_help' : 0,
+      \ 'show_numbers' : 0,
+      \ 'mode' : 2,
+      \}
 
-  let g:vimtex_quickfix_ignored_warnings = [
+  let g:vimtex_quickfix_ignore_filters = [
         \ 'Underfull',
         \ 'Overfull',
         \ 'specifier changed to',
@@ -94,6 +103,6 @@ if dko#IsPlugged('vimtex')
   " `latexmk` coupling and some of the viewer functionality require the |--remote|
   " options. These options have been removed from neovim. `neovim-remote` [1] is
   " a simple tool that implements the |--remote| options through a python script.
-    let g:vimtex_latexmk_progname = 'nvr'
+    let g:vimtex_compiler_progname = 'nvr'
   endif
 endif

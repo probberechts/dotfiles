@@ -1,52 +1,45 @@
 " plugin/operator.vim
+" vim-operator-user operators
 
-if !dko#IsPlugged('vim-operator-user') | finish | endif
+if !dkoplug#Exists('vim-operator-user') | finish | endif
 
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
+silent! unmap gc
+silent! unmap gcc
+silent! unmap gsc
+silent! unmap gsa
+silent! unmap gsd
+silent! unmap gsr
+silent! unmap <Leader>c
+
 " ============================================================================
 
-if dko#IsPlugged('vim-operator-surround')
-  " disable [s]ubstitute
-  map   s   <Nop>
+if dkoplug#Exists('caw.vim')
+  " By default works like tcomment_vim (instantly)
+  "let g:caw_operator_keymappings = 1
 
-  " operators
-  map   sa    <Plug>(operator-surround-append)
-  map   sd    <Plug>(operator-surround-delete)
-  map   sr    <Plug>(operator-surround-replace)
+  nmap gc   <Plug>(caw:prefix)
+  xmap gc   <Plug>(caw:prefix)
 
-  " commands, not operators
-  nmap   s'    <Plug>(operator-surround-append)iW'
-  nmap   s"    <Plug>(operator-surround-append)iW"
-  nmap   s)    <Plug>(operator-surround-append)iW)
-  nmap   s}    <Plug>(operator-surround-append)iW)
-  nmap   s]    <Plug>(operator-surround-append)iW]
-  nmap   s>    <Plug>(operator-surround-append)iW>
+  nmap gcc   <Plug>(caw:hatpos:toggle)
+  xmap gcc   <Plug>(caw:hatpos:toggle)
 
-  " visual mode
-  vmap   s'    <Plug>(operator-surround-append)'
-  vmap   s"    <Plug>(operator-surround-append)"
-  vmap   s)    <Plug>(operator-surround-append))
-  vmap   s}    <Plug>(operator-surround-append)}
-  vmap   s]    <Plug>(operator-surround-append)]
-  vmap   s>    <Plug>(operator-surround-append)>
-
-  " accept block char on anyblock
-  if dko#IsPlugged('vim-textobj-anyblock')
-    nmap  say   <Plug>(operator-surround-append)<Plug>(textobj-anyblock-a)
-    nmap  sdy   <Plug>(operator-surround-delete)<Plug>(textobj-anyblock-a)
-    nmap  sry   <Plug>(operator-surround-replace)<Plug>(textobj-anyblock-a)
-  endif
+  map <silent> gsc   <Plug>(caw:hatpos:toggle:operator)
 endif
 
-if dko#IsPlugged('operator-camelize.vim')
-  " operators
-  map   <unique>  <Leader>c   <Plug>(operator-camelize-toggle)
+if dkoplug#Exists('vim-operator-surround')
+  " note: gs is mapped to <NOP> in after/plugin/mappings.vim
+  map <silent>  gsa   <Plug>(operator-surround-append)
+  map <silent>  gsd   <Plug>(operator-surround-delete)
+  map <silent>  gsr   <Plug>(operator-surround-replace)
+  nmap <silent>  gs'   gsra"'
+  nmap <silent>  gs"   gsra'"
+endif
 
-  " commands, not operators
-  map   ccb          <Plug>(operator-camelize-toggle)<Plug>(textobj-anyblock-a)
-  map   ccc          <Plug>(operator-camelize-toggle)iWB
+if dkoplug#Exists('operator-camelize.vim')
+  map <special> <Leader>c <Plug>(operator-camelize-toggle)
 endif
 
 " ============================================================================

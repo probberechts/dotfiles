@@ -117,3 +117,5 @@
   path = "~/.dotfiles/local/gitconfig"
 
 # vim: ft=gitconfig :
+[cola]
+	spellcheck = false

@@ -14,8 +14,18 @@ scriptencoding utf-8
 " Settings vars
 " ============================================================================
 
+let g:mapleader = "\<Space>"
+
 " Just for debugging
 let g:dko_rtp_original = &runtimepath
+
+" flags
+let g:dko_is_iterm = $TERM_PROGRAM ==# 'iTerm.app'
+
+" Plugin settings
+let g:dko_use_completion = has('nvim-0.3') && executable('node')
+let g:dko_use_fzf = v:version >= 704 && exists('&autochdir')
+let g:dko_fzf_float = 0 && has('nvim-0.4')
 
 " Used by anything that needs to change/use loc list
 let g:dko_loc_list_height = 10
@@ -118,11 +128,6 @@ set ttimeout
 if !has('nvim')
   set ttimeoutlen=10
 endif
-
-" no longer using comma so I can reverse repeat fFtT searches
-" no longer using \ so I can type escaped chars :/
-" needs to be before bundle so plugins map correctly
-let g:mapleader = "\<Space>"
 
 " ----------------------------------------------------------------------------
 " Wild and file globbing stuff in command mode
@@ -495,6 +500,13 @@ endfunction
 function! s:LoadPlugins()
   " Notes on adding plugins:
   " - Absolutely do not use 'for' if the plugin provides an `ftdetect/`
+  
+  " ==========================================================================
+  " Vim debugging
+  " ==========================================================================
+
+  " Show slow plugins
+  Plug 'tweekmonster/startuptime.vim', { 'on': [ 'StartupTime' ] }
 
   " ========================================================================
   " Plug: Colorscheme
@@ -586,35 +598,46 @@ function! s:LoadPlugins()
   " Plug: Completion
   " ========================================================================
 
-  if has('nvim') && has('python3')
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  elseif has('lua')
-    Plug 'Shougo/neocomplete.vim'
-  endif
+  " --------------------------------------------------------------------------
+  " Signature preview
+  " --------------------------------------------------------------------------
 
-  let g:dko_has_completion =
-        \ exists("g:plugs['neocomplete.vim']")
-        \ || exists("g:plugs['deoplete.nvim']")
+  Plug 'Shougo/echodoc.vim'
 
-  if g:dko_has_completion
-    "Full syntax completion - super slow, like syntaxcomplete
-    "Plug 'Shougo/neco-syntax', { 'for': ['scss'] }
+  " --------------------------------------------------------------------------
+  " Snippet engine
+  " Now using coc-snippets
+  " --------------------------------------------------------------------------
 
-    " Mixed-filetype completion for Shougo complete, e.g. highlight JS within
-    " Markdown fenced code blocks.
-    Plug 'Shougo/context_filetype.vim'
+  " Provides some ultisnips snippets for use with neosnippet or coc-snippets
+  Plug 'honza/vim-snippets', WithCompl()
 
-    " Include completion
-    Plug 'Shougo/neoinclude.vim'
+  " --------------------------------------------------------------------------
+  " Completion engine
+  " --------------------------------------------------------------------------
 
-    Plug 'Shougo/neosnippet'
-          \| Plug 'honza/vim-snippets'
-          \| Plug 'Shougo/neosnippet-snippets'
-
-    if has('python3')
-      Plug 'zchee/deoplete-jedi'
-    endif
-  endif
+  let g:coc_global_extensions = [
+        \  'coc-calc',
+        \  'coc-css',
+        \  'coc-diagnostic',
+        \  'coc-docthis',
+        \  'coc-eslint',
+        \  'coc-git',
+        \  'coc-html',
+        \  'coc-json',
+        \  'coc-markdownlint',
+        \  'coc-prettier',
+        \  'coc-pyright',
+        \  'coc-snippets',
+        \  'coc-tsserver',
+        \  'coc-yaml',
+        \]
+  " Not working
+  "      \  'coc-python',
+  "      \  'coc-java',
+  " Doesn't redraw in sync with edits
+  "\  'coc-highlight',
+  Plug 'neoclide/coc.nvim', WithCompl({ 'branch': 'release' })
 
   " ========================================================================
   " Plug: Editing keys
@@ -627,7 +650,7 @@ function! s:LoadPlugins()
   Plug 'nishigori/increment-activator'
 
   " gcc to comment the current line
-  Plug 'tomtom/tcomment_vim'
+  Plug 'tyru/caw.vim', { 'on': [ '<Plug>(caw' ] }
 
   " easyclip requires repeat, REMAPS all register keys (y,d,s,c,etc.)
   " and use 'm' instead
@@ -643,38 +666,17 @@ function! s:LoadPlugins()
         \| Plug 'rhysd/vim-operator-surround'
         \| Plug 'tyru/operator-camelize.vim'
 
-  " Sorted by what the textobj provides
-  " Tip Use :omap ie to see what the operator-pending is mapped to
-  " d/D for underscore section (e.g. `did` on foo_b|ar_baz -> foo__baz)
-  " r for right hand of assignment (`baz` in `foo = baz`)
-  " k/v for JSON style key/value
-  " e for entire file
-  " i for indent level
-  " l for current line
-  " u for url
-  " b for any block type (parens, braces, quotes, ltgt)
-  " = and i= for conflicts marked blocks
-  " x for xml attr like `data-content="everything"`
-  " c for css/sass/less block
-  " f for function (c, java, js, php, vim only)
+  " Some textobjs are lazy loaded since they are ~4ms slow to load.
+  " -       Base textobj plugin
   Plug 'kana/vim-textobj-user'
-        \| Plug 'machakann/vim-textobj-delimited'
-        \| Plug 'Julian/vim-textobj-assignment',
-        \   has('python') ? {} : { 'on': [] }
-        \| Plug 'vimtaku/vim-textobj-keyvalue'
-        \| Plug 'kana/vim-textobj-entire'
-        \| Plug 'kana/vim-textobj-indent'
-        \| Plug 'kana/vim-textobj-line'
-        \| Plug 'mattn/vim-textobj-url'
-        \| Plug 'rhysd/vim-textobj-anyblock'
-        \| Plug 'rhysd/vim-textobj-conflict'
-        \| Plug 'whatyouhide/vim-textobj-xmlattr'
-        \| Plug 'glts/vim-textobj-comment', { 'for': [ 'javascript' ] }
-        \| Plug 'jasonlong/vim-textobj-css',
-        \   { 'for': [ 'css', 'sass', 'scss' ] }
-        \| Plug 'kana/vim-textobj-function'
-                \| Plug 'thinca/vim-textobj-function-javascript',
-                \   { 'for': [ 'javascript' ] }
+  " - i     for indent level
+  Plug 'kana/vim-textobj-indent', { 'on': [ '<Plug>(textobj-indent' ] }
+  " - P     for last paste
+  Plug 'gilligan/textobj-lastpaste', { 'on': [ '<Plug>(textobj-lastpaste' ] }
+  " - u     for url
+  Plug 'mattn/vim-textobj-url', { 'on': [ '<Plug>(textobj-url' ] }
+  " - b     for any block type (parens, braces, quotes, ltgt)
+  Plug 'rhysd/vim-textobj-anyblock'
 
   " ========================================================================
   " Plug: Language
@@ -750,33 +752,11 @@ function! s:LoadPlugins()
   " <leader>pd on function to insert jsdoc above
   Plug 'heavenshell/vim-jsdoc'
 
-  " ----------------------------------------
-  " Completion
-  " ----------------------------------------
-
-  " Code analysis completion
-  if executable('npm')
-    " Configured in plugins/completion.vim
-    Plug 'ternjs/tern_for_vim', { 'do': 'npm install --global tern' }
-
-    if has('nvim')
-      " Configured in plugins/completion.vim
-      Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install --global tern' }
-    endif
-
-  else
-    " Syntax completion when no npm
-    Plug '1995eaton/vim-better-javascript-completion'
-  endif
-
-  " Parameter completion (in or after ' or "), bound to user complete
-  " Plug 'othree/jspc.vim'
-
-  " ========================================================================
+    " ========================================================================
   " Language: Latex
   " ========================================================================
 
-  Plug 'lervag/vimtex'
+  Plug 'lervag/vimtex', { 'for': 'tex' }
 
   " ========================================================================
   " Language: Markdown, Pandoc, text
@@ -786,6 +766,9 @@ function! s:LoadPlugins()
   " The git repo has a newer syntax file than the one that ships with vim
   "Plug 'tpope/vim-markdown'
 
+  " Live preview
+  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+
   " Enable pandoc filetype options and vim operators/fns
   Plug 'vim-pandoc/vim-pandoc'
 
@@ -794,9 +777,6 @@ function! s:LoadPlugins()
 
   " Distraction-free writing
   Plug 'junegunn/goyo.vim', { 'on': ['Goyo'] }
-
-  " Personal wiki
-  Plug 'vimwiki/vimwiki'
 
   " Check for grammar errors
   Plug 'rhysd/vim-grammarous'
@@ -809,10 +789,11 @@ function! s:LoadPlugins()
   " ========================================================================
 
   Plug 'kh3phr3n/python-syntax', { 'for': 'python' }
-  Plug 'google/yapf', { 'rtp': 'plugins/vim', 'for': 'python' }
+  Plug 'psf/black', { 'for': 'python' }
   Plug 'fisadev/vim-isort', { 'for': 'python' }
   Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
   Plug 'raimon49/requirements.txt.vim'
+  Plug 'cespare/vim-toml'
   Plug 'lambdalisue/vim-pyenv', { 'for': 'python' }
 
   " ========================================================================
@@ -879,13 +860,17 @@ function! s:LoadPlugins()
   " Auto-prefix continuation lines with \
   Plug 'lambdalisue/vim-backslash'
 
-  " Completion
-  if g:dko_has_completion | Plug 'Shougo/neco-vim', { 'for': ['vim'] }
-  endif
-
   " ========================================================================
   " Plug: UI -- load last!
   " ========================================================================
+
+  " --------------------------------------------------------------------------
+  " Quickfix window
+  " --------------------------------------------------------------------------
+
+  Plug 'blueyed/vim-qf_resize'
+
+  Plug 'romainl/vim-qf'
 
   " :GitGutterToggle (bound to C-g)
   Plug 'airblade/vim-gitgutter', { 'on': ['GitGutterToggle'] }
@@ -913,8 +898,6 @@ function! s:LoadPlugins()
 
   Plug 'moll/vim-bbye'
 
-  Plug 'now/vim-quit-if-only-quickfix-buffer-left'
-
   Plug 'tmux-plugins/vim-tmux-focus-events'
 endfunction
 
@@ -928,6 +911,11 @@ let s:plug_dir .= has('nvim') ? 'nvim' : 'vim'
 let s:dko_plug_absdir = g:dko#vim_dir . s:plug_dir
 
 let g:plug_window = 'tabnew'
+
+" Shortcut
+function! WithCompl(...) abort
+  return call('PlugIf', [ g:dko_use_completion ] + a:000)
+endfunction
 
 if s:use_plugins
   " Load vim-plug and its plugins?

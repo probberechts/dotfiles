@@ -112,7 +112,7 @@ let g:neomake_javascript_enabled_makers =
 let s:local_eslint = {
       \   'ft':    'javascript',
       \   'maker': 'eslint',
-      \   'exe':   'node_modules/.bin/eslint',
+      \   'exe':   $PWD .'node_modules/.bin/eslint',
       \   'when':  '!empty(dkoproject#GetEslintrc())'
       \ }
 
