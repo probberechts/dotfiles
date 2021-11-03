@@ -6,7 +6,7 @@ nmap <silent> t<C-l> :TestLast<CR>    " t Ctrl+l
 nmap <silent> t<C-g> :TestVisit<CR>   " t Ctrl+g
 
 " make test commands execute using neomake
-let test#strategy = "basic"
+let test#strategy = "vimux"
 
 " set project root dir
 let test#project_root = dkoproject#GetRoot()
