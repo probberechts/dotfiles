@@ -148,7 +148,7 @@ set wildignore+=.sass-cache
 set wildignore+=*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*.gem
 set wildignore+=*.*~,*~
 set wildignore+=tags.lock
-set wildignore+=*.aux,*.out,*.toc
+set wildignore+=*.aux,*.toc
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.jar,*.pyc,*.rbc,*.class
 set wildignore+=*.ai,*.bmp,*.gif,*.ico,*.jpg,*.jpeg,*.png,*.psd,*.webp
 set wildignore+=*.avi,*.m4a,*.mp3,*.oga,*.ogg,*.wav,*.webm
@@ -574,6 +574,7 @@ function! s:LoadPlugins()
   Plug 'tpope/vim-eunuch'
 
   " Run tests
+  Plug 'benmills/vimux'
   Plug 'janko-m/vim-test'
 
   " ========================================================================
@@ -597,6 +598,8 @@ function! s:LoadPlugins()
   " ========================================================================
   " Plug: Completion
   " ========================================================================
+
+  Plug 'github/copilot.vim'
 
   " --------------------------------------------------------------------------
   " Signature preview
