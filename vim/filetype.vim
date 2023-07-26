@@ -12,24 +12,10 @@
 if exists('g:did_load_filetypes_user') | finish | endif
 let g:did_load_filetypes_user = 1
 
-" For files that might be JSON or YAML, read first line and use that
-function! s:SetJSONorYAML()
-  if getline(1) ==# '{'
-    setfiletype json
-    return
-  endif
-  setfiletype yaml
-endfunction
-
-function! s:BindPreview()
-  if exists('$ITERM_PROFILE') || has('gui_macvim')
-    nnoremap  <silent><buffer>  <Leader>m
-          \ :<C-u>silent !open -a "Marked 2" '%:p'<CR>
-  elseif dko#IsPlugged('vim-instant-markdown')
-    let g:instant_markdown_autostart = 0
-    nnoremap  <silent><buffer>  <Leader>m
-          \ :<C-u>InstantMarkdownPreview<CR>
-  endif
+function! s:SetByShebang() abort
+  let l:shebang = getline(1)
+  if l:shebang =~# '^#!.*/.*\s\+node\>' | setfiletype javascript | endif
+  if l:shebang =~# '^#!.*/.*\s\+zsh\>' | setfiletype zsh | endif
 endfunction
 
 " For filetypes that can be detected by filename (option C in the docs for
@@ -38,36 +24,14 @@ endfunction
 " cleared (otherwise it will run, and then this one, possible causing two
 " filetype events to execute in succession)
 augroup filetypedetect
+  autocmd! BufNewFile,BufRead * call s:SetByShebang()
 
-  autocmd! BufNewFile,BufRead
-        \ *.cap
-        \ setfiletype ruby
+  autocmd! BufNewFile,BufRead *.dump setfiletype sql
+  autocmd! BufNewFile,BufRead .flake8 setfiletype dosini
 
-  autocmd! BufNewFile,BufRead
-        \ *.dump
-        \ setfiletype sql
+  autocmd! BufNewFile,BufRead *.gitconfig setfiletype gitconfig
 
   " git branch description (opened via `git branch --edit-description`)
-  autocmd! BufNewFile,BufRead
-        \ BRANCH_DESCRIPTION
-        \ setfiletype gitbranchdescription.markdown
-
-  autocmd! BufNewFile,BufRead
-        \ .babelrc,.bowerrc,.jshintrc
-        \ setfiletype json
-
-  autocmd! BufNewFile,BufRead
-        \ .eslintrc,.stylelintrc
-        \ call s:SetJSONorYAML()
-
-  autocmd! BufRead,BufNewFile
-        \ */nginx*.conf,/*/nginx*.conf
-        \ setfiletype nginx
-
-  " polkit rules files
-  autocmd! BufNewFile,BufRead
-        \ *.rules
-        \ setfiletype javascript
+  autocmd! BufNewFile,BufRead BRANCH_DESCRIPTION setfiletype gitbranchdescription.markdown
 
 augroup END
-
