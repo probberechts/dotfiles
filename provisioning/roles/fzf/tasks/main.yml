@@ -1,7 +1,7 @@
 ---
 - name: FZF | remove ~/.fzf
   file:
-    dest:  '{{ fzf.dir || ~/.fzf }}'
+    dest:  '{{ fzf.dir|default("~/.fzf") }}'
     state: absent
   when: is_ci
 
