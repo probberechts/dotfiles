@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Usage: pair [<github-user>] [-t <tmux-session>]
 #
-# Copy the command to clipboard which grants another person access to the tmux
+# Output the command which grants another person access to the tmux
 # session on your machine. The resulting command is in format:
 #
 #   ssh -t <USER>@<HOST> 'tmux attach -t <SESSION>'
@@ -61,4 +61,4 @@ if [ -z "$tmux_session" ]; then
   tmux_session="$(tmux display -p '#{session_name}')"
 fi
 
-echo ssh -t ${USER}@${host} "'${tmux} at -t ${tmux_session}'" | tee >(pbcopy)
+echo ssh -t ${USER}@${host} "'${tmux} at -t ${tmux_session}'"
