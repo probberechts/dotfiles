@@ -15,13 +15,12 @@ homebrew:
     - basictex
     - calibre
     - cyberduck
-    - dropbox
     - gimp
     - google-chrome
     - hammerspoon
     - iterm2
     - karabiner-elements
-    - lastpass
+    - bitwarden
     - selfcontrol
     - superduper
     - the-unarchiver
