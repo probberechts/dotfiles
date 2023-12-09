@@ -1,25 +1,25 @@
 ---
-- name: nodejs | check ndenv
-  shell: which ndenv
-  register: which_ndenv
+- name: nodejs | check nodenv
+  shell: which nodenv
+  register: which_nodenv
   ignore_errors: yes
 
-- name: nodejs | install ndenv
-  shell: anyenv install ndenv
-  when: which_ndenv.rc > 0
+- name: nodejs | install nodenv
+  shell: anyenv install nodenv
+  when: which_nodenv.rc > 0
 
 - name: nodejs | get installed versions
-  shell: ndenv versions
+  shell: nodenv versions
   register: installed_versions
 
 - name: nodejs | install nodejs
-  shell: ndenv install {{ item | quote }}
+  shell: nodenv install {{ item | quote }}
   when: |
     nodejs.versions and installed_versions.stdout.find(item) == -1
   with_items: '{{ nodejs.versions }}'
 
 - name: nodejs | set global nodejs
-  shell: ndenv global {{ nodejs.versions[0] | quote }}
+  shell: nodenv global {{ nodejs.versions[0] | quote }}
   when: nodejs.versions
 
 - name: nodejs | install npm packages
