@@ -1,40 +1,17 @@
 ##############################################################################
-# Computerlab
-# Download keys from https://www.cs.kuleuven.be/restricted/computerklas/
-##############################################################################
-
-Host *.cs.kotnet.kuleuven.be
-     User u0116427
-     IdentityFile ~/.ssh/keys/id_rsa_sol
-
-Host kulgateway
-     HostName st.cs.kuleuven.be
-     User u0116427
-     IdentityFile ~/.ssh/keys/id_rsa_sol
-
-Host gent
-     ProxyCommand ssh -A -q kulgateway nc -q0 gent.cs.kotnet.kuleuven.be 22
-     User u0116427
-     IdentityFile ~/.ssh/keys/id_rsa_sol
-
-Host kotgent
-     HostName gent.cs.kotnet.kuleuven.be
-     User u0116427
-     IdentityFile ~/.ssh/keys/id_rsa_sol
-
-##############################################################################
 # CS
 ##############################################################################
 
-Host *.cs.kuleuven.be
-    User pieterr
-
 Host cs
     HostName ssh.cs.kuleuven.be
-    User pieterr
 
-Host spock
-    HostName spock.cs.kuleuven.be
+Host glados
+    HostName glados.cs.kuleuven.be
+
+Host pinac*
+    HostName %h.cs.kuleuven.be
+
+Host *.cs.kuleuven.be cs glados
     User pieterr
 
 Host repo
@@ -43,10 +20,16 @@ Host repo
     User Pieter.Robberechts
 
 ##############################################################################
-# pinac
+# Computerlab
+# Download keys from https://www.cs.kuleuven.be/restricted/computerklas/
 ##############################################################################
 
-Host pinac*
-  HostName %h.cs.kuleuven.be
-  User pieterr
+Host luik
+     HostName luik.student.cs.kuleuven.be
 
+Host csluik
+     ProxyCommand ssh -A -q cs nc -q0 luik.student.cs.kuleuven.be 22
+
+Host *.student.cs.kuleuven.be luik csluik
+     User u0116427
+     IdentityFile ~/.ssh/keys/id_rsa_sol
