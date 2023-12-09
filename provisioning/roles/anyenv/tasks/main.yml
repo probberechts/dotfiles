@@ -38,3 +38,8 @@
   with_items:
     - 'export PATH="{{ anyenv.dir }}/bin:$PATH"'
     - 'eval "$(anyenv init -)"'
+
+- name: anyenv | update
+  shell: anyenv update
+  environment:
+    PATH: "{{ anyenv.dir }}/bin:{{ ansible_env.PATH }}"
