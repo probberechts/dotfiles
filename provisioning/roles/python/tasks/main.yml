@@ -50,7 +50,7 @@
   when: which_pipx.rc > 0
 
 - name: python | install global CLI tools
-  shell: pipsi install '{{ package.name | default(package) }}'
+  shell: pipx install --include-deps '{{ package.name | default(package) }}'
   with_items: '{{ python.packages }}'
   when: python.packages
   ignore_errors: yes

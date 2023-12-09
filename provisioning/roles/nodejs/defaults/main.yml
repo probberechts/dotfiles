@@ -1,4 +1,0 @@
-nodejs:
-  versions:
-    - '8.9.4'
-  packages:

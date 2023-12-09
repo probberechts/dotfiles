@@ -1,13 +1,11 @@
 ---
 - name: ruby | check rbenv
-  command: |
-    bash -lc 'which rbenv'
+  shell: which rbenv
   register: which_rbenv
   ignore_errors: yes
 
 - name: ruby | install rbenv
-  command: |
-    bash -lc 'anyenv install rbenv'
+  shell: anyenv install rbenv
   when: which_rbenv.rc > 0
 
 - name: ruby | install plugins
@@ -18,8 +16,7 @@
   when: ruby.plugins_dir and ruby.plugins
 
 - name: ruby | get installed versions
-  command: |
-    bash -lc 'rbenv versions'
+  shell: rbenv versions
   register: installed_versions
 
 - include_tasks: debian.yml
@@ -29,8 +26,7 @@
   when: ansible_distribution == 'Ubuntu'
 
 - name: ruby | install ruby
-  command: |
-    bash -lc 'rbenv install {{ item | quote }}'
+  shell: rbenv install {{ item | quote }}
   environment:
     RUBY_CONFIGURE_OPTS: '--with-openssl-dir={{ openssl_dir.stdout | quote }} --with-readline-dir={{ readline_dir.stdout | quote }}'
   when: |
@@ -38,6 +34,5 @@
   with_items: '{{ ruby.versions }}'
 
 - name: ruby | set global ruby
-  command: |
-    bash -lc 'rbenv global {{ ruby.versions[0] | quote }}'
+  shell: rbenv global {{ ruby.versions[0] | quote }}
   when: ruby.versions
