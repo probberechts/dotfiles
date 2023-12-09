@@ -1,5 +1,7 @@
 # Global gitconfig
 
+# Aliases --------------------------------------------------------------------
+
 [alias]
     co = checkout
     ci = commit
@@ -64,58 +66,88 @@
     # Displays committers in descending order of number of commits
     who = shortlog --numbered --summary --email --no-merges --since="3 months"
 
-[color]
-    branch      = auto
-    diff        = auto
-    grep        = auto
-    interactive = auto
-    status      = auto
-    ui          = auto
-    pager       = true
+# Color ------------------------------------------------------------------------
 
-# Repo settings ----------------------------------------------------------------
+[color]
+  branch      = auto
+  diff        = auto
+  grep        = auto
+  interactive = auto
+  status      = auto
+  ui          = auto
+  pager       = true
+
+[color "diff-highlight"]
+  oldNormal    = red bold
+  oldHighlight = red bold 52
+  newNormal    = green bold
+  newHighlight = green bold 22
+
+# Repo settings and command options --------------------------------------------
+
+[blame]
+  date = short
+  showEmail = true
+
+[branch]
+  autosetupmerge = always
+  autosetuprebase = always
+
 [commit]
     template = "~/.dotfiles/git/commit-template"
 
 [core]
-    excludesfile = ~/.dotfiles/git/dot.gitignore
-    commentchar = ";"
+  compression = -1
+# editor = "vim -f" ; removed so git will use env EDITOR or VISUAL
+  sharedRepository = 0664
+  commentchar = ";"
+# pager = less -x4 ; removed so git will use the env GIT_PAGER
+# pager = delta ; removed -- added as GIT_PAGER for zsh only
+  ignorecase = false
+  excludesfile = "~/.dotfiles/git/dot.gitignore"
 
 [push]
-    default = simple
+  default = simple
 
 # Programs ---------------------------------------------------------------------
+
 [gui]
-    commitmsgwidth = 80
-    diffcontext = 10
+  commitmsgwidth = 80
+  diffcontext = 10
 
 [difftool]
-    prompt = false
+  prompt = false
 
 [mergetool]
-    prompt = false
+  prompt = false
 
 [pager]
-    status = true
+  status = true
 
 [pretty]
-    # tut: http://gitimmersion.com/lab_10.html
-    # ref: http://linux.die.net/man/1/git-log
-    # Result: <short-sha> <commit-message> (<pointer-names>) -- <commit-author-name>; <relative-time>
-    nice = "%C(yellow)%h%C(reset) %C(white)%s%C(cyan)%d%C(reset) -- %an; %ar"
+  # tut: http://gitimmersion.com/lab_10.html
+  # ref: http://linux.die.net/man/1/git-log
+  # Result: <short-sha> <commit-message> (<pointer-names>) -- <commit-author-name>; <relative-time>
+  nice = "%C(yellow)%h%C(reset) %C(white)%s%C(cyan)%d%C(reset) -- %an; %ar"
 
 # User defaults (may be overridden by local)------------------------------------
-[credential]
-    username = "probberechts"
 
 [user]
-    name  = "Pieter Robberechts"
-    email = "pieter_robberechts@msn.com"
+  name = Pieter Robberechts
+  email = pieter.robberechts@kuleuven.be
+
+[credential]
+  username = "probberechts"
+
+[credential "https://git.overleaf.com"]
+  username = "pieter.robberechts@cs.kuleuven.be"
 
 # Local ------------------------------------------------------------------------
+
+[includeIf "gitdir:/Users/"]
+  path = "~/.dotfiles/git/mac.gitconfig"
+
 [include]
   path = "~/.dotfiles/local/gitconfig"
 
 # vim: ft=gitconfig :
-[cola]
-	spellcheck = false
