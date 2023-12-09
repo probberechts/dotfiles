@@ -30,13 +30,10 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # Assign global var to virtualenv name
 virtualenv_info() {
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-      # Strip out the path and just leave the env name
-      venv="${VIRTUAL_ENV##*/}"
-  else
-      venv=''
-  fi
-  [[ -n "$venv" ]] && echo "$venv"
+  venv=''
+  # Strip out the path and just leave the env name
+  [ -n "$VIRTUAL_ENV" ] && venv="${VIRTUAL_ENV##*/}"
+  [ -n "$venv" ] && printf '%s\n' "$venv"
 }
 
 # ==============================================================================
@@ -45,9 +42,9 @@ virtualenv_info() {
 
 dko::has "pip" && {
   if [ -n "$ZSH_VERSION" ]; then
-    eval "$(pip completion --zsh)"
+    eval "$(python3 -m pip completion --zsh)"
   elif [ -n "$BASH" ]; then
-    eval "$(pip completion --bash)"
+    eval "$(python3 -m pip completion --bash)"
   fi
 }
 
