@@ -163,17 +163,17 @@
 
 - name: input device | key repeat
   osx_defaults:
-    domain: NSGlobalDomain
+    domain: Accessibility
     key:    KeyRepeat
-    type:   int
-    value:  1 # 1Hz = 16.7ms
+    type:   float
+    value:  0.016666666
 
 - name: input device | delay until repeat
   osx_defaults:
-    domain: NSGlobalDomain
-    key:    InitialKeyRepeat
-    type:   int
-    value:  12 # 12Hz = 200ms
+    domain: Accessibility
+    key:    KeyRepeatDelay
+    type:   float
+    value:  0.183333333
 
 - name: input device | enable accents popup
   osx_defaults:
