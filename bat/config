@@ -1,0 +1,5 @@
+--paging="never"
+--style="numbers"
+--theme="base16"
+
+--map-syntax .ignore:.gitignore

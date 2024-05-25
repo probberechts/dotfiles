@@ -1,5 +1,10 @@
 function! dkowhitespace#clean() abort
-  %retab      " Replace tabs with spaces
-  %s/\r/\r/eg " Turn DOS returns ^M into real returns
-  %s= *$==e   " Delete end of line blanks
+  " Replace tabs with spaces
+  %retab
+  let l:save = winsaveview()
+  " Turn DOS returns ^M into real returns
+  " vint: -ProhibitCommandRelyOnUser -ProhibitCommandWithUnintendedSideEffect
+  %s/\r/\r/eg
+  %s/\s\+$//e
+  call winrestview(l:save)
 endfunction

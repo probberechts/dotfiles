@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+# Initially create XDG dirs
+# Run after shell/vars sourced
+#
+
+set -eu
+
+mkdir -p -- "$XDG_STATE_HOME"

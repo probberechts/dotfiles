@@ -113,6 +113,7 @@ python:
 
 ruby:
   versions:
+    - '2.4.1'
 
   plugins_dir: '{{ anyenv.envs_dir }}/rbenv/plugins'
 

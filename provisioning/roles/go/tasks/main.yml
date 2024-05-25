@@ -1,0 +1,23 @@
+---
+- name: go | check goenv
+  shell: which goenv
+  register: which_goenv
+  ignore_errors: yes
+
+- name: go | install goenv
+  shell: anyenv install goenv
+  when: which_goenv.rc > 0
+
+- name: go | get installed versions
+  shell: goenv versions
+  register: installed_versions
+
+- name: go | install go
+  shell: goenv install {{ item | quote }}
+  when: |
+    go.versions and installed_versions.stdout.find(item) == -1
+  with_items: '{{ go.versions }}'
+
+- name: go | set global go
+  shell: goenv global {{ go.versions[0] | quote }}
+  when: go.versions

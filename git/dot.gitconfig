@@ -151,3 +151,11 @@
   path = "~/.dotfiles/local/gitconfig"
 
 # vim: ft=gitconfig :
+[safe]
+	directory = .
+	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/kloppy-etsy
+	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/trackingutils
+	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/ETSY_public
+	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/club-brugge-sap
+[hub]
+	protocol = ssh

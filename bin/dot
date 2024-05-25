@@ -1,0 +1,414 @@
+#!/usr/bin/env bash
+
+[[ -z "${DOTFILES}" ]] && echo "Symlink first" && exit 1
+. "${DOTFILES}/lib/helpers.sh"
+. "${DOTFILES}/lib/pretty.bash"
+
+# ==============================================================================
+
+latest_xcode_major="15"
+
+# ==============================================================================
+# Command functions
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Meta
+# ------------------------------------------------------------------------------
+
+__dko_dotfiles__command_not_found() {
+  __dko_err "Command not found '${1:-''}'"
+  echo
+  __dko_dotfiles__usage
+  exit 1
+}
+
+__dko_dotfiles__usage() {
+  __dko_usage "dot <command>"
+  echo '
+  Utility Commands
+    dotfiles    -- update dotfiles (git pull)
+    secret      -- update ~/.secret (git pull)
+    daily       -- secret, Packages / Developer Tools, fzf
+
+  Shell Tools
+    fzf         -- update fzf with flags to not update rc scripts
+
+  Packages / Developer Tools
+    gem         -- update rubygems and global gems for current ruby
+    go          -- golang
+    pip         -- update all versions of pip (OS dependent)
+    pipx        -- update pipx-installed cli tools
+    neovim      -- update neovim to latest prerelease build
+
+  System: Debian/Ubuntu
+    deb         -- update apt packages
+
+  System: macOS/OS X
+    brew        -- homebrew packages
+    mac         -- software updates
+'
+}
+
+__dko_dotfiles__cd() {
+  cd -- "$DOTFILES" || {
+    __dko_err "No \$DOTFILES directory"
+    return 1
+  }
+}
+
+__dko_dotfiles__update() {
+  __dko_status "Updating dotfiles"
+
+  local lockfile="${HOME}/.local/dotfiles.lock"
+  # shellcheck disable=SC2064
+  trap "rm -f \"$lockfile\"" EXIT
+  touch "$lockfile"
+
+  (
+    __dko_dotfiles__cd || exit 1
+    git pull --rebase || exit 1
+    git log --no-merges --abbrev-commit --oneline ORIG_HEAD..
+  ) || {
+    __dko_err "Error updating dotfiles"
+    return 1
+  }
+
+  __dko_ok "Successfully updated dotfiles"
+}
+
+__dko_dotfiles__update_secret() {
+  (
+    cd -- "${HOME}/.secret" 2>/dev/null || {
+      __dko_warn 'Skipping ~/.secret/ update -- directory not found'
+      exit 0
+    }
+    __dko_status "Updating ~/.secret/"
+    git pull --rebase --recurse-submodules || exit 1
+    git log --no-merges --abbrev-commit --oneline ORIG_HEAD..
+  )
+}
+
+__dko_dotfiles__update_daily() {
+  __dko_dotfiles__update_secret
+
+  if [ -x /usr/bin/fzf ]; then
+    __dko_ok "fzf installed by system package manager"
+  elif [[ -x "${HOMEBREW_PREFIX}/opt/fzf/install" ]] ||
+    [[ -d "${XDG_CONFIG_HOME}/fzf" ]] ||
+    [[ -d "${HOME}/.fzf" ]]; then
+    __dko_dotfiles__update_fzf
+  else
+    __dko_warn "fzf is not installed"
+  fi
+
+  __dko_dotfiles__go__require_go && __dko_dotfiles__go__update_go_packages
+
+  __dko_dotfiles__ruby__require_rubygems && __dko_dotfiles__ruby__update_gems
+
+}
+
+# ------------------------------------------------------------------------------
+# Externals
+# ------------------------------------------------------------------------------
+
+__dko_dotfiles__update_fzf() {
+  local installer
+
+  if [ -x /usr/bin/fzf ]; then
+    __dko_ok "fzf installed by system package manager"
+  elif [[ -x "${HOMEBREW_PREFIX}/opt/fzf/install" ]]; then
+    __dko_status "fzf was installed via brew, re-running installer"
+    installer="${HOMEBREW_PREFIX}/opt/fzf/install"
+  elif [[ -d "${HOME}/.fzf" ]]; then
+    __dko_status "fzf was installed in ~/.fzf"
+    installer="${HOME}/.fzf/install"
+    (
+      cd -- "${HOME}/.fzf" || { __dko_err "Could not cd to ~/.fzf" && exit 1; }
+      __dko_status "Updating fzf"
+      git pull --rebase || { __dko_err "Could not update ~/.fzf" && exit 1; }
+      git log --no-merges --abbrev-commit --oneline ORIG_HEAD..
+    ) || return 1
+  else
+    __dko_err "fzf is not installed"
+    return 1
+  fi
+
+  # Install/update shell extensions
+  if [[ -n "$installer" ]]; then
+    __dko_status "Updating fzf shell extensions"
+    "$installer" --xdg --key-bindings --completion --no-update-rc ||
+      return 1
+  fi
+}
+
+# ----------------------------------------------------------------------------
+# Ruby: Introspection
+# ----------------------------------------------------------------------------
+
+# pass any arg to silence
+__dko_dotfiles__ruby__require_rubygems() {
+  __dko_has gem && return 0
+  __dko_warn "rubygems is not installed"
+  return 1
+}
+
+# ----------------------------------------------------------------------------
+# Ruby: Update Gems
+# ----------------------------------------------------------------------------
+
+__dko_dotfiles__ruby__update_gems() {
+  __dko_status "Updating gems"
+  __dko_dotfiles__ruby__require_rubygems || return 1
+
+  __dko_status "Updating RubyGems itself for ruby: ${RUBY_VERSION}"
+  gem update --system || {
+    __dko_err "Could not update RubyGems"
+    return 1
+  }
+
+  gem update || {
+    __dko_err "Could not update gems"
+    return 1
+  }
+}
+
+# ----------------------------------------------------------------------------
+# Go
+# ----------------------------------------------------------------------------
+
+# pass any arg to silence
+__dko_dotfiles__go__require_go() {
+  __dko_has go && return 0
+  __dko_warn "go is not installed"
+  return 1
+}
+
+# pass any arg to silence
+__dko_dotfiles__go__require_goenv() {
+  __dko_has goenv && return 0
+  __dko_warn "goenv is not installed"
+  return 1
+}
+__dko_dotfiles__go__update_go_packages() {
+  __dko_status "Updating go packages"
+  __dko_dotfiles__go__require_goenv || return 1
+  __dko_dotfiles__go__require_go || return 1
+
+  # in case go was updated recently, the go shim needs to be reset
+  goenv rehash
+
+  go get -u all || {
+    __dko_err "Could not update go packages"
+    return 1
+  }
+}
+
+# ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
+
+# $1 pip command (e.g. `pip2`)
+__dko_dotfiles__py__update_pip() {
+  __dko_status "Updating pip"
+  ! python -m pip --version >/dev/null 2>&1 &&
+    __dko_warn "pip not found" && return 1
+  python -m pip install --upgrade setuptools || return 1
+  python -m pip install --upgrade wheel || return 1
+  python -m pip install --upgrade pip
+}
+
+__dko_dotfiles__py__update_pipx() {
+  __dko_status "Updating pipx tools"
+  ! __dko_has pipx &&
+    __dko_warn "pipx not found" && return 1
+  pipx upgrade-all
+}
+
+__dko_dotfiles__update_neovim() {
+  if __dko_has brew; then
+    if __dko_has nvim; then
+      local version
+      version="$(nvim --version | head -n1)"
+      if ! grep dev <<<"$version"; then
+        brew uninstall neovim
+        brew install --force --HEAD neovim
+      else
+        brew reinstall neovim
+      fi
+    fi
+  elif __dko_has pamac; then
+    pamac build neovim-git
+  fi
+
+  local res=$?
+  [ $res -ne 0 ] &&
+    __dko_err "Could not update to latest neovim prerelease build" &&
+    return 1
+
+  nvim --version
+  __dko_ok "Updated to latest neovim prerelease build"
+}
+
+# ------------------------------------------------------------------------------
+# OS-specific commands
+# ------------------------------------------------------------------------------
+
+__dko_dotfiles__linux__update() {
+  case "$1" in
+  deb) __dko_dotfiles__linux__deb__update ;;
+  *) __dko_dotfiles__command_not_found "$1" ;;
+  esac
+}
+
+__dko_dotfiles__darwin__update() {
+  case "$1" in
+  brew) __dko_dotfiles__darwin__update_brew ;;
+  mac) __dko_dotfiles__darwin__update_mac ;;
+  *) __dko_dotfiles__command_not_found "$1" ;;
+  esac
+}
+
+# ------------------------------------------------------------------------------
+# OS: GNU/Linux: Debian or Ubuntu
+# ------------------------------------------------------------------------------
+
+__dko_dotfiles__linux__deb__update() {
+  __dko_status "Apt system update"
+
+  ! __dko_has apt &&
+    __dko_err "apt not found, manually use 'apt-get' for crappy systems" &&
+    return 1
+
+  sudo apt update
+
+  # This is for home systems only! Removes unused stuff, same as
+  # `apt-get dist-upgrade`
+  sudo apt full-upgrade
+}
+
+# ------------------------------------------------------------------------------
+# OS: macOS/OS X
+# ------------------------------------------------------------------------------
+
+__dko_dotfiles__darwin__update_mac() {
+  __dko_status "macOS system update"
+  softwareupdate --install --all --force
+
+  __dko_status "xcode and cli update"
+  sudo xcode-select --install
+
+  __dko_has mas && mas upgrade
+}
+
+# pass any arg to silence
+__dko_dotfiles__darwin__require_latest_xcode() {
+  local v
+  # 14.0.0
+  v="$(xcodebuild -version | awk 'NR==1{print $2}')"
+  # 14 (trim until .)
+  v="${v%%.*}"
+  if ((v <= latest_xcode_major)); then
+    __dko_ok "Found Xcode >= v${v}"
+    return 0
+  fi
+  __dko_err "Found Xcode ${v}, please install ${latest_xcode_major}.x.x"
+  return 1
+}
+
+__dko_dotfiles__darwin__update_brew() {
+  __dko_dotfiles__darwin__require_latest_xcode || return 1
+  __dko_has brew || return 1
+
+  __dko_status "Updating homebrew"
+  (
+    # CLEANROOM
+    # enter dotfiles dir to do this in case user has any gem flags or local
+    # vendor bundle that will cause use of local gems
+    __dko_dotfiles__cd || exit 1
+
+    __dko_status "brew update"
+    brew update || exit 1
+
+    # check if needed
+    local outdated
+    outdated="$(brew outdated --quiet)"
+    [[ -z "$outdated" ]] && {
+      __dko_ok "Packages up-to-date"
+      exit
+    }
+
+    # Upgrade remaining
+    __dko_status "brew upgrade"
+    # We'll manually cleanup later
+    HOMEBREW_NO_INSTALL_CLEANUP=1 brew upgrade || exit 1
+    __dko_ok "Upgrade complete"
+
+    __dko_dotfiles__darwin__update_brew_postupgrade "$outdated"
+  ) && {
+    __dko_status "brew cleanup - clean up old versions and prune dead symlinks"
+    brew cleanup --verbose
+    __dko_ok "All clean"
+  }
+}
+
+__dko_dotfiles__darwin__update_brew_postupgrade() {
+  __dko_status "Running post-upgrade packages"
+
+  local outdated="$1"
+
+  # link curl
+  if grep -q "curl" <<<"$outdated"; then
+    brew unlink curl && brew link --force curl
+  fi
+
+  # re-init goenv
+  if grep -q "goenv" <<<"$outdated"; then
+    goenv rehash
+  fi
+
+  # do not use zsh git completion, the bash one is better
+  if grep -q "git" <<<"$outdated"; then
+    "${DOTFILES}/bin/dko-fix-git-completion"
+  fi
+
+  # Detect if brew's python3 (not pyenv) was outdated
+  if grep -q "python3" <<<"$outdated"; then
+    __dko_status "Python3 was outdated, upgrading python3"
+    brew upgrade python3
+  fi
+
+  __dko_ok "Post-upgrade complete"
+}
+
+# ==============================================================================
+# Main
+# ==============================================================================
+
+# $1 command
+__dko_dotfiles() {
+  local argcount="$#"
+  [[ "$argcount" == "0" ]] && __dko_dotfiles__usage && return 1
+
+  case $1 in
+  dotfiles) __dko_dotfiles__update ;;
+  secret) __dko_dotfiles__update_secret ;;
+  daily) __dko_dotfiles__update_daily ;;
+  fzf) __dko_dotfiles__update_fzf ;;
+  gem) __dko_dotfiles__ruby__update_gems ;;
+  go) __dko_dotfiles__go__update_go_packages ;;
+  pip) __dko_dotfiles__py__update_pip ;;
+  pipx) __dko_dotfiles__py__update_pipx ;;
+  neovim) __dko_dotfiles__update_neovim ;;
+  neopy) __dko_dotfiles__py__update_neovim_python ;;
+
+  *)
+    case "$OSTYPE" in
+    linux*) __dko_dotfiles__linux__update "$@" ;;
+    *arwin*) __dko_dotfiles__darwin__update "$@" ;;
+    esac
+    ;;
+  esac
+}
+
+__dko_dotfiles "$@"

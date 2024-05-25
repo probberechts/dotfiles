@@ -8,6 +8,13 @@
 " List of loaded plug names
 let s:loaded = []
 
+function! dkoplug#Install() abort
+  execute 'silent !curl -fLo '
+        \ . g:dko#vim_dir . '/autoload/plug.vim '
+        \ . 'https://raw.githubusercontent.com/'
+        \ . 'junegunn/vim-plug/master/plug.vim'
+endfunction
+
 " @param  {String} name
 " @return {Boolean} true if the plugin is installed
 function! dkoplug#Exists(name) abort

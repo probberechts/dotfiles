@@ -1,4 +1,3 @@
-if has('vim_starting') | set encoding=utf-8 nobomb | endif
 scriptencoding utf-8
 
 "
@@ -23,9 +22,9 @@ let g:dko_rtp_original = &runtimepath
 let g:dko_is_iterm = $TERM_PROGRAM ==# 'iTerm.app'
 
 " Plugin settings
+let g:dko_autoinstall_vim_plug = executable('git')
 let g:dko_use_completion = has('nvim-0.3') && executable('node')
 let g:dko_use_fzf = v:version >= 704 && exists('&autochdir')
-let g:dko_fzf_float = 0 && has('nvim-0.4')
 
 " Used by anything that needs to change/use loc list
 let g:dko_loc_list_height = 10
@@ -73,7 +72,8 @@ if !has('nvim')
 endif
 
 " no beeps or flashes
-set visualbell t_vb=
+set novisualbell
+set noerrorbells
 
 set number
 set numberwidth=5
@@ -88,6 +88,10 @@ set colorcolumn=+3
 " set cursorline
 
 set synmaxcol=512                     " don't syntax highlight long lines
+
+if exists('+signcolumn')
+  let &signcolumn = has('nvim-0.4') ? 'auto:3' : 'yes'
+endif
 
 " ------------------------------------
 " Tab line
@@ -112,42 +116,31 @@ set noshowmode                        " don't show -- INSERT -- in cmdline
 " Input
 " ----------------------------------------------------------------------------
 
-" ------------------------------------
-" Mouse
-" ------------------------------------
-
+" Enable mouse in all modes
 set mouse=a
-if !has('nvim') | set ttymouse=xterm | endif
 
-" ------------------------------------
 " Typing key combos
-" ------------------------------------
-
 set notimeout
 set ttimeout
-if !has('nvim')
-  set ttimeoutlen=10
-endif
 
 " ----------------------------------------------------------------------------
 " Wild and file globbing stuff in command mode
 " ----------------------------------------------------------------------------
 
 set browsedir=buffer                  " browse files in same dir as open file
-set wildmenu                          " Enhanced command line completion.
 set wildmode=list:longest,full        " Complete files using a menu AND list
 set wildignorecase
 
 " wildignore prevents things from showing up in cmd completion
 " It's for things you'd NEVER open in Vim, like caches and binary files
-set wildignore+=.git
-set wildignore+=.hg,.svn
-set wildignore+=tags
-set wildignore+=*.manifest
-set wildignore+=.sass-cache
-set wildignore+=*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*.gem
-set wildignore+=*.*~,*~
-set wildignore+=tags.lock
+"
+" So don't do this! There are cases where you'd edit them or their contents
+"set wildignore+=.git
+"set wildignore+=.hg,.svn
+"set wildignore+=tags
+"set wildignore+=*.manifest
+
+" Binary
 set wildignore+=*.aux,*.toc
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.jar,*.pyc,*.rbc,*.class
 set wildignore+=*.ai,*.bmp,*.gif,*.ico,*.jpg,*.jpeg,*.png,*.psd,*.webp
@@ -155,66 +148,51 @@ set wildignore+=*.avi,*.m4a,*.mp3,*.oga,*.ogg,*.wav,*.webm
 set wildignore+=*.eot,*.otf,*.ttf,*.woff
 set wildignore+=*.doc,*.pdf
 set wildignore+=*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz
-set wildignore+=*.swp,.lock,.DS_Store,._*
+" Cache
+set wildignore+=*/vendor/gems/*,*/vendor/cache/*,*/.bundle/*,*.gem
+set wildignore+=.sass-cache
+set wildignore+=npm-debug.log
+" Compiled
+set wildignore+=*.marko.js
+set wildignore+=*.min.*,*-min.*
+" Temp/System
+set wildignore+=*.*~,*~
+set wildignore+=*.swp,.lock,.DS_Store,._*,tags.lock
 
 " ----------------------------------------------------------------------------
 " File saving
 " ----------------------------------------------------------------------------
 
-"set autoread                         " reload files if they were edited
-                                      " elsewhere
 set fileformats=unix,mac,dos
-set fileformat=unix
+" Not modifiable if no window (e.g. resourcing vimrc)
+if !&modifiable | set fileformat=unix | endif
 
-" info file -- nvim uses shada in $XDG_DATA_HOME so that's cool.
-if !has('nvim')
-  execute 'set viminfo+=n' . expand(g:dko#vim_dir . '/.tmp/cache/.viminfo')
-
-  " From https://github.com/swizzard/dotfiles/blob/master/.vimrc
-  " Don't keep .viminfo information for files in temporary directories or shared
-  " memory filesystems; this is because they're used as scratch spaces for tools
-  " like sudoedit(8) and pass(1) and hence could present a security problem
-  if has('viminfo')
-    augroup dkoviminfo
-      autocmd!
-      silent! autocmd vimrc BufNewFile,BufReadPre
-          \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
-          \ setlocal viminfo=
-    augroup END
-  endif
-endif
-
-" swap - useless
+" If we have a swap conflict, FZF has issues opening the file (and doesn't
+" prompt correctly)
 set noswapfile
-if !has('nvim')
-  execute 'set directory=' . g:dko#vim_dir . '/.tmp/swap//'
-endif
 
-" backups
+" Use backup files when writing (create new file, replace old one with new
+" one)
+" Disabled for coc.nvim compat
+set nowritebackup
+" but do not leave around backup.xyz~ files after that
 set nobackup
-set backupskip=/tmp/*
+" backupcopy=yes is the default, just be explicit. We need this for
+" webpack-dev-server and hot module reloading -- preserves special file types
+" like symlinks
+set backupcopy=yes
+
+" don't create backups for these paths
+set backupskip+=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*
 " Make Vim able to edit crontab files again.
-set backupskip+=,/private/tmp/*"
-if has('mac')
-  augroup dkomac
-    autocmd!
-    autocmd BufEnter  /private/tmp/crontab.*
-          \ setlocal backup
-          \ setlocal backupcopy=yes
-  augroup END
-endif
-if !has('nvim')
-  execute 'set backupdir=' . g:dko#vim_dir . '/.tmp/backup//'
-endif
+set backupskip+=/private/tmp/*"
+set backupskip+=~/.secret/*
 
 " undo files
 " double slash means create dir structure to mirror file's path
 set undofile
 set undolevels=1000
 set undoreload=10000
-if !has('nvim')
-  execute 'set undodir=' . g:dko#vim_dir . '/.tmp/undo//'
-endif
 
 " ----------------------------------------------------------------------------
 " Spellcheck
@@ -224,21 +202,27 @@ endif
 "execute 'set spellfile=' . glob(expand(dko#vim_dir . '/en.utf-8.add'))
 
 " ----------------------------------------------------------------------------
-" Completion -- see also plugins/completion.vim
+" Built-in completion
 " ----------------------------------------------------------------------------
 
 " Don't consider = symbol as part filename. Helps for deoplete file source, too.
 set isfname-==
 
-set complete-=i                       " don't complete includes
 set complete-=t                       " don't complete tags
+set completeopt-=longest              " ncm2 requirement
 set completeopt-=preview              " don't open scratch preview
+set completeopt+=noinsert             " ncm2 requirement
+set completeopt+=noselect             " ncm2 don't select first thing
 set completeopt+=menu,menuone         " show PUM, even for one thing
 
-" @see <https://github.com/Valloric/YouCompleteMe/blob/master/autoload/youcompleteme.vim#L343>
-if has('patch-7.4.314')
-  set shortmess+=c                    " Disable "Pattern not found" messages
-endif
+" ----------------------------------------------------------------------------
+" Message output on vim actions
+" ----------------------------------------------------------------------------
+
+" Some of these are the defaults, but explicitly match vim and nvim-4.0
+set shortmess+=ilmnrxoOtWI
+" Disable "Pattern not found" messages
+if has('patch-7.4.314') | set shortmess+=c | endif
 
 " ----------------------------------------------------------------------------
 " Window splitting and buffers
@@ -246,7 +230,9 @@ endif
 
 set splitbelow
 set splitright
-set fillchars=vert:│                  " Vertical sep between windows (unicode)
+if exists('+splitkeep')
+  set splitkeep=screen
+endif
 
 set hidden                            " remember undo after quitting
 
@@ -259,16 +245,10 @@ set nostartofline                     " don't jump to col1 on switch buffer
 " ----------------------------------------------------------------------------
 " Code folding
 " ----------------------------------------------------------------------------
-
-set nofoldenable
-set foldcolumn=2
-set foldlevel=99                      " show all folds by default
+"
+set foldlevel=999                     " very high === all folds open
 set foldlevelstart=99                 " show all folds by default
-if has('windows')
-  set fillchars=vert:┃              " BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
-  set fillchars+=fold:·             " MIDDLE DOT (U+00B7, UTF-8: C2 B7)
-endif
-set foldtext=dko#foldtext()
+set nofoldenable
 
 " ----------------------------------------------------------------------------
 " Trailing whitespace
@@ -283,16 +263,14 @@ set listchars+=precedes:«
 set listchars+=nbsp:⣿
 
 " maybe...
-" if has('patch-7.4.785')
-"   set fixendofline
-" endif
+" if has('patch-7.4.785') | set fixendofline | endif
 
 " ----------------------------------------------------------------------------
 " Diffing
 " ----------------------------------------------------------------------------
 
 " Note this is += since fillchars was defined in the window config
-" set fillchars+=diff:⣿
+set fillchars+=diff:⣿
 set diffopt=vertical                  " Use in vertical diff mode
 set diffopt+=filler                   " blank lines to keep sides aligned
 set diffopt+=iwhite                   " Ignore whitespace changes
@@ -316,8 +294,6 @@ set formatoptions+=1                  " Break before 1-letter words
 " Vim 7.4 only: no // comment when joining commented lines
 if v:version >= 704 | set formatoptions+=j | endif
 
-set nrformats-=octal                  " never use octal when <C-x> or <C-a>
-
 " ----------------------------------------------------------------------------
 " Whitespace
 " ----------------------------------------------------------------------------
@@ -329,12 +305,17 @@ set nojoinspaces                      " J command doesn't add extra space
 " Indenting - overridden by indent plugins
 " ----------------------------------------------------------------------------
 
-set autoindent                        " indent when creating newline
-
-" for autoindent, use same spaces/tabs mix as previous line, even if
+" For autoindent, use same spaces/tabs mix as previous line, even if
 " tabs/spaces are mixed. Helps for docblock, where the block comments have a
 " space after the indent to align asterisks
-set copyindent
+"
+" The test case what happens when using o/O and >> and << on these:
+"
+"     /**
+"      *
+"
+" Refer also to formatoptions+=o (copy comment indent to newline)
+set nocopyindent
 
 " Try not to change the indent structure on "<<" and ">>" commands. I.e. keep
 " block comments aligned with space if there is a space there.
@@ -342,6 +323,7 @@ set nopreserveindent
 
 " Smart detect when in braces and parens. Has annoying side effect that it
 " won't indent lines beginning with '#'. Relying on syntax indentexpr instead.
+" 'smartindent' in general is a piece of garbage, never turn it on.
 set nosmartindent
 
 " Global setting. I don't edit C-style code all the time so don't default to
@@ -383,30 +365,15 @@ set hlsearch
 set incsearch
 set wrapscan                          " Searches wrap around end of the file.
 set ignorecase
+" Follow smartcase and ignorecase when doing tag search
+if exists('+tagcase') && has('patch-7.4.2230') | set tagcase=followscs | endif
 set smartcase
 
-if executable('rg')
-  set grepprg=rg\ --vimgrep
-  set grepformat=%f:%l:%c:%m
-elseif executable('ag')
-  set grepprg=ag\ --vimgrep\ --nocolor
-  set grepformat=%f:%l:%c:%m,%f:%l:%m
-elseif executable('ack')
-  set grepprg=ack\ --nogroup\ --nocolor\ --smart-case\ --column
-  set grepformat=%f:%l:%c:%m,%f:%l:%m
+if !empty(dkogrepper#Get().command)
+  let &g:grepprg = dkogrepper#Get().command . ' '
+        \ . join(dkogrepper#Get().options, ' ')
+  let &g:grepformat = dkogrepper#Get().format
 endif
-
-" ----------------------------------------------------------------------------
-" Special highlights
-" ----------------------------------------------------------------------------
-
-" misspellings
-match ErrorMsg 'targett'
-match ErrorMsg 'plugn'
-
-" Highlight VCS conflict markers
-" @see {@link https://bitbucket.org/sjl/dotfiles/src/83aac563abc9d0116894ac61db2c63c9a05f72be/vim/vimrc?at=default&fileviewer=file-view-default#vimrc-233}
-match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 " ----------------------------------------------------------------------------
 " Syntax
@@ -421,9 +388,10 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 " vim-markdown plugin (which is bundled with vim7.4 now)
 " There are more syntaxes, but checking for them makes editing md very slow
 let g:markdown_fenced_languages = [
-      \ 'html',
-      \ 'javascript', 'js=javascript', 'json=javascript',
-      \ 'sass',
+      \   'python',
+      \   'json',
+      \   'bash=sh', 'sh',
+      \   'help',
       \ ]
 
 " ----------------------------------------
@@ -473,9 +441,17 @@ augroup END
 let g:loaded_2html_plugin = 1
 let g:loaded_getscriptPlugin = 1
 let g:loaded_gzip = 1
+let g:loaded_man = 1
 let g:loaded_LogiPat = 1
 let g:loaded_tarPlugin = 1
+let g:loaded_tutor_mode_plugin = 1
 let g:loaded_zipPlugin = 1
+
+" % matching replaced by vim-matchup, which sets the following
+"let g:loaded_matchit = 1
+" Upstream matchparen -- it is inaccurate. Replaced by vim-matchup
+let g:loaded_matchparen = 1
+
 " used to download spellfile and enable gx mapping
 "let g:loaded_netrwPlugin = 0
 
@@ -492,15 +468,23 @@ let g:netrw_browsex_viewer = has('mac') ? 'open' : 'xdg-open'
 " Plugins: load - called when vim-plug available
 " ----------------------------------------------------------------------------
 
+" Similar but safer than Cond() from
+" <https://github.com/junegunn/vim-plug/wiki/faq>
+" This is a global function for command access
 function! PlugIf(condition, ...) abort
   let l:enabled = a:condition ? {} : { 'on': [], 'for': [] }
   return a:0 ? extend(l:enabled, a:000[0]) : l:enabled
 endfunction
 
+" Shortcut
+function! WithCompl(...) abort
+  return call('PlugIf', [ g:dko_use_completion ] + a:000)
+endfunction
+
 function! s:LoadPlugins()
   " Notes on adding plugins:
   " - Absolutely do not use 'for' if the plugin provides an `ftdetect/`
-  
+
   " ==========================================================================
   " Vim debugging
   " ==========================================================================
@@ -521,54 +505,49 @@ function! s:LoadPlugins()
   " ==========================================================================
 
   " determine inline embedded filetypes
-  Plug 'Shougo/context_filetype.vim'
-
-  " ========================================================================
-  " Plug: File system, ctags
-  " ========================================================================
-
-  " creates dir if new file in new dir
-  Plug 'dockyard/vim-easydir'
-
-  " manages tag files
-  " Plug 'ludovicchabant/vim-gutentags'
+  Plug 'Shougo/context_filetype.vim', { 'commit': '2876816' }
 
   " ========================================================================
   " Plug: Commands
   " ========================================================================
 
-  " Disabled on regular vim since it needs a terminal
-  if has('nvim')
-    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-    Plug 'junegunn/fzf.vim'
-  endif
-
-  " Perform git operations within a Vim session
-  Plug 'lambdalisue/gina.vim', { 'on': ['Gina'] }
-
-  " gK to lookup documentation
-  Plug 'keith/investigate.vim'
-
   Plug 'Shougo/unite.vim'
-        \| Plug 'Shougo/vimfiler.vim'
-        \| Plug 'Shougo/unite-outline'
-        \| Plug 'tsukkee/unite-tag'
+      \| Plug 'Shougo/vimfiler.vim'
+      \| Plug 'Shougo/unite-outline'
+      \| Plug 'tsukkee/unite-tag'
 
-  " unite most-recently-used files menu
-  if executable('redis-server') && executable('npm')
-    Plug 'chemzqm/redismru.vim', { 'do': 'npm install' }
-  else
-    Plug 'Shougo/neomru.vim'
-  endif
+  " --------------------------------------------------------------------------
+  " FZF
+  " --------------------------------------------------------------------------
 
-  " Indent guides
-  Plug 'nathanaelkane/vim-indent-guides', {
-        \   'on': [
-        \     '<Plug>IndentGuidesToggle',
-        \     'IndentGuidesToggle',
-        \     'IndentGuidesEnable',
-        \   ]
-        \ }
+  " Use the repo instead of the version in brew since it includes the help
+  " docs for fzf#run()
+  Plug 'junegunn/fzf', PlugIf(g:dko_use_fzf)
+
+  let g:fzf_command_prefix = 'FZF'
+  let g:fzf_layout = extend({ 'down': '~40%' }, {})
+  let g:fzf_buffers_jump = 1
+  Plug 'junegunn/fzf.vim', PlugIf(g:dko_use_fzf)
+
+  " --------------------------------------------------------------------------
+  " NeoMake
+  " --------------------------------------------------------------------------
+
+  let g:neoformat_enabled_json = [ 'dkoprettier', 'jq' ]
+  let g:neoformat_enabled_java = [ 'uncrustify' ]
+  let g:neoformat_enabled_javascript = [ 'eslint_d', 'standard' ]
+  let g:neoformat_enabled_less = [ 'dkoprettier' ]
+  let g:neoformat_enabled_lua = [ 'luafmt', 'luaformatter', 'stylua' ]
+  let g:neoformat_enabled_markdown = []
+  let g:neoformat_enabled_python = [ 'black', 'isort' ]
+  let g:neoformat_enabled_scss = [ 'dkoprettier' ]
+  Plug 'sbdchd/neoformat'
+  augroup dkoneoformat
+    autocmd! FileType
+        \ javascript,javascriptreact,typescript,typescriptreact
+        \ nmap <silent> <A-e> :<C-u>Neoformat eslint_d<CR>
+    autocmd BufWritePre *.ts* Neoformat eslint_d
+  augroup END
 
   " Add file manip commands like Remove, Move, Rename, SudoWrite
   Plug 'tpope/vim-eunuch'
@@ -581,19 +560,64 @@ function! s:LoadPlugins()
   " Plug: Input, syntax, spacing
   " ========================================================================
 
-  " highlight matching html tag
-  Plug 'gregsexton/MatchTag'
+  " highlight matching html/xml tag
+  "Plug 'gregsexton/MatchTag'
+  let g:matchup_delim_noskips = 2
+  let g:matchup_matchparen_deferred = 1
+  let g:matchup_matchparen_status_offscreen = 0
+  Plug 'andymass/vim-matchup', PlugIf(has('patch-7.4.1689'))
 
-  " highlight lines corresponding to quickfix entries
-  Plug 'jceb/vim-hier', { 'on': ['HierStart'] }
-
-  " add gS to smart split lines like comma lists and html tags
+  " add gS on char to smart split lines at char, like comma lists and html tags
+  let g:splitjoin_trailing_comma = 0
+  let g:splitjoin_ruby_trailing_comma = 1
+  let g:splitjoin_ruby_hanging_args = 1
   Plug 'AndrewRadev/splitjoin.vim'
 
-  Plug 'neomake/neomake'
+  Plug 'neomake/neomake', PlugIf(has('patch-7.4.503'))
 
-  " get the name for the function where your cussor is located
-  Plug 'tyru/current-func-info.vim'
+  " ========================================================================
+  " Plug: Editing keys
+  " ========================================================================
+
+  " align regions of text that match a pattern , eg: `:Tab /=A`
+  Plug 'godlygeek/tabular', { 'on': ['Tabularize'] }
+
+  " custom C-x C-a mappings, see plugin/plug-increment-activator.vim
+  Plug 'nishigori/increment-activator'
+
+  " used for line bubbling commands on mac
+  " buffer switch, lnext/prev, etc.
+  Plug 'tpope/vim-unimpaired'
+
+  " easyclip requires repeat, REMAPS all register keys (y,d,s,c,etc.)
+  " and use 'm' instead
+  Plug 'tpope/vim-repeat'
+        \| Plug 'svermeulen/vim-easyclip'
+
+  " --------------------------------------------------------------------------
+  " Operators and Textobjs
+  " --------------------------------------------------------------------------
+
+  " gcc to comment the current line
+  Plug 'tyru/caw.vim', { 'on': [ '<Plug>(caw' ] }
+
+  " REMAPS 's' to surround operator
+  Plug 'kana/vim-operator-user'
+  Plug 'rhysd/vim-operator-surround'
+  " <Leader>c to toggle PascalCase/snak_e the pending operator
+  Plug 'tyru/operator-camelize.vim', { 'on': [ '<Plug>(operator-camelize' ] }
+
+  " Some textobjs are lazy loaded since they are ~4ms slow to load.
+  " -       Base textobj plugin
+  Plug 'kana/vim-textobj-user'
+  " - i     for indent level
+  Plug 'kana/vim-textobj-indent', { 'on': [ '<Plug>(textobj-indent' ] }
+  " - P     for last paste
+  Plug 'gilligan/textobj-lastpaste', { 'on': [ '<Plug>(textobj-lastpaste' ] }
+  " - u     for url
+  Plug 'mattn/vim-textobj-url', { 'on': [ '<Plug>(textobj-url' ] }
+  " - b     for any block type (parens, braces, quotes, ltgt)
+  Plug 'rhysd/vim-textobj-anyblock'
 
   " ========================================================================
   " Plug: Completion
@@ -619,9 +643,11 @@ function! s:LoadPlugins()
   " Completion engine
   " --------------------------------------------------------------------------
 
+  " https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions
   let g:coc_global_extensions = [
         \  'coc-calc',
         \  'coc-css',
+        \  'coc-cssmodules',
         \  'coc-diagnostic',
         \  'coc-docthis',
         \  'coc-eslint',
@@ -631,8 +657,8 @@ function! s:LoadPlugins()
         \  'coc-markdownlint',
         \  'coc-prettier',
         \  'coc-pyright',
+        \  'coc-sh',
         \  'coc-snippets',
-        \  'coc-tsserver',
         \  'coc-yaml',
         \]
   " Not working
@@ -643,50 +669,21 @@ function! s:LoadPlugins()
   Plug 'neoclide/coc.nvim', WithCompl({ 'branch': 'release' })
 
   " ========================================================================
-  " Plug: Editing keys
-  " ========================================================================
-
-  " align regions of text that match a pattern , eg: `:Tab /=A`
-  Plug 'godlygeek/tabular', { 'on': ['Tabularize'] }
-
-  " custom C-x C-a mappings, see plugin/plug-increment-activator.vim
-  Plug 'nishigori/increment-activator'
-
-  " gcc to comment the current line
-  Plug 'tyru/caw.vim', { 'on': [ '<Plug>(caw' ] }
-
-  " easyclip requires repeat, REMAPS all register keys (y,d,s,c,etc.)
-  " and use 'm' instead
-  Plug 'tpope/vim-repeat'
-        \| Plug 'svermeulen/vim-easyclip'
-
-  " used for line bubbling commands on mac
-  " buffer switch, lnext/prev, etc.
-  Plug 'tpope/vim-unimpaired'
-
-  " REMAPS 's' to surround operator
-  Plug 'kana/vim-operator-user'
-        \| Plug 'rhysd/vim-operator-surround'
-        \| Plug 'tyru/operator-camelize.vim'
-
-  " Some textobjs are lazy loaded since they are ~4ms slow to load.
-  " -       Base textobj plugin
-  Plug 'kana/vim-textobj-user'
-  " - i     for indent level
-  Plug 'kana/vim-textobj-indent', { 'on': [ '<Plug>(textobj-indent' ] }
-  " - P     for last paste
-  Plug 'gilligan/textobj-lastpaste', { 'on': [ '<Plug>(textobj-lastpaste' ] }
-  " - u     for url
-  Plug 'mattn/vim-textobj-url', { 'on': [ '<Plug>(textobj-url' ] }
-  " - b     for any block type (parens, braces, quotes, ltgt)
-  Plug 'rhysd/vim-textobj-anyblock'
-
-  " ========================================================================
   " Plug: Language
   " ========================================================================
 
   " special end syntax for various langs
   Plug 'tpope/vim-endwise'
+
+  " sets the value of ‘commentstring’ to a different value depending on the
+  " region of the file you are in.
+  Plug 'suy/vim-context-commentstring'
+
+  " ==========================================================================
+  " Language: ansible config
+  " ==========================================================================
+
+  Plug 'pearofducks/ansible-vim'
 
   " ========================================================================
   " Language: bash/shell/zsh
@@ -706,6 +703,8 @@ function! s:LoadPlugins()
   Plug 'tpope/vim-git'
 
   " show diff in own split when editing a COMMIT_EDITMSG
+  let g:committia_open_only_vim_starting = 0
+  let g:committia_use_singlecolumn       = 'always'
   Plug 'rhysd/committia.vim'
 
   " ========================================================================
@@ -713,31 +712,19 @@ function! s:LoadPlugins()
   " ========================================================================
 
   Plug 'othree/html5.vim'
-  Plug 'briancollins/vim-jst'
-
-  "Plug 'tpope/vim-haml'
-
-  " Creates html.handlebars and other fts and sets syn
-  Plug 'mustache/vim-mustache-handlebars'
-
-  " ========================================================================
-  " Language: Java
-  " ========================================================================
-
-    Plug 'artur-shaik/vim-javacomplete2'
 
   " ========================================================================
   " Language: JavaScript and derivatives, JSON
   " ========================================================================
 
-    Plug 'elzr/vim-json'
-    Plug 'maksimr/vim-jsbeautify'
+  Plug 'elzr/vim-json'
+  Plug 'maksimr/vim-jsbeautify'
 
   " provides coffee ft
   " Plug 'kchmck/vim-coffee-script'
 
   " TypeScript
-  "Plug 'leafgarland/typescript-vim'
+  " Plug 'leafgarland/typescript-vim'
 
   " ----------------------------------------
   " Syntax
@@ -755,7 +742,7 @@ function! s:LoadPlugins()
   " <leader>pd on function to insert jsdoc above
   Plug 'heavenshell/vim-jsdoc'
 
-    " ========================================================================
+  " ========================================================================
   " Language: Latex
   " ========================================================================
 
@@ -767,16 +754,21 @@ function! s:LoadPlugins()
 
   " Override vim included markdown ft* and syntax
   " The git repo has a newer syntax file than the one that ships with vim
-  "Plug 'tpope/vim-markdown'
+  " I'm using jumpy.vim for [[ and ]]
+  let g:no_markdown_maps = 1
+  Plug 'tpope/vim-markdown'
+
+  " after/syntax for GitHub emoji, checkboxes
+  Plug 'rhysd/vim-gfm-syntax'
 
   " Live preview
-  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+  Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npx --yes yarn install' }
 
   " Enable pandoc filetype options and vim operators/fns
-  Plug 'vim-pandoc/vim-pandoc'
+  Plug 'vim-pandoc/vim-pandoc', PlugIf(v:version >= 704)
 
   " Use pandoc for markdown syntax
-  Plug 'vim-pandoc/vim-pandoc-syntax'
+  " Plug 'vim-pandoc/vim-pandoc-syntax'
 
   " Distraction-free writing
   Plug 'junegunn/goyo.vim', { 'on': ['Goyo'] }
@@ -791,12 +783,9 @@ function! s:LoadPlugins()
   " Language: Python
   " ========================================================================
 
-  Plug 'kh3phr3n/python-syntax', { 'for': 'python' }
-  Plug 'psf/black', { 'for': 'python' }
-  Plug 'fisadev/vim-isort', { 'for': 'python' }
+  Plug 'vim-python/python-syntax'
   Plug 'heavenshell/vim-pydocstring', { 'for': 'python' }
   Plug 'raimon49/requirements.txt.vim'
-  Plug 'cespare/vim-toml'
   Plug 'lambdalisue/vim-pyenv', { 'for': 'python' }
 
   " ========================================================================
@@ -844,6 +833,12 @@ function! s:LoadPlugins()
   " Omnicompletion
   Plug 'othree/csscomplete.vim'
 
+  " ==========================================================================
+  " Language: TOML
+  " ==========================================================================
+
+  Plug 'cespare/vim-toml'
+
   " ========================================================================
   " Language: .tmux.conf
   " ========================================================================
@@ -866,101 +861,87 @@ function! s:LoadPlugins()
   " ========================================================================
   " Plug: UI -- load last!
   " ========================================================================
+ 
+  Plug 'nathanaelkane/vim-indent-guides'
+  Plug 'majutsushi/tagbar'
 
   " --------------------------------------------------------------------------
   " Quickfix window
   " --------------------------------------------------------------------------
 
+  let g:qf_resize_min_height = 4
   Plug 'blueyed/vim-qf_resize'
 
-  Plug 'romainl/vim-qf'
+  " --------------------------------------------------------------------------
+  " Window events
+  " --------------------------------------------------------------------------
 
-  " :GitGutterToggle (bound to C-g)
-  Plug 'airblade/vim-gitgutter', { 'on': ['GitGutterToggle'] }
+  " <C-w>o to zoom in/out of a window
+  "Plug 'dhruvasagar/vim-zoom'
+  " Better zoom plugin, accounts for command window and doesn't use sessions
+  Plug 'troydm/zoomwintab.vim'
 
-  " <Plug> to not move on * search function
-  Plug 'haya14busa/vim-asterisk'
+  Plug 'wellle/visual-split.vim', { 'on': [
+        \   'VSResize', 'VSSplit',
+        \   'VSSplitAbove', 'VSSplitBelow',
+        \   '<Plug>(Visual-Split',
+        \ ] }
 
-  " Disabled on neovim until 0.2
-  " Will be replaced by https://github.com/neovim/neovim/pull/5226
-  " @see https://github.com/haya14busa/incsearch.vim/issues/79
-  " @see https://github.com/neovim/neovim/issues/3688
-  " highlight partial matches as you type in search mode
-  if !has('nvim') | Plug 'haya14busa/incsearch.vim'
-  endif
-
-  Plug 'majutsushi/tagbar'
-
-  " show registers in split if use \" or <C-R>
-  "Plug 'junegunn/vim-peekaboo'
-
-  " Show (#/total results) when searching for a term
-  " known echo issue if remapping [[ and ]], but I removed that map
-  " @see https://github.com/osyo-manga/vim-anzu/issues/19
-  " Plug 'osyo-manga/vim-anzu'
-
-  Plug 'moll/vim-bbye'
-
-  Plug 'tmux-plugins/vim-tmux-focus-events'
 endfunction
 
 " ----------------------------------------------------------------------------
 " Plugins: autoinstall vim-plug, define plugins, install plugins if needed
 " ----------------------------------------------------------------------------
 
-let s:use_plugins = 1
-let s:plug_dir = '/vendor/'
-let s:plug_dir .= has('nvim') ? 'nvim' : 'vim'
-let s:dko_plug_absdir = g:dko#vim_dir . s:plug_dir
-
-let g:plug_window = 'tabnew'
-
-" Shortcut
-function! WithCompl(...) abort
-  return call('PlugIf', [ g:dko_use_completion ] + a:000)
-endfunction
-
-if s:use_plugins
+if g:dko_autoinstall_vim_plug
+  let s:has_plug = !empty(glob(expand(g:dko#vim_dir . '/autoload/plug.vim')))
   " Load vim-plug and its plugins?
-  if empty(glob(expand(g:dko#vim_dir . '/autoload/plug.vim')))
-    execute 'silent !curl -fLo '
-          \ . g:dko#vim_dir . '/autoload/plug.vim '
-          \ . 'https://raw.githubusercontent.com/'
-          \ . 'junegunn/vim-plug/master/plug.vim'
+  if !s:has_plug && executable('curl')
+    call dkoplug#install#Install()
+    let s:has_plug = 1
   endif
 
-  call plug#begin(s:dko_plug_absdir)
-    call s:LoadPlugins()
-    if !isdirectory(expand(s:dko_plug_absdir)) | PlugInstall
-    endif
-  call plug#end()
+  if s:has_plug
+    augroup dkoplugupdates
+      autocmd User dko-plugins-installed,dko-plugins-updated
+            \   if exists(':UpdateRemotePlugins')
+            \|    silent! UpdateRemotePlugins
+            \|  endif
+    augroup END
+
+    command! PI PlugInstall | doautocmd User dko-plugins-installed
+    command! PU PlugUpgrade | PlugUpdate | doautocmd User dko-plugins-updated
+
+    let g:plug_window = 'tabnew'
+    call plug#begin(g:dko#plug_absdir)
+    if empty($VIMNOPLUGS) | call s:LoadPlugins() | endif
+    call plug#end()
+  endif
 endif
 
 " ============================================================================
 " Autocommands
 " ============================================================================
 
-" Window aucmds -- affect layout
 augroup dkowindow
-  autocmd!
+   autocmd!
+   autocmd VimResized * wincmd =
 
-  " Resize all windows when the window is resized
-  autocmd VimResized
-        \ *
-        \ wincmd =
+   " automatically close corresponding loclist when quitting a window
+   if exists('##QuitPre')
+     autocmd QuitPre * nested if &filetype != 'qf' | silent! lclose | endif
+   endif
 augroup END
 
-" Tabline
-augroup dkotabline
+augroup dkolines
   autocmd!
-
-  autocmd vimrc VimEnter
-        \ *
-        \ set tabline=%!dkotabline#Output()
-
-  autocmd BufWinEnter,Colorscheme,CursorMoved,Filetype,SessionLoadPost,WinEnter
-        \ *
-        \ call dkotabline#Refresh()
+  if dkoplug#IsLoaded('coc.nvim')
+    autocmd User CocNvimInit ++nested call dkoline#Init()
+  elseif has('nvim')
+    autocmd VimEnter * ++nested call dkoline#Init()
+  else
+    autocmd VimEnter * nested call dkoline#Init()
+  endif
 augroup END
 
 " Statusline
@@ -977,6 +958,46 @@ augroup dkostatusline
   autocmd BufWinEnter,Colorscheme,Filetype,SessionLoadPost
         \ *
         \ call dkostatus#Refresh()
+augroup END
+
+augroup dkoproject
+  autocmd!
+  autocmd BufNewFile,BufRead,BufWritePost * call dkoproject#MarkBuffer()
+  autocmd User CocNvimInit call dkolint#SetupCoc()
+  autocmd User neomake call dkolint#Setup()
+augroup END
+
+" Read only mode (un)mappings
+augroup dkoreadonly
+  autocmd!
+  autocmd BufEnter * call dkoreadonly#Unmap()
+augroup END
+
+" Disable linting and syntax highlighting for large and minified files
+augroup dkohugefile
+  autocmd BufReadPre *
+        \   if getfsize(expand("%")) > 10000000
+        \|    syntax off
+        \|    let b:dko_hugefile = 1
+        \|  endif
+  autocmd BufReadPre *.min.* syntax off
+augroup END
+
+" Automatically assign file marks for filetype when switch buffer so you can
+" easily go between e.g., css/html using `C `H
+" https://old.reddit.com/r/vim/comments/df4jac/how_do_you_use_marks/f317a1l/
+augroup dkoautomark
+  autocmd!
+  autocmd BufLeave *.css,*.less,*.scss  normal! mC
+  autocmd BufLeave *.html               normal! mH
+  autocmd BufLeave *.js*,*.ts*          normal! mJ
+  autocmd BufLeave *.md                 normal! mM
+  autocmd BufLeave *.yml,*.yaml         normal! mY
+augroup END
+
+augroup dkorestoreposition
+  autocmd!
+  autocmd BufWinEnter * call dko#RestorePosition()
 augroup END
 
 " ============================================================================

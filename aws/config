@@ -1,0 +1,3 @@
+[default]
+region = eu-central-1
+output = json

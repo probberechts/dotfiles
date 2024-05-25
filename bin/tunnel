@@ -12,5 +12,3 @@ SSH_HOST="$2"
 SSH_PORT="$3"
 
 ssh -N -f -L "$SSH_PORT":localhost:"$PORT" "$SSH_HOST"
-
-# vi:syntax=sh

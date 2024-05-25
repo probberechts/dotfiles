@@ -1,4 +1,3 @@
-scriptencoding utf-8
 " autoload/dko.vim
 "
 " vimrc and debugging helper funtions
@@ -16,6 +15,9 @@ let g:loaded_dko = 1
 " ============================================================================
 
 let g:dko#vim_dir = fnamemodify(resolve(expand('$MYVIMRC')), ':p:h')
+
+let g:dko#plug_dir = '/vendor/'
+let g:dko#plug_absdir = expand('$XDG_DATA_HOME') . '/vim' . g:dko#plug_dir
 
 " ============================================================================
 " General VimL utility functions
@@ -188,75 +190,96 @@ function! dko#IsPlugged(name) abort
   return l:is_plugged
 endfunction
 
-" ============================================================================
-" Neomake helpers
-" ============================================================================
-
-" @param  {String} name of maker
-" @param  {String} [a:1] ft of the maker, defaults to current buffers filetype
-" @return {Boolean} true when the maker exe exists or was registered as a local
-"         maker (so local exe exists)
-function! dko#IsMakerExecutable(name, ...) abort
-  if !exists('*neomake#GetMaker')
-    return 0
-  endif
-
-  let l:ft = get(a:, 1, &filetype)
-  if empty(l:ft)
-    return 0
-  endif
-
-  let l:maker = neomake#GetMaker(a:name, l:ft)
-  return !empty(l:maker) && executable(l:maker.exe)
-endfunction
-
-" ============================================================================
-" Search helpers
-" ============================================================================
-
-" Get vim-asterisk, vim-anzu, and incsearch.vim to play nicely
-"
-" @param  {String} op
-" @return {String} <expr>
-function! dko#Search(op) abort
-  let l:long_op = a:op ==# '*' ? 'star' : 'sharp'
-
-  let l:ops = ''
-
-  " Highlight matches?
-  if dko#IsPlugged('incsearch.vim')
-    " no CursorMoved event if using vim-asterisk
-    let l:ops .= dko#IsPlugged('vim-asterisk')
-          \ ? "\<Plug>(incsearch-nohl0)"
-          \ : "\<Plug>(incsearch-nohl)"
-  endif
-
-  " Move or don't move?
-  let l:ops .= dko#IsPlugged('vim-asterisk')
-        \ ? "\<Plug>(asterisk-z" . a:op . ')'
-        \ : ''
-
-  " Show count of matches
-  if dko#IsPlugged('vim-anzu')
-    let l:ops .= dko#IsPlugged('vim-asterisk')
-          \ ? "\<Plug>(anzu-update-search-status)"
-          \ : "\<Plug>(anzu-" . l:long_op . ')'
-  endif
-
-  return l:ops
-endfunction
 
 " ============================================================================
 " Filepath helpers
 " ============================================================================
 
+" Hide CWD in a path (make relative to CWD)
+"
 " @param {String[]} pathlist to shorten and validate
+" @param {String} base to prepend to paths
 " @return {String[]} filtered pathlist
-function! dko#ShortPaths(pathlist) abort
-  return map(
-        \   filter(a:pathlist, 'filereadable(expand(v:val))'),
-        \   "fnamemodify(v:val, ':~:.')"
-        \ )
+function! dko#ShortPaths(pathlist, ...) abort
+  let l:pathlist = a:pathlist
+
+  " Prepend base path
+  if isdirectory(get(a:, 1, ''))
+    call map(l:pathlist, "a:1 . '/' . v:val")
+  endif
+
+  " Shorten
+  return map(l:pathlist, "fnamemodify(v:val, ':.')" )
+endfunction
+
+" Return shortened path
+"
+" @param {String} path
+" @param {Int} max
+" @return {String}
+function! dko#HomePath(path, ...) abort
+  let l:max = get(a:, 1, 0)
+  let l:full = fnamemodify(a:path, ':~:.')
+  return l:max && len(l:full) > l:max
+        \ ? ''
+        \ : (len(l:full) == 0 ? '~' : l:full)
+endfunction
+
+" ============================================================================
+" Filetype
+" ============================================================================
+
+function! dko#IsShebangBash() abort
+  return getline(1) =~# '^#!.*bash'
+endfunction
+
+" ============================================================================
+" Buffer info
+" ============================================================================
+
+" @param {Int|String} bufnr or {expr} as in bufname()
+" @return {Boolean}
+function! dko#IsHelp(bufnr) abort
+  return getbufvar(a:bufnr, '&buftype') ==# 'help'
+endfunction
+
+let s:nonfilebuftypes = join([
+      \ 'help',
+      \ 'nofile',
+      \ 'quickfix',
+      \ 'terminal',
+      \], '|')
+
+let s:nonfilefiletypes = join([
+      \ 'git$',
+      \ 'netrw',
+      \ 'vim-plug'
+      \], '|')
+
+" @param {Int|String} bufnr or {expr} as in bufname()
+" @return {Boolean}
+function! dko#IsNonFile(bufnr) abort
+  let l:ft = getbufvar(a:bufnr, '&filetype')
+  let l:bt = getbufvar(a:bufnr, '&buftype')
+  return l:bt =~# '\v(' . s:nonfilebuftypes . ')'
+        \ || l:ft =~# '\v(' . s:nonfilefiletypes . ')'
+endfunction
+
+" @param {Int|String} bufnr or {expr} as in bufname()
+" @return {Boolean}
+function! dko#IsEditable(bufnr) abort
+  return getbufvar(a:bufnr, '&modifiable')
+        \ && !getbufvar(a:bufnr, '&readonly')
+        \ && !dko#IsNonFile(a:bufnr)
+endfunction
+
+" Usually to see if there's a linter/syntax
+"
+" @param {Int|String} bufnr
+" @return {Boolean}
+function! dko#IsTypedFile(...) abort
+  let l:bufnr = get(a:, 1, '%')
+  return !empty(getbufvar(l:bufnr, '&filetype')) && !dko#IsNonFile(l:bufnr)
 endfunction
 
 " ============================================================================
@@ -293,6 +316,35 @@ function! dko#GetFunctionInfo() abort
         \   'source': 'viml',
         \ }
 
+endfunction
+
+" ============================================================================
+" Restore Position
+" From vim help docs on last-position-jump
+" ============================================================================
+
+" http://stackoverflow.com/questions/6496778/vim-run-autocmd-on-all-filetypes-except
+let s:excluded_ft = [
+      \   'gitbranchdescription',
+      \   'gitcommit',
+      \   'gitrebase',
+      \   'hgcommit',
+      \   'svn',
+      \ ]
+function! dko#RestorePosition() abort
+  if !dko#IsNonFile('%') || (
+        \   index(s:excluded_ft, &filetype) < 0
+        \   && line("'\"") > 1 && line("'\"") <= line('$')
+        \)
+
+    " Last check for file exists
+    " https://github.com/farmergreg/vim-lastplace/blob/48ba343c8c1ca3039224727096aae214f51327d1/plugin/vim-lastplace.vim#L38
+    try
+      if empty(glob(@%)) | return | endif
+    catch | return
+    endtry
+    silent! normal! g`"
+  endif
 endfunction
 
 " ============================================================================
@@ -335,25 +387,43 @@ function! dko#WordProcessorMode() abort
 endfunction
 
 " ============================================================================
-" Override default `foldtext()`, which produces something like:
-"
-"   +---  2 lines: source $HOME/.vim/pack/bundle/opt/vim-pathogen/autoload/pathogen.vim--------------------------------
-"
-" Instead returning:
-"
-"   »··[2ℓ]··: source $HOME/.vim/pack/bundle/opt/vim-pathogen/autoload/pathogen.vim···································
-"
-" Shamelessly stolen from Wincent
-"
+" Whitespace settings
 " ============================================================================
 
-let s:middot='·'
-let s:raquo='»'
-let s:small_l='ℓ'
+function! dko#TwoSpace() abort
+  setlocal expandtab shiftwidth=2 softtabstop=2
+endfunction
 
-function! dko#foldtext() abort
-  let l:lines='[' . (v:foldend - v:foldstart + 1) . s:small_l . ']'
-  let l:first=substitute(getline(v:foldstart), '\v *', '', '')
-  let l:dashes=substitute(v:folddashes, '-', s:middot, 'g')
-  return s:raquo . s:middot . s:middot . l:lines . l:dashes . ': ' . l:first
+function! dko#FourSpace() abort
+  setlocal expandtab shiftwidth=4 softtabstop=4
+endfunction
+
+function! dko#TwoTabs() abort
+  setlocal noexpandtab shiftwidth=2 softtabstop=2
+endfunction
+
+function! dko#FourTabs() abort
+  setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=0
+endfunction
+
+function! dko#PrettierSpace() abort
+  let l:rc_candidate = dkoproject#GetPrettierrc()
+  if empty(l:rc_candidate)
+    return v:false
+  endif
+
+  let l:rc_file = dkoproject#GetFile(l:rc_candidate)
+  try
+    let l:contents = json_decode(readfile(l:rc_file))
+    if l:contents['tabWidth'] == 4
+      call dko#FourSpace()
+      return v:true
+    elseif l:contents['tabWidth'] == 2
+      call dko#TwoSpace()
+      return v:true
+    endif
+  catch
+  endtry
+
+  return v:false
 endfunction
