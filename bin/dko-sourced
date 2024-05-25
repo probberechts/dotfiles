@@ -1,33 +1,35 @@
 #!/usr/bin/env node
 
 /*eslint-env es6*/
-'use strict';
+"use strict";
 
 // Recursive array flatten
-const flatten = arr => arr.reduce(
-  (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []
-);
+const flatten = (arr) =>
+  arr.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), []);
 
 // parse DKO_SOURCE into array like [ 'a', '{', 'b', '}', 'c' ]
 const sources = flatten(
-  process.env['DKO_SOURCE']
-    .split('->')
+  process.env["DKO_SOURCE"]
+    .split("->")
     .slice(1)
-    .map((s) => s.split(' '))
+    .map((s) => s.split(" ")),
 ).filter((n) => n.length);
 
 // output and store bracket balance
 // exits non-zero if brackets not balanced
-process.exit(sources.reduce((indent, node) => {
-  // opening node
-  if (node === '{') {
-    return indent += 1;
-  }
+process.exit(
+  sources.reduce((indent, node) => {
+    // opening node
+    if (node === "{") {
+      return (indent += 1);
+    }
 
-  if (node === '}') {
-    return indent -= 1;
-  }
+    if (node === "}") {
+      return (indent -= 1);
+    }
 
-  process.stdout.write(`  ${'  '.repeat(indent)}- ${node}\n`);
-  return indent;
-}, 0))
+    process.stdout.write(`  ${"  ".repeat(indent)}- ${node}\n`);
+    return indent;
+  }, 0),
+);
+
