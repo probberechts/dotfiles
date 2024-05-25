@@ -1,0 +1,201 @@
+#!/bin/bash
+# gebruikt sinequanon
+#/usr/local/cfengine2/bin/cs_i_am_used cs-sshfsdisconnect 2015080315
+
+function usage {
+	echo "
+Usage: $0 [ -n|--dryrun ] [ -v|--verbose ] { -l|--list | -a|--all | [ directory-to-unmount ] }
+
+-a|--all:	unmount all mounted sshfs file systems
+-l|--list:	list all mounted sshfs file systems
+-n|--dryrun:	show but do not actually unmount (has no effect with list)
+-v|--verbose:	show what is happening
+
+when neither list nor all are specified:
+
+	if a directory is given, unmount it
+	or else lookup which sshfs file systems are mounted
+	and if there is only 1, ask whether to unmount it.
+"
+}
+
+dryrun=''
+verbose=''
+
+while [ -n "$1" ]
+do
+    case "$1" in
+
+    -a|--all)
+	"$0" --list | while read l
+		do
+			# op bionic komen sommige sshfs gemonteerde directories
+			# meer dan 1 keer voor in de uitvoer van mount
+			# vermoedelijk omwille van ecryptfs
+			# na de eerste unmount, is de tweede voorkomen uiteraard
+			# ook weg en kan dan uiteraard niet meer geunmount worden
+			# daarom deze controle of het nog wel degelijk bestaat met -d
+			[ -d "$l" ] && "$0" $dryrun $verbose "$l"
+		done
+	exit 0
+	;;
+
+    -h|--help)
+	usage
+	exit 0
+	;;
+
+    -l|--list)
+	[ -n "$verbose" ] && echo "# VERBOSE: looking for macfuse file systems" >&2
+  mount | grep macfuse | if [ -n "$verbose" ]; then grep . || echo "# VERBOSE: none found" >&2 ; else sed -e 's/ (macfuse, .*)//' -e 's/.* on //' ; fi
+	exit 0
+	;;
+
+    -n|--dryrun)
+	dryrun="$1"
+	shift
+	;;
+
+    -v|--verbose)
+	verbose="$1"
+	shift
+	;;
+
+    *)
+	break
+	;;
+
+    esac
+done
+
+dir="$1"
+
+if [ -z "$dir" ]
+then
+
+	sshfs=`"$0" --list`
+	nsshfs=`echo "$sshfs" | wc -l | bc`
+	[ -z "$sshfs" ] && nsshfs=0
+	case "$nsshfs" in
+	0)
+		echo "You don't seem to have any sshfs file systems mounted ... aborting"
+		exit 2
+		;;
+	1)
+		# OK: exactly one sshfs file system mounted
+		dir="$sshfs"
+		echo "
+No sshfs file system specified on command line, but exactly one mounted:
+
+$dir
+
+Press Enter to unmount it or Ctrl-C to abort."
+		read a
+		;;
+	*)
+		echo "
+You seem to have more than one sshfs file systems mounted ... aborting
+
+$sshfs
+
+Please specify the one you want to unmount as an argument.
+"
+		exit 3
+		;;
+	esac
+
+elif [ ! -d "$dir" ]
+then
+	echo "No such directory: $dir"
+	usage
+	exit 1
+fi
+
+# remove trailing / if present
+case "$dir" in
+*/)
+	dir=`echo "$dir" | sed 's,/*$,,'`
+	;;
+esac
+
+function traverse {
+
+	if [ -z "$2" ]
+	then
+		echo "$1"
+		return
+	else
+		if [ -L "$2" ]
+		then
+			d=`readlink "$2"`
+			if ! cd "$d"
+			then
+				echo "Oops, cannot traverse into $1/$2 -> $d - aborting" >&2
+				exit 6
+			fi
+		else
+			d="$2"
+			if ! cd "$d"
+			then
+				echo "Oops, cannot traverse into $1/$2 - aborting" >&2
+				exit 7
+			fi
+		fi
+		shift
+		shift
+		d=`pwd`
+		traverse "$d" "$@"
+	fi
+}
+
+function canonify {
+
+	parts=`echo "$1" | sed 's,/, ,g'`
+	cd /
+	traverse / $parts
+
+}
+
+function verify {
+
+    sshfs=`mount | grep "$dir (macfuse"`
+    nsshfs=`echo "$sshfs" | wc -l | bc`
+    [ -z "$sshfs" ] && nsshfs=0
+    case "$nsshfs" in
+    0)
+	canonicaldir=`canonify "$dir"`
+	if [ "$dir" = "$canonicaldir" ]
+	then
+		echo "Cannot find $dir in /proc/mounts ... aborting"
+		exit 4
+	else
+		echo "Cannot find $dir in /proc/mounts"
+		echo "  but found actual location $canonicaldir"
+		echo "Do you want me to use that instead ?"
+		echo "Press Enter to continue or Ctrl-C to interrupt"
+		read answer
+		dir="$canonicaldir"
+		verify "$dir"
+	fi
+	;;
+    1)
+	# OK: exactly one occurrence of $dir in /proc/mounts as sshfs
+	;;
+    *)
+	echo "Cannot uniquely find $dir in /proc/mounts ... aborting"
+	exit 5
+	;;
+    esac
+
+}
+
+verify "$dir"
+
+if [ -n "$dryrun" ]
+then
+	echo "# DRYRUN: Would have unmounted $dir"
+else
+	[ -n "$verbose" ] && echo "# VERBOSE: unmounting $dir" >&2
+	umount "$dir"
+	sleep 1 ; rmdir "$dir" > /dev/null 2>&1
+fi

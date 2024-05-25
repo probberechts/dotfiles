@@ -1,0 +1,176 @@
+#!/bin/bash
+# gebruikt sinequanon
+#/usr/local/cfengine2/bin/cs_i_am_used localbin/cs-sshfsconnect 2015080315
+
+function usage {
+
+	echo "Usage:
+	$0 -h | --help
+	$0 -l | --list
+	$0 -c | --clean | --cleanup
+	$0 [ -o sshfsoption=value ] [ remotehost[:[remotedir]] | remotedir ] [ localdir | label ]"
+
+}
+
+LOCALBASEDIR="$HOME/NoBackUp/SSHFS"
+if [ -L "$LOCALBASEDIR" ]
+then
+	cd "$HOME/NoBackUp"
+	cd "`readlink SSHFS`"
+	LOCALBASEDIR="`pwd`"
+fi
+
+function list {
+
+	echo "
+Mounted file systems:
+====================="
+	mount | grep " on $LOCALBASEDIR/"
+	echo "
+Local mountpoints:
+=================="
+	find "$LOCALBASEDIR/" -maxdepth 1 | grep -v "^$LOCALBASEDIR/\$"
+
+}
+
+function cleanup {
+
+	find "$LOCALBASEDIR/" -maxdepth 1 | grep -v "^$LOCALBASEDIR/*\$" | while read dir
+	do
+		if mount | grep -q " on $dir type fuse.sshfs "
+		then
+			echo "
+$dir is still mounted - skipping it"
+		else
+			echo "
+$dir is not mounted - deleting it with rmdir"
+			rmdir "$dir"
+		fi
+	done | if grep .
+	then # add an extra empty line at the end if there are other lines
+		echo ''
+	else # nothing found and nothing output - show at least some message
+		echo "
+Nothing mounted and no mount points found to clean in $LOCALBASEDIR/
+"
+	fi
+
+}
+
+sshopts=''
+
+while [ -n "$1" ]
+do
+    case "$1" in
+
+    -h|--help)
+	usage
+	exit 1
+	;;
+
+    -a|--all)
+	echo "
+I think you are mistakenly using an option of cs-sshfsdisconnect: $1
+I (cs-sshfsconnect) do not know what to do with it.
+I therefore cowardly exit now.
+I am sorry for any inconvenience.
+"
+	usage
+	exit 1
+	;;
+
+    -l|--list)
+	list
+	exit 0
+	;;
+
+    -c|--clean|--cleanup)
+	cleanup
+	exit 0
+	;;
+
+    -o)
+	# the -o option expects a value
+	# we currently do not check to see if one is there
+	sshopts="$sshopts $1 $2"
+	# shift the -o, the value arg will be shifted below
+	shift
+	;;
+
+    *)
+	break
+	;;
+
+    esac
+    shift
+done
+
+case "$1" in
+
+'')
+	REMOTEHOSTANDDIR="ssh.cs.kuleuven.be:"
+	[ -z "$2" ] && LOCALDIR="$LOCALBASEDIR/$USER"
+	;;
+
+*:*)
+	REMOTEHOSTANDDIR="$1"
+	[ -z "$2" ] && LOCALDIR="$LOCALBASEDIR/"`basename "$1"`
+	;;
+
+*/*)
+	REMOTEHOSTANDDIR="ssh.cs.kuleuven.be:$1"
+	[ -z "$2" ] && LOCALDIR="$LOCALBASEDIR/"`basename "$1"`
+	;;
+
+*)
+	REMOTEHOSTANDDIR="$1":
+	[ -z "$2" ] && LOCALDIR="$LOCALBASEDIR/$1"
+	;;
+
+esac
+
+if [ -n "$2" ]
+then
+
+    case "$2" in
+
+    */*)
+	LOCALDIR="$2"
+	;;
+
+    *)
+	LOCALDIR="$LOCALBASEDIR/$2"
+	;;
+
+    esac
+
+fi
+
+# controleer of LOCALDIR bestaat en leeg is
+if [ -d "$LOCALDIR" ]
+then
+	empty=`find "$LOCALDIR" | head -2 | wc -l | bc`
+	if [ "$empty" != 1 ]
+	then
+		# found more than the directory itself => not empty
+		echo "Aborting because the directory to mount on seems not to be empty: $LOCALDIR"
+		exit 2
+	fi
+else
+	mkdir -p "$LOCALDIR"
+fi
+
+if [ ! -d "$LOCALDIR" ]
+then
+	echo "Aborting because there are problems with the directory to mount on: $LOCALDIR"
+	exit 3
+fi
+
+# controleer of LOCALDIR niet al gemonteerd is
+if mount | grep -q "$LOCALDIR"
+then
+	echo "Aborting because the directory to mount on seems to be mounted already: $LOCALDIR"
+	exit 3
+fi
+
+sshfs -o idmap=user -o reconnect -o local -o volname=`basename $LOCALDIR` $sshopts "$REMOTEHOSTANDDIR" "$LOCALDIR"
