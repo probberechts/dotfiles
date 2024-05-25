@@ -111,10 +111,10 @@ __dko_status "Restart your terminal"
 # sdks
 # ============================================================================
 
-open -Ra 'Xcode' || {
-  __dko_err "Missing Xcode, install from App Store"
-  exit 1
-}
+# open -Ra 'Xcode' || {
+#   __dko_err "Missing Xcode, install from App Store"
+#   exit 1
+# }
 
 __dko_require 'xcrun' || {
   __dko_err "Missing Xcode Command Line Tools, install via Xcode"
@@ -153,5 +153,5 @@ _bootstrap_sdks() {
     __dko_ok "Found SDK headers"
   fi
 }
-__dko_status "Re-bootstrapping SDKs (required to install python on 10.14+)"
-_bootstrap_sdks || exit 1
+# __dko_status "Re-bootstrapping SDKs (required to install python on 10.14+)"
+# _bootstrap_sdks || exit 1
