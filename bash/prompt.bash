@@ -1,7 +1,7 @@
 #
 # Clean and minimalistic Bash prompt
 # Author: Artem Sapegin, sapegin.me
-# 
+#
 # Inspired by: https://github.com/sindresorhus/pure & https://github.com/dreadatour/dotfiles/blob/master/.bash_profile
 #
 # Notes:
@@ -9,11 +9,10 @@
 # - Colors ($RED, $GREEN) - defined in ../tilde/bash_profile.bash
 #
 
-
 # User color
 case $(id -u) in
-  0) user_color="$RED" ;;  # root
-  *) user_color="$GREEN" ;;
+0) user_color="$RED" ;; # root
+*) user_color="$GREEN" ;;
 esac
 
 # Symbols
@@ -72,7 +71,7 @@ function prompt_command() {
   # Text (commands) inside \[...\] does not impact line length calculation which fixes stange bug when looking through the history
   # $? is a status of last command, should be processed every time prompt prints
   second_line="\`if [ \$? = 0 ]; then echo \[\$CYAN\]; else echo \[\$RED\]; fi\`\$prompt_symbol\[\$NOCOLOR\] "
-  PS2="\n$first_line\n$second_line"
+  PS1="\n$first_line\n$second_line"
 
   # Multiline command
   PS2="\[$CYAN\]$prompt_symbol\[$NOCOLOR\] "
@@ -80,7 +79,8 @@ function prompt_command() {
   # Terminal title
   local title="$(basename "$PWD")"
   [ -n "$remote" ] && title="$title \xE2\x80\x94 $HOSTNAME"
-  echo -ne "\033]0;$title"; echo -ne "\007"
+  echo -ne "\033]0;$title"
+  echo -ne "\007"
 }
 
 # Show awesome prompt only if Git is istalled

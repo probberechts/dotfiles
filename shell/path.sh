@@ -1,8 +1,14 @@
 # shell/path.sh
 #
-# Sourced in bash and zsh by loader
-# pyenv, chruby, chphp, nvm pathing is done in shell/after
+# Sourced in dot.profile on login shells
 #
+# Rebuild path starting from system path
+# Regarding tmux:
+# Since my tmux shells are not login shells the path needs to be rebuilt.
+#
+# shell/vars.sh on the other hand just get inherited.
+# XDG is set up in init.sh, which should already have been sourced
+# envs, chphp pathing is done in zshrc, zinit, or shell/after
 
 export DKO_SOURCE="${DKO_SOURCE} -> shell/path.sh"
 
@@ -11,58 +17,41 @@ export DKO_SOURCE="${DKO_SOURCE} -> shell/path.sh"
 # ==============================================================================
 
 # Probably created via /etc/profile and /etc/profile.d/*
-#
 # On macOS/OS X/BSD path_helper is run in /etc/profile, which generates paths
 # using /etc/paths and /etc/paths.d/* and defines the initial $PATH
-# Something like "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin"
-#
 # On arch, via /etc/profile, default path is:
 # /usr/local/sbin:/usr/local/bin:/usr/bin
-if [ -n "$DKO_SYSTEM_PATH" ]; then
-  export DKO_SYSTEM_PATH="${PATH}:${DKO_SYSTEM_PATH}"
-else
-  export DKO_SYSTEM_PATH="${PATH}"
-fi
+export DKO_SYSTEM_PATH="${DKO_SYSTEM_PATH:-$PATH}"
 
-# _add_my_paths
-#
-dko::add_paths() {
-  # Begin my_path composition --------------------------------------------------
-  # On BSD system, e.g. Darwin -- path_helper is called, reads /etc/paths
-  # Move local bin to front for homebrew compatibility
-  #if [ -x /usr/libexec/path_helper ]; then
-  my_path="$DKO_SYSTEM_PATH"
+# ============================================================================
+# Begin composition
+# ============================================================================
 
-  # enforce local bin and sbin order
-  my_path="/usr/local/bin:/usr/local/sbin:${DKO_SYSTEM_PATH}"
+# On BSD system, e.g. Darwin -- path_helper is called, reads /etc/paths
+# Move local bin to front for homebrew compatibility
+#if [ -x /usr/libexec/path_helper ]; then
+PATH="$DKO_SYSTEM_PATH"
 
-  # local ----------------------------------------------------------------------
+# ----------------------------------------------------------------------------
+# Package managers
+# ----------------------------------------------------------------------------
 
-  my_path="${DOTFILES}/bin:${my_path}"
+# composer; COMPOSER_HOME is in shell/vars.sh
+PATH="${COMPOSER_HOME}/vendor/bin:${PATH}"
 
-  [ ! -d "${HOME}/.local/bin" ] && mkdir -p "${HOME}/.local/bin"
-  my_path="${HOME}/.local/bin:${my_path}"
+# luarocks per-user rock tree (may be overridden by os-*.sh config)
+PATH="${HOME}/.luarocks/bin:${PATH}"
 
-  echo "${my_path}"
-}
+# go -- prefer go binaries over composer; GOPATH is in shell/vars.sh
+PATH="${GOPATH}/bin:${PATH}"
 
-PATH="$(dko::add_paths)"
+# ============================================================================
+# Local path -- everything after the path setting this may use "command" to
+# check for presence
+# ============================================================================
 
-
-# ==============================================================================
-# Anyenv
-# ==============================================================================
-
-export ANYENV_ROOT="${HOME}/.anyenv"
-export PATH="${ANYENV_ROOT}/bin:${PATH}"
-[ -d "${ANYENV_ROOT}" ] && eval "$(anyenv init --no-rehash - $SHELL)"
-
-# ==============================================================================
-# direnv
-# ==============================================================================
-
-[ -x "$(command -v direnv)" ] && eval "$(direnv hook $SHELL)"
-
-export PATH
+# pipx uses this one by default
+PATH="${HOME}/.local/bin:${PATH}"
+PATH="${DOTFILES}/bin:${DOTFILES}/local/bin:${PATH}"
 
 # vim: ft=sh :

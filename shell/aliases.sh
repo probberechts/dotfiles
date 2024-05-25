@@ -9,7 +9,7 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ~="cd ~"
 alias -- -="cd -"
-alias dirs="dirs -v"                  # default to vert, use -l for list
+alias dirs="dirs -v" # default to vert, use -l for list
 alias tree="tree -C"
 
 # cat
@@ -24,7 +24,6 @@ alias mvim="open -a MacVim"
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ipconfig getifaddr en1"
 
 # Empty the Trash on all mounted volumes and the main HDD
 # Also, clear Apple’s System Logs to improve shell startup speed
@@ -49,7 +48,7 @@ alias countTex="clear;texcount -total -q -col -sum *.tex"
 alias grep="grep --color=auto"
 alias ag="ag --hidden --smart-case --one-device --path-to-ignore \"\${DOTFILES}/ag/dot.ignore\""
 alias today="date +%d-%m-%Y"
-alias catn="cat -n"    # Concatenate and print content of files (add line numbers)
+alias catn="cat -n" # Concatenate and print content of files (add line numbers)
 
 # python
 alias pea="pyenv activate"
@@ -64,13 +63,16 @@ alias root="sudo -s"
 alias se="sudo -e"
 
 # editor
-alias e="nvim"
-alias ehosts="se /etc/hosts"
-alias etmux="e \"\${DOTFILES}/tmux/tmux.conf\""
-alias evr="e \"\${VIM_DOTFILES}/vimrc\""
-alias eze="e \"\${ZDOTDIR}/.zshenv\""
-alias ezp="e \"\${ZDOTDIR}/zplug.zsh\""
-alias ezr="e \"\${ZDOTDIR}/.zshrc\""
+alias ehosts='se /etc/hosts'
+alias essh='e "${HOME}/.ssh/config"'
+alias etmux='e "${DOTFILES}/tmux/tmux.conf"'
+alias evi='e "${VDOTDIR}/init.lua"'
+alias evl='e "${VDOTDIR}/lua/dko/plugins"'
+alias eze='e "${ZDOTDIR}/dot.zshenv"'
+alias ezi='e "${ZDOTDIR}/zinit.zsh"'
+alias ezl='e "${LDOTDIR}/zshrc"'
+alias ezr='e "${ZDOTDIR}/.zshrc"'
+alias ke="pkill -f 'nvim.sock'"
 
 # direnv
 alias tmux='direnv exec / tmux'
@@ -79,7 +81,7 @@ alias tmux='direnv exec / tmux'
 
 __alias_ls() {
   local almost_all="-A" # switchted from --almost-all for old bash support
-  local classify="-F" # switched from --classify for old bash support
+  local classify="-F"   # switched from --classify for old bash support
   local colorized="--color=auto"
   local groupdirs="--group-directories-first"
   local literal=""
@@ -142,7 +144,7 @@ __alias_darwin() {
 # ============================================================================
 
 __alias_linux() {
-  alias open="o"                    # use open() function in shell/functions
+  alias open="o" # use open() function in shell/functions
 }
 
 # ============================================================================
@@ -168,12 +170,13 @@ __alias_deb() {
 
 # os specific
 case "$OSTYPE" in
-  darwin*)  __alias_darwin ;;
-  linux*)   __alias_linux
+  darwin*) __alias_darwin ;;
+  linux*)
+    __alias_linux
     case "$DOTFILES_DISTRO" in
-      busybox)                  ;;
-      archlinux)  __alias_arch   ;;
-      debian)     __alias_deb    ;;
+      busybox) ;;
+      archlinux) __alias_arch ;;
+      debian) __alias_deb ;;
     esac
     ;;
 esac

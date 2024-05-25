@@ -16,12 +16,6 @@ export PYLINTHOME="${XDG_CONFIG_HOME}/pylint"
 export PYLINTRC="${DOTFILES}/python/pylintrc"
 
 # ==============================================================================
-# pyenv for multiple Python binaries
-# ==============================================================================
-
-dko::has "pyenv-virtualenv-init" && eval "$(pyenv virtualenv-init -)"
-
-# ==============================================================================
 # VirtualEnv for python package isolation
 # ==============================================================================
 
@@ -40,7 +34,7 @@ virtualenv_info() {
 # pip
 # ==============================================================================
 
-dko::has "pip" && {
+__dko_has "pip" && {
   if [ -n "$ZSH_VERSION" ]; then
     eval "$(python3 -m pip completion --zsh)"
   elif [ -n "$BASH" ]; then

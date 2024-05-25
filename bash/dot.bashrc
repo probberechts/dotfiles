@@ -1,34 +1,41 @@
-# .bashrc
+# dot.bashrc
+#
+# sourced on interactive/TTY
+# sourced on login shells via .bash_profile
+# symlinked to ~/.bashrc
+#
 
-# ==============================================================================
-# Before
-# ==============================================================================
-
+[[ -n "$TMUX" ]] && DKO_SOURCE="${DKO_SOURCE} -> ____TMUX____ {"
 export DKO_SOURCE="${DKO_SOURCE} -> .bashrc {"
-source "${HOME}/.dotfiles/shell/vars.sh"
-source "${DOTFILES}/shell/before.sh"
 
-# Override HISTFILE for bash
-export HISTFILE="${BASH_DOTFILES}/.bash_history"
+# Non-interactive? Some shells/OS will source bashrc and bash_profile out of
+# order or skip one entirely
+[[ -z "$PS1" ]] && DKO_SOURCE="${DKO_SOURCE} }" && return
 
-# ==============================================================================
-# Main
-# ==============================================================================
+# dot.bashprofile was sourced instead, which sourced dot.bashrc, so we need
+# to define stuff here
+. "${HOME}/.dotfiles/shell/dot.profile"
+
+# ============================================================================
+# BASH settings
+# ============================================================================
+
+export HISTFILE="${HOME}/.local/bash_history"
 
 # ----------------------------------------------------------------------------
 # Options
 # ----------------------------------------------------------------------------
 
 set -o notify
-shopt -s checkwinsize               # update $LINES and $COLUMNS
-shopt -s cmdhist                    # save multi-line commands in one
+shopt -s checkwinsize # update $LINES and $COLUMNS
+shopt -s cmdhist      # save multi-line commands in one
 shopt -s histappend
-shopt -s dotglob                    # expand filenames starting with dots too
+shopt -s dotglob # expand filenames starting with dots too
 shopt -s nocaseglob
 shopt -s extglob
-shopt -s cdspell                    # autocorrect dir names
+shopt -s cdspell # autocorrect dir names
 shopt -s cdable_vars
-shopt -s no_empty_cmd_completion    # don't try to complete empty lines
+shopt -s no_empty_cmd_completion # don't try to complete empty lines
 
 # ----------------------------------------------------------------------------
 # Completions
@@ -36,43 +43,40 @@ shopt -s no_empty_cmd_completion    # don't try to complete empty lines
 
 set completion-ignore-case on
 
-dko::source /etc/bash_completion
-dko::source /usr/share/bash-completion/bash_completion
+. "/etc/bash_completion" 2>/dev/null
+. "/usr/share/bash-completion/bash_completion" 2>/dev/null
 
 # homebrew's bash-completion package sources the rest of bash_completion.d
-dko::source "${BREW_PREFIX}/etc/bash_completion"
+. "${HOMEBREW_PREFIX}/etc/bash_completion" 2>/dev/null
 
-dko::source "${NVM_DIR}/bash_completion"
+. "${NVM_DIR}/bash_completion" 2>/dev/null
 
 # following are from
 # https://github.com/mathiasbynens/dotfiles/blob/master/.bash_profile
 
 # Enable tab completion for `g` by marking it as an alias for `git`
-if type _git &>/dev/null && [ -f /usr/local/etc/bash_completion.d/git-completion.bash ]; then
-  complete -o default -o nospace -F _git g;
-fi
+type _git &>/dev/null &&
+  [[ -f "${HOMEBREW_PREFIX}/etc/bash_completion.d/git-completion.bash" ]] &&
+  complete -o default -o nospace -F _git g
 
 # ==============================================================================
 # Plugins
 # ==============================================================================
 
-dko::source "${HOME}/.fzf.bash"
+. "${XDG_CONFIG_HOME}/fzf/fzf.bash" 2>/dev/null
 
 # ============================================================================
 # Prompt -- needs to be after plugins since it might use them
 # ============================================================================
 
-source "${BASH_DOTFILES}/prompt.bash"
+. "${BDOTDIR}/prompt.bash"
 
 # ==============================================================================
 # After
 # ==============================================================================
 
-source "${DOTFILES}/shell/after.sh"
-dko::source "${DOTFILES}/local/bashrc"
+. "${DOTFILES}/shell/after.sh"
+. "${LDOTDIR}/bashrc" 2>/dev/null
 
-export DKO_SOURCE="${DKO_SOURCE} }"
-
-# vim: syn=sh :
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+DKO_SOURCE="${DKO_SOURCE} }"
+# vim: ft=sh
