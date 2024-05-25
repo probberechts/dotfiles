@@ -385,89 +385,89 @@
 # Safari                                                                      #
 ###############################################################################
 
-- name: sarari | prevent Safari from opening ‘safe’ files automatically after downloading
-  osx_defaults:
-    domain: com.apple.Safari
-    key: AutoOpenSafeDownloads
-    type: bool
-    value: false
+# - name: sarari | prevent Safari from opening ‘safe’ files automatically after downloading
+#   osx_defaults:
+#     domain: com.apple.Safari
+#     key: AutoOpenSafeDownloads
+#     type: bool
+#     value: false
 
-- name: sarari | allow hitting the Backspace key to go to the previous page in history
-  osx_defaults:
-    domain: com.apple.Safari
-    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled
-    type: bool
+#- name: sarari | allow hitting the Backspace key to go to the previous page in history
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled
+#    type: bool
     value: true
 
-- name: safari | enable the Develop menu and the Web Inspector (1/4)
-  osx_defaults:
-    domain: com.apple.Safari
-    key: IncludeDevelopMenu
-    type: bool
-    value: true
+#- name: safari | enable the Develop menu and the Web Inspector (1/4)
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: IncludeDevelopMenu
+#    type: bool
+#    value: true
 
-- name: safari | enable the Develop menu and the Web Inspector (2/4)
-  osx_defaults:
-    domain: com.apple.Safari
-    key: WebKitDeveloperExtrasEnabledPreferenceKey
-    type: bool
-    value: true
+#- name: safari | enable the Develop menu and the Web Inspector (2/4)
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: WebKitDeveloperExtrasEnabledPreferenceKey
+#    type: bool
+#    value: true
 
-- name: safari | enable the Develop menu and the Web Inspector (3/4)
-  osx_defaults:
-    domain: com.apple.Safari
-    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled
-    type: bool
-    value: true
+#- name: safari | enable the Develop menu and the Web Inspector (3/4)
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled
+#    type: bool
+#    value: true
 
-- name: safari | enable the Develop menu and the Web Inspector (4/4)
-  osx_defaults:
-    domain: NSGlobalDomain
-    key: WebKitDeveloperExtras
-    type: bool
-    value: true
+#- name: safari | enable the Develop menu and the Web Inspector (4/4)
+#  osx_defaults:
+#    domain: NSGlobalDomain
+#    key: WebKitDeveloperExtras
+#    type: bool
+#    value: true
 
-- name: safari | enable continuous spellchecking
-  osx_defaults:
-    domain: com.apple.Safari
-    key: WebContinuousSpellCheckingEnabled
-    type: bool
-    value: true
+#- name: safari | enable continuous spellchecking
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: WebContinuousSpellCheckingEnabled
+#    type: bool
+#    value: true
 
-- name: safari | disable auto-correct
-  osx_defaults:
-    domain: com.apple.Safari
-    key: WebAutomaticSpellingCorrectionEnabled
-    type: bool
-    value: false
+#- name: safari | disable auto-correct
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: WebAutomaticSpellingCorrectionEnabled
+#    type: bool
+#    value: false
 
-- name: safari | block pop-up windows (1/2)
-  osx_defaults:
-    domain: com.apple.Safari
-    key: WebKitJavaScriptCanOpenWindowsAutomatically
-    type: bool
-    value: false
+#- name: safari | block pop-up windows (1/2)
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: WebKitJavaScriptCanOpenWindowsAutomatically
+#    type: bool
+#    value: false
 
-- name: safari | block pop-up windows (2/2)
-  osx_defaults:
-    domain: com.apple.Safari
-    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically
-    type: bool
-    value: false
+#- name: safari | block pop-up windows (2/2)
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically
+#    type: bool
+#    value: false
 
-- name: safari | enable “Do Not Track”
-  osx_defaults:
-    domain: com.apple.Safari
-    key: SendDoNotTrackHTTPHeader 
-    type: bool
-    value: true
+#- name: safari | enable “Do Not Track”
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: SendDoNotTrackHTTPHeader 
+#    type: bool
+#    value: true
 
-- name: safari | update extensions automatically
-  osx_defaults:
-    domain: com.apple.Safari
-    key: InstallExtensionUpdatesAutomatically 
-    type: bool
-    value: true
+#- name: safari | update extensions automatically
+#  osx_defaults:
+#    domain: com.apple.Safari
+#    key: InstallExtensionUpdatesAutomatically 
+#    type: bool
+#    value: true
 
 ###############################################################################
 # Mail                                                                        #
