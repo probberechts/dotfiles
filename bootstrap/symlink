@@ -55,7 +55,7 @@ __symlink() {
 
   case "$OSTYPE" in
   *arwin*)
-    dko-symlink "mac/keyboard/hammerspoon" \
+    dko-symlink "mac/hammerspoon" \
       ".hammerspoon"
     ;;
   esac

@@ -162,32 +162,19 @@ install_homebrew() {
   echo 'done'
 }
 
-install_ansible() {
-  command -v 'ansible' > /dev/null 2>&1 && return
-
-  echo 'Installing ansible...'
-  brew install ansible
-  echo 'done'
-}
-
-run_provisioning() {
-  echo 'Provisioning...'
-  $DOTFILES_PATH/provisioning/run.sh ${ARGS[@]}
-  echo 'done'
-}
-
 
 #=== Entrypoint
 #==============================================================================================
-main() {
-  print_header
+
+print_header
+clone_or_update_repo
+if [[ "$OSTYPE" == *'arwin'* ]]; then
   check_os
-  clone_or_update_repo
   check_xcode_license_approved
   fix_permission
   install_homebrew
-  install_ansible
-  run_provisioning
-}
-
-main
+  . $DOTFILES_PATH/bootstrap/mac
+else
+  . $DOTFILES_PATH/bootstrap/symlink
+  . $DOTFILES_PATH/bootstrap/cleanup
+fi
