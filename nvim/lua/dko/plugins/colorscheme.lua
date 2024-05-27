@@ -19,6 +19,10 @@ return {
       require("dko.settings").set("colors.light", "komau")
     end,
     config = function()
+      require("onedark").setup({
+        style = "dark",
+        toggle_style_key = "<leader>ts",
+      })
       vim.cmd.colorscheme("onedark")
       if vim.env.TERM_PROGRAM == "WezTerm" then
         require("dko.colors").wezterm_sync()
