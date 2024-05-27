@@ -510,4 +510,30 @@ return {
       require("dko.mappings").bind_nvim_various_textobjs()
     end,
   },
+
+  -- =========================================================================
+  -- Testing
+  -- =========================================================================
+
+  {
+    "nvim-neotest/neotest",
+    cond = has_ui,
+    dependencies = {
+      "nvim-neotest/nvim-nio",
+      "nvim-lua/plenary.nvim",
+      "antoinemadec/FixCursorHold.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-neotest/neotest-python",
+    },
+    config = function()
+      require("neotest").setup({
+        adapters = {
+          require("neotest-python")({
+            pytest_discover_instances = true,
+          }),
+        },
+      })
+      -- require("dko.mappings").bind_treesj()
+    end,
+  },
 }
