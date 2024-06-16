@@ -1,5 +1,7 @@
 -- Code formatting pipelines
 
+local Methods = vim.lsp.protocol.Methods
+
 ---@param names string[]
 local function notify(names)
   if #names == 0 then
@@ -54,11 +56,7 @@ M.run_pipeline = function(options)
   local names = {}
   options = vim.tbl_deep_extend("force", options or {}, {
     filter = function(client)
-      if
-        not client.supports_method(
-          vim.lsp.protocol.Methods.textDocument_formatting
-        )
-      then
+      if not client.supports_method(Methods.textDocument_formatting) then
         return false
       end
 
@@ -88,6 +86,82 @@ M.run_pipeline = function(options)
   -- https://github.com/neovim/neovim/blob/master/runtime/lua/vim/lsp/buf.lua#L156-L196
   vim.lsp.buf.format(options)
   notify(names)
+end
+
+-- =============================================================================
+-- Autocmd handlers
+-- =============================================================================
+
+-- LspAttach autocmd callback
+M.enable_on_lspattach = function(args)
+  -- already enabled from a previous client
+  if vim.b.enable_format_on_save then
+    return
+  end
+
+  local bufnr = args.buf
+  local clients = vim.lsp.get_clients({
+    id = args.data.client_id,
+    bufnr = bufnr,
+    method = Methods.textDocument_formatting,
+  })
+  if #clients == 0 then -- just to shut up type checking
+    return
+  end
+
+  vim.b.enable_format_on_save = true
+  vim.notify(
+    ("Format on save enabled using %s"):format(clients[1].name),
+    vim.log.levels.INFO,
+    { render = "compact" }
+  )
+end
+
+-- LspDetach autocmd callback
+M.disable_on_lspdetach = function(args)
+  -- was already disabled manually?
+  if not vim.b.enable_format_on_save then
+    return
+  end
+
+  local bufnr = args.buf
+  local detached_client_id = args.data.client_id
+
+  -- @TODO could i just check using { bufnr, and method } here? Or does it still
+  -- include in the client being detached?
+  local capable_clients = vim.lsp.get_clients({
+    bufnr = bufnr,
+    method = Methods.textDocument_formatting,
+  })
+  local still_has_formatter = vim.iter(capable_clients):any(function(client)
+    return client.id ~= detached_client_id
+  end)
+  if still_has_formatter then
+    return
+  end
+
+  vim.b.enable_format_on_save = false
+  vim.notify(
+    "Format on save disabled, no capable clients attached",
+    vim.log.levels.INFO,
+    { render = "compact" }
+  )
+end
+
+-- autocmd callback for *WritePre
+M.format_on_save = function()
+  -- callback gets arg
+  -- {
+  --   buf = 1,
+  --   event = "BufWritePre",
+  --   file = "nvim/lua/dko/behaviors.lua",
+  --   id = 127,
+  --   match = "/home/davidosomething/.dotfiles/nvim/lua/dko/behaviors.lua"
+  -- }
+  if not vim.b.enable_format_on_save then
+    return
+  end
+  M.run_pipeline({ async = false })
 end
 
 return M
