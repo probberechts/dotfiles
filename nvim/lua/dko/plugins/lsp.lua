@@ -30,9 +30,6 @@ return {
     end,
   },
 
-  -- https://github.com/deathbeam/lspecho.nvim
-  { "deathbeam/lspecho.nvim" },
-
   { "aznhe21/actions-preview.nvim" },
 
   -- This has a cursor based code_action instead line based, so you get more
