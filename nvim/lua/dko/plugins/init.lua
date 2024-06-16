@@ -323,7 +323,7 @@ return {
   --         "css",
   --         "html",
   --         "scss",
-  --       }, require("dko.jsts").fts),
+  --       }, require("dko.utils.jsts").fts),
   --       user_default_options = {
   --         css = true,
   --         tailwind = true,
