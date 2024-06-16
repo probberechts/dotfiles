@@ -11,8 +11,8 @@ local signs = {
   severity_sort = true,
 }
 
-local sign_types = { "Error", "Warn", "Info", "Hint" }
-for _, type in ipairs(sign_types) do
+local SIGN_TYPES = { "Error", "Warn", "Info", "Hint" }
+for _, type in ipairs(SIGN_TYPES) do
   local hl = ("DiagnosticSign%s"):format(type)
   local icon = icons[type]
 
@@ -25,7 +25,10 @@ for _, type in ipairs(sign_types) do
   -- vim.diagnostic.config signs
   signs.text[code] = ("%s "):format(icon)
   signs.numhl[code] = hl
-  signs.linehl[code] = hl
+  -- Only colorize entire line for errors
+  if code == vim.diagnostic.severity.ERROR then
+    signs.linehl[code] = hl
+  end
 end
 
 -- ===========================================================================
