@@ -13,22 +13,22 @@ local cmp_dependencies = {
 
   { "roobert/tailwindcss-colorizer-cmp.nvim", config = true },
   "onsails/lspkind.nvim",
-  { 
+  {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     event = "InsertEnter",
     config = function()
       require("copilot").setup({
-	suggestion = { enabled = false },
-	panel = { enabled = false },
+        suggestion = { enabled = false },
+        panel = { enabled = false },
       })
     end,
   },
   {
-      "zbirenbaum/copilot-cmp",
-      config = function()
-          require("copilot_cmp").setup()
-      end,
+    "zbirenbaum/copilot-cmp",
+    config = function()
+      require("copilot_cmp").setup()
+    end,
   },
 }
 
@@ -50,7 +50,7 @@ return {
           { name = "snippy" },
           { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
-	  { name = "copilot" },
+          { name = "copilot" },
         }, { -- group 2 only if nothing in above had results
           { name = "buffer" },
         }),
@@ -59,11 +59,11 @@ return {
 
         window = {
           completion = {
-            border = "rounded",
+            border = require("dko.settings").get("border"),
             scrollbar = "║",
           },
           documentation = {
-            border = "rounded",
+            border = require("dko.settings").get("border"),
             scrollbar = "║",
           },
         },
@@ -95,9 +95,8 @@ return {
 
             kind_formatted.kind = (strings[1] or "")
 
-            local smallcaps_type = require("dko.utils.string").smallcaps(
-              strings[2] or ""
-            )
+            local smallcaps_type =
+              require("dko.utils.string").smallcaps(strings[2] or "")
 
             local tailwind_colorized =
               require("tailwindcss-colorizer-cmp").formatter(entry, vim_item)

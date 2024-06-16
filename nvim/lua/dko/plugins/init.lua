@@ -1,4 +1,4 @@
-local icons = require("dko.icons")
+local dkosettings = require("dko.settings")
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
@@ -100,7 +100,7 @@ return {
           max_win_width = 0.5,
         },
         style = {
-          border = "rounded",
+          border = dkosettings.get("border"),
           hide_buffer_id = true,
           highlights = {
             background = "dkoBgAlt",
@@ -171,7 +171,9 @@ return {
     cond = has_ui,
     config = function()
       require("toggleterm").setup({
-        float_opts = { border = "curved" },
+        float_opts = {
+          border = dkosettings.get("border"),
+        },
         -- built-in mappings only work on LAST USED terminal, so it confuses
         -- the buffer terminal with the floating terminal
         open_mapping = nil,
@@ -201,7 +203,9 @@ return {
     config = function()
       require("gitsigns").setup({
         on_attach = require("dko.mappings").bind_gitsigns,
-        preview_config = { border = "rounded" },
+        preview_config = {
+          border = dkosettings.get("border"),
+        },
       })
     end,
   },
@@ -509,6 +513,14 @@ return {
       require("various-textobjs").setup({ useDefaultKeymaps = false })
       require("dko.mappings").bind_nvim_various_textobjs()
     end,
+  },
+
+  -- adds a 'cut' operation separate from 'delete'
+  {
+    "gbprod/cutlass.nvim",
+    opts = {
+      cut_key = "m",
+    },
   },
 
   -- =========================================================================
