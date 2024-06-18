@@ -30,7 +30,7 @@ pipelines["javascriptreact"] = pipelines["javascript"]
 pipelines["typescript"] = pipelines["javascript"]
 pipelines["typescriptreact"] = pipelines["javascript"]
 pipelines["json"] = function()
-  require("dko.format.efm").format_with("prettier", { pipeline = "json" })
+  require("dko.utils.format.efm").format_with("prettier", { pipeline = "json" })
 end
 pipelines["jsonc"] = pipelines["json"]
 pipelines["lua"] = function()
@@ -44,7 +44,7 @@ pipelines["yaml"] = function()
     return
   end
   require("dko.utils.format.efm").format_with(
-    "yamlfmt", 
+    "yamlfmt",
     { pipeline = "yamlfmt" }
   )
 end
