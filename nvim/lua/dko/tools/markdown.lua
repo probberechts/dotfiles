@@ -14,6 +14,14 @@ tools.register({
   end,
 })
 
+-- code actions for link completion
+tools.register({
+  mason_type = "lsp",
+  name = "marksman",
+  fts = { "markdown" },
+  runner = "mason-lspconfig",
+})
+
 -- needs temp file to handle
 -- tools.register({
 --   mason_type = "tool",
