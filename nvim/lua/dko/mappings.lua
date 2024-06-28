@@ -485,9 +485,12 @@ M.bind_tsserver_lsp = function(client, bufnr)
     buffer = bufnr,
   })
 
+  -- For typescript only (i.e. not JSON files)
   -- use go to def for gf, lazy way of getting it to map import dir/ to
   -- dir/index.ts automatically
-  map("n", "gf", "gd", { remap = true })
+  if vim.startswith(vim.bo.filetype, "t") then
+    map("n", "gf", "gd", { remap = true })
+  end
 end
 
 -- ===========================================================================
@@ -1041,6 +1044,36 @@ M.zoomwintab = {
   "<C-w>o",
   "<C-w><C-o>",
 }
+
+-- ===========================================================================
+-- Plugin: neotest.vim
+-- ===========================================================================
+
+M.bind_neotest = function()
+  local neotest = require("neotest")
+
+  map("n", "<leader>tfr", function()
+    neotest.run.run(vim.fn.expand("%"))
+  end, { desc = "Run test file" })
+
+  map("n", "<leader>tr", function()
+    neotest.run.run()
+    neotest.summary.open()
+  end, { desc = "Run all tests" })
+
+  map("n", "<leader>to", function()
+    neotest.output.open({ last_run = true, enter = true })
+  end, { desc = "Open test output" })
+
+  map("n", "<leader>tt", function()
+    neotest.summary.toggle()
+  end, { desc = "Toggle test summary" })
+
+  map("n", "<leader>tl", function()
+    neotest.run.run_last({ enter = true })
+    neotest.output.open({ last_run = true, enter = true })
+  end, { desc = "Run last test and open output" })
+end
 
 -- ===========================================================================
 
