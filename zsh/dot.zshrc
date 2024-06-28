@@ -68,6 +68,7 @@ fi
 # ============================================================================
 
 compdef g=git
+compdef e=nvim
 
 # ============================================================================
 # Options
@@ -169,20 +170,24 @@ zle -N self-insert url-quote-magic
 # VI mode, and make -M main === -M viins
 bindkey -v
 
+# map jj to Esc
+bindkey -M viins 'jj' vi-cmd-mode
+
 # ----------------------------------------------------------------------------
 # Keybindings - Completion with tab
 # Cancel and reset prompt with ctrl-c
 # ----------------------------------------------------------------------------
 
 # shift-tab to select previous result
-bindkey -M menuselect '^[[Z'  reverse-menu-complete
+bindkey -M menuselect '^[[Z' reverse-menu-complete
 
 # fix prompt (and side-effect of exiting menuselect) on ^C
-bindkey -M menuselect '^C'    reset-prompt
+bindkey -M menuselect '^C' reset-prompt
 
 # ----------------------------------------------------------------------------
 # Keybindings - Movement keys
-# The 1;3 variants are for wezterm and kitty
+# Left and right should jump through words
+# Up and down search history filtered using already entered contents
 # ----------------------------------------------------------------------------
 
 # C-Left
@@ -235,8 +240,8 @@ bindkey -M viins '^?' backward-delete-char
 # ----------------------------------------------------------------------------
 
 # Up/Down search history filtered using already entered contents
-bindkey '^[[A'  history-search-backward
-bindkey '^[[B'  history-search-forward
+bindkey '^[[1;5A'  history-search-backward
+bindkey '^[[1;5B'  history-search-forward
 
 # PgUp/Dn navigate through history like regular up/down
 bindkey '^[[5~' up-history
