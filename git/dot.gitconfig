@@ -92,6 +92,7 @@
 [branch]
   autosetupmerge = always
   autosetuprebase = always
+	sort = -committerdate
 
 [commit]
     template = "~/.dotfiles/git/commit-template"
