@@ -60,6 +60,26 @@ return {
     event = "VeryLazy",
   },
 
+  {
+    "rachartier/tiny-inline-diagnostic.nvim",
+    event = "VeryLazy",
+    config = function()
+      require("tiny-inline-diagnostic").setup({
+        blend = {
+          factor = 0.3,
+        },
+        options = {
+          break_line = {
+            enabled = true,
+            after = 80,
+          },
+          multiple_diag_under_cursor = true,
+        },
+      })
+      dkosettings.set("diagnostics.goto_float", false)
+    end,
+  },
+
   -- =========================================================================
   -- ui: buffer and window manipulation
   -- =========================================================================
@@ -498,13 +518,23 @@ return {
     },
     config = function()
       require("neotest").setup({
+        floating = {
+          border = require("dko.settings").get("border"),
+          max_height = 0.9,
+          max_width = 0.9,
+          options = {},
+        },
+        summary = {
+          open = "botright vsplit | vertical resize 60",
+        },
         adapters = {
           require("neotest-python")({
             pytest_discover_instances = true,
           }),
         },
       })
-      -- require("dko.mappings").bind_treesj()
+
+      require("dko.mappings").bind_neotest()
     end,
   },
 }
