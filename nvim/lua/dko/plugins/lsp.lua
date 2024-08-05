@@ -31,10 +31,15 @@ return {
   },
 
   {
-    "aznhe21/actions-preview.nvim",
+    "rachartier/tiny-code-action.nvim",
     dependencies = {
-      "nvim-telescope/telescope.nvim",
+      { "nvim-lua/plenary.nvim" },
+      { "nvim-telescope/telescope.nvim" },
     },
+    event = "LspAttach",
+    config = function()
+      require("tiny-code-action").setup()
+    end,
   },
 
   -- This has a cursor based code_action instead line based, so you get more
