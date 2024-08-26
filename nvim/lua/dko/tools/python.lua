@@ -1,15 +1,19 @@
 local tools = require("dko.tools")
 
-tools.register({
-  mason_type = "tool",
-  require = "python",
-  name = "black",
-  fts = { "python" },
-  efm = function()
-    return require("efmls-configs.formatters.black")
-  end,
-})
+-- just use ruff, it's >99.99% compatible with black
+-- tools.register({
+--   mason_type = "tool",
+--   require = "python",
+--   name = "black",
+--   fts = { "python" },
+--   efm = function()
+--     return require("efmls-configs.formatters.black")
+--   end,
+-- })
 
+-- ruff can also sort, but does it in two passes,
+-- see https://docs.astral.sh/ruff/formatter/#sorting-imports
+-- use isort for now
 tools.register({
   mason_type = "tool",
   require = "python",
@@ -23,6 +27,7 @@ tools.register({
   end,
 })
 
+-- type checker, go to def
 tools.register({
   mason_type = "lsp",
   require = "python",
@@ -33,8 +38,7 @@ tools.register({
       settings = {
         basedpyright = {
           typeCheckingMode = "standard",
-          -- Using Ruff's import organizer
-          disableOrganizeImports = true,
+          disableOrganizeImports = true, -- prefer ruff or isort
         },
         python = {
           analysis = {
@@ -47,7 +51,7 @@ tools.register({
   end,
 })
 
--- python hover and some diagnostics from jedi
+-- syntax checker, python hover and some diagnostics from jedi
 -- https://github.com/pappasam/jedi-language-server#capabilities
 tools.register({
   mason_type = "lsp",
