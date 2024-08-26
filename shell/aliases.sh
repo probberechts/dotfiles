@@ -16,7 +16,7 @@ alias tree="tree -C"
 alias pyg="pygmentize -O style=rrt -f console256 -g"
 
 # shorter git
-alias g='git'
+# alias g='git'
 
 # Open file in existing MacVim window
 alias gvim="open -a MacVim"
@@ -66,8 +66,6 @@ alias se="sudo -e"
 alias ehosts='se /etc/hosts'
 alias essh='e "${HOME}/.ssh/config"'
 alias etmux='e "${DOTFILES}/tmux/tmux.conf"'
-alias evi='e "${VDOTDIR}/init.lua"'
-alias evl='e "${VDOTDIR}/lua/dko/plugins"'
 alias eze='e "${ZDOTDIR}/dot.zshenv"'
 alias ezi='e "${ZDOTDIR}/zinit.zsh"'
 alias ezl='e "${LDOTDIR}/zshrc"'
