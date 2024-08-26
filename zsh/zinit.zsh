@@ -100,7 +100,7 @@ function {
     'BurntSushi/ripgrep' \
     \
     pick'zoxide/zoxide' \
-    # atload'eval "$(zoxide init --cmd j zsh)"' \
+    atload'eval "$(zoxide init --cmd j zsh)"' \
     'ajeetdsouza/zoxide' \
     ;
 
