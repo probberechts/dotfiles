@@ -77,6 +77,8 @@ function {
     atload"$bat_manpager" \
     '@sharkdp/bat' \
     \
+    atclone'delta/delta --generate-completion zsh > delta/_delta' \
+    atpull'%atclone' \
     mv'delta* -> delta' \
     pick'delta/delta' \
     'dandavison/delta' \
