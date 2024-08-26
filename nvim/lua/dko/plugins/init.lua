@@ -74,6 +74,7 @@ return {
             after = 80,
           },
           multiple_diag_under_cursor = true,
+          show_source = true,
         },
       })
       dkosettings.set("diagnostics.goto_float", false)
