@@ -1,3 +1,6 @@
+local uis = vim.api.nvim_list_uis()
+local has_ui = #uis > 0
+
 return {
 
   -- https://github.com/tadmccorkle/markdown.nvim
@@ -23,5 +26,17 @@ return {
         map("n", "<c-x>", "<Cmd>MDTaskToggle<CR>", opts)
       end,
     },
+  },
+
+  {
+    "lukas-reineke/headlines.nvim",
+    cond = has_ui,
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    ft = "markdown",
+    opts = {
+      markdown = {
+        bullets = {},
+      },
+    }, -- or `opts = {}`
   },
 }
