@@ -26,6 +26,7 @@ require("dko.tools.lua")
 require("dko.tools.markdown")
 require("dko.tools.python")
 require("dko.tools.sh")
+require("dko.tools.text")
 require("dko.tools.vim")
 require("dko.tools.yaml")
 
