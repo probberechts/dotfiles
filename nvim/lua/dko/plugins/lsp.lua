@@ -93,16 +93,16 @@ return {
   -- https://github.com/pmizio/typescript-tools.nvim
   {
     "pmizio/typescript-tools.nvim",
-    cond = has_ui and vim.tbl_contains(dkotools.get_mason_lsps(), "tsserver"), -- I'm using vtsls now instead,
+    cond = has_ui and vim.tbl_contains(dkotools.get_mason_lsps(), "ts_ls"), -- I'm using vtsls now instead,
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     config = function()
-      local tsserver_config = require("dko.utils.typescript").tsserver.config
+      local ts_ls_config = require("dko.utils.typescript").ts_ls.config
 
       require("typescript-tools").setup({
-        on_attach = tsserver_config.on_attach,
-        handlers = tsserver_config.handlers,
+        on_attach = ts_ls.on_attach,
+        handlers = ts_ls.handlers,
         settings = {
-          tsserver_file_preferences = {
+          ts_ls_file_preferences = {
             -- https://github.com/microsoft/TypeScript/blob/v5.0.4/src/server/protocol.ts#L3487C1-L3488C1
             importModuleSpecifierPreference = "non-relative", -- "project-relative",
           },
@@ -150,7 +150,7 @@ return {
       -- @TODO move these somewhere else
       "b0o/schemastore.nvim", -- wait for schemastore for jsonls
       "davidosomething/format-ts-errors.nvim", -- extracted ts error formatter
-      "marilari88/twoslash-queries.nvim", -- tsserver comment with  ^? comment
+      "marilari88/twoslash-queries.nvim", -- ts_ls comment with  ^? comment
     },
     config = function()
       local lspconfig = require("lspconfig")
