@@ -107,6 +107,9 @@
   ignorecase = false
   excludesfile = "~/.dotfiles/git/dot.gitignore"
 
+[init]
+	defaultBranch = main
+
 [push]
   default = simple
 
