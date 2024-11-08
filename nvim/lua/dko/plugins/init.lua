@@ -115,7 +115,7 @@ return {
     "ghillb/cybu.nvim",
     cond = has_ui,
     dependencies = {
-      "nvim-tree/nvim-web-devicons",
+      "nvim-tree/nvim-web-devicons", -- should resolve to mini.icons
       "nvim-lua/plenary.nvim",
     },
     keys = vim.tbl_values(require("dko.mappings").cybu),
