@@ -3,6 +3,19 @@ local dkosettings = require("dko.settings")
 
 local map = vim.keymap.set
 
+--- wrap handler with buffer assertions
+local function emap(modes, keys, handler, opts)
+  map(modes, keys, function()
+    if vim.bo.buftype == "nofile" then
+      return ""
+    end
+    if type(handler) == "function" then
+      return handler()
+    end
+    return handler
+  end, opts)
+end
+
 local M = {}
 
 map("n", "<Esc><Esc>", function()
@@ -466,7 +479,7 @@ M.bind_on_lspattach = function(args)
 end
 
 -- @TODO
-M.unbind_on_lspdetach = function(_args)
+M.unbind_on_lspdetach = function()
   -- local bufnr = args.buf
   -- local clients = vim.lsp.get_clients({ bufnr = bufnr })
   -- if #clients == 0 then -- Last LSP attached
@@ -476,7 +489,10 @@ M.unbind_on_lspdetach = function(_args)
 end
 
 -- on_attach binding for ts_ls
-M.bind_ts_ls_lsp = function(_client, bufnr)
+-- ---@param client table
+---@param bufnr integer
+---@diagnostic disable-next-line: unused-local
+M.bind_ts_ls_lsp = function(client, bufnr)
   -- Use TypeScript's Go To Source Definition so we don't end up in the
   -- type declaration files.
   map("n", "gd", function()
@@ -791,7 +807,7 @@ M.bind_telescope = function()
   local t = require("telescope")
   local tb = require("telescope.builtin")
 
-  map("n", "<A-e>", function()
+  emap("n", "<A-e>", function()
     if t.extensions.file_browser then
       t.extensions.file_browser.file_browser({
         hidden = true, -- show hidden
@@ -799,18 +815,18 @@ M.bind_telescope = function()
     end
   end, { desc = "Telescope: pick existing buffer" })
 
-  map("n", "<A-b>", function()
+  emap("n", "<A-b>", function()
     tb.buffers({ layout_strategy = "vertical" })
   end, { desc = "Telescope: pick existing buffer" })
 
-  map("n", "<A-c>", function()
+  emap("n", "<A-c>", function()
     tb.find_files({
       hidden = true,
       layout_strategy = "vertical",
     })
   end, { desc = "Telescope: files in cwd" })
 
-  map("n", "<A-f>", function()
+  emap("n", "<A-f>", function()
     -- https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes#falling-back-to-find_files-if-git_files-cant-find-a-git-directory
     local res =
       vim.system({ "git", "rev-parse", "--is-inside-work-tree" }):wait()
@@ -827,15 +843,15 @@ M.bind_telescope = function()
     end
   end, { desc = "Telescope: files in git work files or CWD" })
 
-  map("n", "<A-g>", function()
+  emap("n", "<A-g>", function()
     tb.live_grep({ layout_strategy = "vertical" })
   end, { desc = "Telescope: live grep CWD" })
 
-  map("n", "<A-m>", function()
+  emap("n", "<A-m>", function()
     tb.oldfiles({ layout_strategy = "vertical" })
   end, { desc = "Telescope: pick from previously opened files" })
 
-  map("n", "<A-p>", function()
+  emap("n", "<A-p>", function()
     tb.find_files({
       hidden = true,
       layout_strategy = "vertical",
@@ -846,15 +862,15 @@ M.bind_telescope = function()
     desc = "Telescope: pick from previously opened files in current project root",
   })
 
-  map("n", "<A-r>", function()
+  emap("n", "<A-r>", function()
     tb.resume()
   end, { desc = "Telescope: re-open last picker" })
 
-  map("n", "<A-s>", function()
+  emap("n", "<A-s>", function()
     tb.git_status({ layout_strategy = "vertical" })
   end, { desc = "Telescope: pick from git status files" })
 
-  map("n", "<A-t>", function()
+  emap("n", "<A-t>", function()
     tb.find_files({
       layout_strategy = "vertical",
       prompt_title = "Find tests",
@@ -867,7 +883,7 @@ M.bind_telescope = function()
     })
   end, { desc = "Telescope: pick files in CWD" })
 
-  map("n", "<A-v>", function()
+  emap("n", "<A-v>", function()
     tb.find_files({
       layout_strategy = "vertical",
       prompt_title = "Find in neovim configs",
@@ -876,7 +892,7 @@ M.bind_telescope = function()
     })
   end, { desc = "Telescope: nvim/ files" })
 
-  map("n", "<A-y>", function()
+  emap("n", "<A-y>", function()
     if not t.extensions.yank_history then
       t.load_extension("yank_history")
     end
