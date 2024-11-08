@@ -16,6 +16,7 @@ local HIGHLIGHTING_DISABLED = {
   -- see https://github.com/nvim-treesitter/nvim-treesitter#supported-languages
   --"javascript", -- and jsx
   --"tsx",
+  "latex",
 }
 
 return {
