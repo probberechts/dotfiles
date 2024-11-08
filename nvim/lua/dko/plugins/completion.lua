@@ -37,23 +37,6 @@ local cmp_dependencies = {
   --- init creates the symbol_map, but also modifies
   --- vim.lsp.protocol.CompletionItemKind :(
   -- "onsails/lspkind.nvim",
-  {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
-    config = function()
-      require("copilot").setup({
-        suggestion = { enabled = false },
-        panel = { enabled = false },
-      })
-    end,
-  },
-  {
-    "zbirenbaum/copilot-cmp",
-    config = function()
-      require("copilot_cmp").setup()
-    end,
-  },
 }
 
 return {
@@ -74,7 +57,6 @@ return {
           { name = "snippy" },
           { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
-          { name = "copilot" },
         }, { -- group 2 only if nothing in above had results
           { name = "buffer" },
         }),
