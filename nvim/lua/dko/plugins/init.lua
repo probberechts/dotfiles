@@ -35,12 +35,14 @@ return {
     "echasnovski/mini.icons",
     lazy = true,
     cond = has_ui,
-    opts = {},
     init = function()
       package.preload["nvim-web-devicons"] = function()
         require("mini.icons").mock_nvim_web_devicons()
         return package.loaded["nvim-web-devicons"]
       end
+    end,
+    config = function()
+      require("mini.icons").setup()
     end,
   },
 
@@ -115,7 +117,7 @@ return {
     "ghillb/cybu.nvim",
     cond = has_ui,
     dependencies = {
-      "nvim-tree/nvim-web-devicons", -- should resolve to mini.icons
+      "echasnovski/mini.icons",
       "nvim-lua/plenary.nvim",
     },
     keys = vim.tbl_values(require("dko.mappings").cybu),
