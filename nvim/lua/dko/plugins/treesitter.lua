@@ -19,6 +19,8 @@ local HIGHLIGHTING_DISABLED = {
   "latex",
 }
 
+local ENSURE_INSTALLED = { "html", "json", "lua", "markdown", "yaml" }
+
 return {
   -- https://github.com/nvim-treesitter/nvim-treesitter/
   {
@@ -35,6 +37,7 @@ return {
       require("nvim-treesitter.configs").setup({
         -- https://github.com/nvim-treesitter/nvim-treesitter/issues/3579#issuecomment-1278662119
         auto_install = has_ui,
+        ensure_installed = has_ui and ENSURE_INSTALLED or {},
         sync_install = not has_ui,
 
         -- Built-in modules configured here
@@ -55,6 +58,7 @@ return {
         },
 
         indent = { enable = true },
+        matchup = { enable = true },
       })
 
       -- Aliases

@@ -1020,7 +1020,7 @@ end
 
 M.twvalues = "<leader>tw"
 M.bind_twvalues = function()
-  map("n", "<leader>tw", "<Cmd>TWValues<CR>", {
+  map("n", M.twvalues, "<Cmd>TWValues<CR>", {
     desc = "Show tailwind CSS values",
   })
 end
