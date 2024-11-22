@@ -206,6 +206,6 @@ return {
     require("dko.heirline.lsp"),
     require("dko.heirline.formatters"),
     require("dko.heirline.diagnostics"),
-    require("dko.heirline.dko-heirline-package-info"),
+    -- require("dko.heirline.dko-heirline-package-info"),
   },
 }
