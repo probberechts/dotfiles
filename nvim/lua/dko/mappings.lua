@@ -650,7 +650,13 @@ end
 ---@return table used in cmp.setup({})
 M.setup_cmp = function()
   local snippy_ok, snippy = pcall(require, "snippy")
-  local cmp = require("cmp")
+  if not snippy_ok then
+    return
+  end
+  local cmp_ok, cmp = pcall(require, "cmp")
+  if not cmp_ok then
+    return
+  end
 
   map("n", "<C-Space>", function()
     vim.cmd.startinsert({ bang = true })
