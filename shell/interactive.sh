@@ -24,6 +24,7 @@ esac
 # asdf is loaded from omzp using zinit
 . "${DOTFILES}/shell/python.sh"
 . "${DOTFILES}/shell/haskell.sh"
+. "${DOTFILES}/shell/rust.sh"
 
 # source aliases late so command -v (as in __dko_has) doesn't detect them
 

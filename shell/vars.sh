@@ -168,5 +168,9 @@ export INPUTRC="${DOTFILES}/shell/dot.inputrc"
 # for shellcheck
 export SHELLCHECK_OPTS="--exclude=SC1090,SC2148"
 
+# yarn cache
+# https://github.com/yarnpkg/yarn/issues/3208
+export YARN_CACHE_FOLDER="${XDG_CACHE_HOME}/yarn"
+
 export DKO_SOURCE="${DKO_SOURCE} }"
 # vim: ft=sh :
