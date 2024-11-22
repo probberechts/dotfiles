@@ -27,9 +27,13 @@ local nhc_ok, nhc
 local cmp_dependencies = {
   { "dcampos/cmp-snippy", dependencies = { "dcampos/nvim-snippy" } },
 
-  "hrsh7th/cmp-buffer",
-  "hrsh7th/cmp-cmdline",
-  "hrsh7th/cmp-nvim-lsp",
+  -- "hrsh7th/cmp-nvim-lsp",
+  { "iguanacucumber/mag-nvim-lsp", name = "cmp-nvim-lsp", opts = {} },
+  -- { "iguanacucumber/mag-nvim-lua", name = "cmp-nvim-lua" },
+  -- "hrsh7th/cmp-buffer",
+  { "iguanacucumber/mag-buffer", name = "cmp-buffer" },
+  -- "hrsh7th/cmp-cmdline",
+  { "iguanacucumber/mag-cmdline", name = "cmp-cmdline" },
   "hrsh7th/cmp-nvim-lsp-signature-help",
   "hrsh7th/cmp-path",
 
@@ -57,6 +61,7 @@ return {
           { name = "snippy" },
           { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
+          { name = "copilot" },
         }, { -- group 2 only if nothing in above had results
           { name = "buffer" },
         }),
