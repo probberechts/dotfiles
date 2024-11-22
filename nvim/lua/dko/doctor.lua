@@ -34,6 +34,7 @@ M.get_all = function()
     { plain = true }
   )
 end
+
 M.get_errors = function()
   return vim.split(
     vim.inpsect({ errors = require("dko.doctor").errors }),
@@ -41,6 +42,7 @@ M.get_errors = function()
     { plain = true }
   )
 end
+
 M.get_warnings = function()
   return vim.split(
     vim.inspect({ warnings = require("dko.doctor").warnings }),
@@ -48,16 +50,21 @@ M.get_warnings = function()
     { plain = true }
   )
 end
+
 ---@type integer
 local floatwin = -1
+
 M.show_float = function()
   local LISTED = false
   local SCRATCH = true
   local buf = vim.api.nvim_create_buf(LISTED, SCRATCH)
+  vim.api.nvim_set_option_value("filetype", "lua", { buf = buf })
+
   local START = 0
   local END = -1
   local STRICT_INDEXING = false
   vim.api.nvim_buf_set_lines(buf, START, END, STRICT_INDEXING, M.get_all())
+
   local position = {
     relative = "editor",
     anchor = "NE",
@@ -82,12 +89,14 @@ M.show_float = function()
     { scope = "local", win = floatwin }
   )
 end
+
 M.close_float = function()
   if M.is_float_open() then
     vim.api.nvim_win_close(floatwin, true)
     floatwin = -1
   end
 end
+
 M.is_float_open = function()
   if floatwin > -1 and vim.api.nvim_win_is_valid(floatwin) then
     return true
@@ -95,11 +104,13 @@ M.is_float_open = function()
   floatwin = -1
   return false
 end
+
 M.enter_float = function()
   if M.is_float_open() then
     vim.api.nvim_set_current_win(floatwin)
   end
 end
+
 --- Open float if not open
 --- Enter float if open and not focused
 --- Close float if currently inside it
@@ -124,6 +135,7 @@ local subcommands = {
     tobuf(M.get_all())
   end,
 }
+
 ---@return string[]
 local complete = function(--[[ ArgLead, CmdLine, CursorPos ]])
   return vim.tbl_keys(subcommands)
