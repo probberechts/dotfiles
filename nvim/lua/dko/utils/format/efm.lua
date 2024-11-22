@@ -4,17 +4,28 @@ local toast = require("dko.utils.notify").toast
 
 local M = {}
 
-M.get_efm_client = function(bufnr)
-  return vim.lsp.get_clients({ bufnr = 0, name = "efm" })[1]
-end
-
+---@param opts? table
+---@return boolean true
 M.format = function(opts)
   opts = opts or {}
+
+  -- notification settings for this function
+  local title = "[LSP] efm"
+  if opts.pipeline then
+    title = ("[LSP] %s > efm"):format(opts.pipeline)
+  end
 
   -- need to check for client in case we did :LspStop or something
   local client = vim.lsp.get_clients({ bufnr = 0, name = "efm" })[1]
   if not client then
-    return
+    if not opts.hide_notification then
+      toast("efm not attached", vim.log.levels.WARN, {
+        group = "format",
+        title = title,
+        render = "wrapped-compact",
+      })
+    end
+    return false
   end
 
   if not opts.hide_notification then
@@ -32,15 +43,10 @@ M.format = function(opts)
         :totable(),
       ", "
     )
-
-    local title = "[LSP] efm"
-    if opts.pipeline then
-      title = ("[LSP] %s > efm"):format(opts.pipeline)
-    end
     toast(("%s"):format(formatters), vim.log.levels.INFO, {
       group = "format",
       title = title,
-      render = "compact",
+      render = "wrapped-compact",
     })
   end
 
@@ -49,9 +55,9 @@ M.format = function(opts)
     name = "efm",
     timeout_ms = vim.env.SSH_CLIENT and 3000 or 1000,
   })
+  return true
 end
 
---- Assuming each
 --- Temporarily removes all efm configs except the one named
 --- Runs lsp format synchronously
 --- Then restores the original efm configs
@@ -61,14 +67,14 @@ M.format_with = function(name, opts)
   opts = opts or {}
 
   local title = opts.pipeline and ("[LSP] %s > efm"):format(opts.pipeline)
-      or "[LSP] efm"
+    or "[LSP] efm"
 
   local client = vim.lsp.get_clients({ bufnr = 0, name = "efm" })[1]
   if not client then
     toast(
       "efm not attached",
       vim.log.levels.ERROR,
-      { title = title, group = "format", render = "compact" }
+      { title = title, group = "format", render = "wrapped-compact" }
     )
     return
   end
@@ -80,7 +86,7 @@ M.format_with = function(name, opts)
     toast(
       ("No formatter %s for %s"):format(name, vim.bo.filetype),
       vim.log.levels.ERROR,
-      { title = title, group = "format", render = "compact" }
+      { title = title, group = "format", render = "wrapped-compact" }
     )
     return
   end
@@ -100,7 +106,7 @@ M.format_with = function(name, opts)
   toast(
     ("Formatting with %s"):format(name),
     vim.log.levels.INFO,
-    { title = title, group = "format", render = "compact" }
+    { title = title, group = "format", render = "wrapped-compact" }
   )
   M.format({ hide_notification = true })
 

@@ -155,7 +155,7 @@ map("n", "<Leader>yn", function()
     vim.notify(
       "Buffer has no filename",
       vim.log.levels.ERROR,
-      { title = "Failed to yank filename", render = "compact" }
+      { title = "Failed to yank filename", render = "wrapped-compact" }
     )
     return
   end
@@ -334,7 +334,7 @@ map("n", "sy", function()
     vim.notify(
       "No treesitter captures under cursor",
       vim.log.levels.ERROR,
-      { title = "Yank failed", render = "compact" }
+      { title = "Yank failed", render = "wrapped-compact" }
     )
     return
   end
@@ -350,7 +350,7 @@ map("n", "sy", function()
   vim.notify(
     resultString,
     vim.log.levels.INFO,
-    { title = "Yanked capture", render = "compact" }
+    { title = "Yanked capture", render = "wrapped-compact" }
   )
 end, { desc = "Copy treesitter captures under cursor" })
 
