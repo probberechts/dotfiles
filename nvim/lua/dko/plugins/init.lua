@@ -1,4 +1,5 @@
 local dkosettings = require("dko.settings")
+local dkomappings = require("dko.mappings")
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
@@ -177,10 +178,12 @@ return {
     },
   },
 
+  -- <leader>w for picker
   -- https://github.com/yorickpeterse/nvim-window
   {
     "yorickpeterse/nvim-window",
     cond = has_ui,
+    keys = vim.tbl_values(dkomappings.nvim_window),
     config = function()
       require("nvim-window").setup({})
       require("dko.mappings").bind_nvim_window()
