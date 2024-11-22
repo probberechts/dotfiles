@@ -1,5 +1,6 @@
-local dkosettings = require("dko.settings")
 local dkomappings = require("dko.mappings")
+local dkosettings = require("dko.settings")
+
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
@@ -245,34 +246,6 @@ return {
   },
 
   -- =========================================================================
-  -- ui: diffing
-  -- =========================================================================
-
-  -- show diff when editing a COMMIT_EDITMSG
-  {
-    "rhysd/committia.vim",
-    lazy = false, -- just in case
-    init = function()
-      vim.g.committia_open_only_vim_starting = 0
-      vim.g.committia_use_singlecolumn = "always"
-    end,
-  },
-
-  {
-    "lewis6991/gitsigns.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    cond = has_ui,
-    config = function()
-      require("gitsigns").setup({
-        on_attach = require("dko.mappings").bind_gitsigns,
-        preview_config = {
-          border = dkosettings.get("border"),
-        },
-      })
-    end,
-  },
-
-  -- =========================================================================
   -- Reading
   -- =========================================================================
 
@@ -338,6 +311,20 @@ return {
   -- =========================================================================
   -- Syntax
   -- =========================================================================
+
+  -- highlight matching html/xml tag
+  -- % textobject
+  {
+    "andymass/vim-matchup",
+    cond = has_ui,
+    -- author recommends against lazy loading
+    lazy = false,
+    init = function()
+      vim.g.matchup_matchparen_deferred = 1
+      vim.g.matchup_matchparen_status_offscreen = 0
+      -- see behaviors.lua for treesitter integration
+    end,
+  },
 
   {
     "lukas-reineke/headlines.nvim",
@@ -409,45 +396,9 @@ return {
   -- Writing
   -- =========================================================================
 
-  -- reconcile filename when using sudoedit
-  -- https://github.com/HE7086/sudoedit.nvim
-  {
-    "HE7086/sudoedit.nvim",
-    enabled = function()
-      return vim.fn.has("linux") == 1
-    end,
-  },
-
-  -- because https://github.com/neovim/neovim/issues/1496
-  -- once https://github.com/neovim/neovim/pull/10842 is merged, there will
-  -- probably be a better implementation for this
-  {
-    "lambdalisue/suda.vim",
-    cond = has_ui,
-    cmd = "SudaWrite",
-  },
-
   { "reedes/vim-pencil" },
 
   { "junegunn/goyo.vim" },
-
-  -- =========================================================================
-  -- Editing
-  -- =========================================================================
-
-  -- highlight matching html/xml tag
-  -- % textobject
-  {
-    "andymass/vim-matchup",
-    cond = has_ui,
-    -- author recommends against lazy loading
-    lazy = false,
-    init = function()
-      vim.g.matchup_matchparen_deferred = 1
-      vim.g.matchup_matchparen_status_offscreen = 0
-      -- see behaviors.lua for treesitter integration
-    end,
-  },
 
   -- Override <A-hjkl> to move lines in any mode
   -- NB: Normally in insert mode, <A-hjkl> will exit insert and move cursor.
