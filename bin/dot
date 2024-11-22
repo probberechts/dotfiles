@@ -352,7 +352,6 @@ __dko_dotfiles() {
   pip) __dko_dotfiles__py__update_pip ;;
   pipx) __dko_dotfiles__py__update_pipx ;;
   neovim) __dko_dotfiles__update_neovim ;;
-  neopy) __dko_dotfiles__py__update_neovim_python ;;
 
   *)
     case "$OSTYPE" in
