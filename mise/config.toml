@@ -1,3 +1,12 @@
 [tools]
+python = "latest"
 node = "20"
-python = "3"
+"pipx:poetry" = "latest"
+"pipx:jupyterlab" = "latest"
+"pipx:nox" = "latest"
+"pipx:td-watson" = "latest"
+ruby = "3.2"
+
+[settings]
+experimental = true
+python_compile = false
