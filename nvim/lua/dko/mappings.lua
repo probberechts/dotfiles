@@ -1036,6 +1036,7 @@ end
 -- ===========================================================================
 
 M.urlview = {
+  menu = "<A-u>",
   prev = "[u",
   next = "]u",
 }
@@ -1047,7 +1048,7 @@ M.bind_urlview = function()
       next = M.urlview.next,
     },
   })
-  map("n", "<A-u>", "<Cmd>UrlView<CR>", { desc = "Open URLs" })
+  map("n", M.urlview.menu, "<Cmd>UrlView<CR>", { desc = "Open URLs" })
 end
 
 -- ===========================================================================
