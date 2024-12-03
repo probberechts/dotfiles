@@ -6,6 +6,7 @@ node = "20"
 "pipx:nox" = "latest"
 "pipx:td-watson" = "latest"
 ruby = "3.2"
+go = "latest"
 
 [settings]
 experimental = true
