@@ -1,11 +1,24 @@
 local dkobuffer = require("dko.utils.buffer")
 local dkosettings = require("dko.settings")
 
-local map = vim.keymap.set
+---@class LspAutocmdArgs
+---@field buf number
+---@field data { client_id: number }
+---@field event "LspAttach"|"LspDetach"
+---@field file string e.g. "$HOME/.dotfiles/nvim/lua/dko/behaviors.lua"
+---Map and return with unbind function
+---@return function # unbind
+local function map(modes, lhs, rhs, opts)
+  vim.keymap.set(modes, lhs, rhs, opts)
+  return function()
+    vim.keymap.del(modes, lhs, opts)
+  end
+end
 
---- wrap handler with buffer assertions
+---wrap handler with buffer assertions
+---@return function # unbind
 local function emap(modes, keys, handler, opts)
-  map(modes, keys, function()
+  return map(modes, keys, function()
     if vim.bo.buftype == "nofile" then
       return ""
     end
@@ -376,38 +389,49 @@ local function telescope_builtin(method)
   return false
 end
 
+---List of unbind functions, keyed by "b"..bufnr
+---@type table<string, fun()[]>
+M.lsp_bindings = {}
+---Run all the unbind functions for the bufnr
+---@param bufnr number
+M.unbind_lsp = function(bufnr)
+  local key = "b" .. bufnr
+  for _, unbind in ipairs(M.lsp_bindings[key]) do
+    unbind()
+  end
+  M.lsp_bindings[key] = nil
+  vim.b.did_bind_lsp = false
+end
+
 -- LspAttach autocmd callback
 ---@param bufnr number
 M.bind_lsp = function(bufnr)
-  ---@param opts table
-  ---@return table opts with silent and buffer set
-  local function lsp_opts(opts)
+  if vim.b.did_bind_lsp then -- First LSP attached
+    return
+  end
+  vim.b.did_bind_lsp = true
+
+  local function lspmap(modes, lhs, rhs, opts)
     opts.silent = true
     opts.buffer = bufnr
-    return opts
+    local unbind = map(modes, lhs, rhs, opts)
+    local key = "b" .. bufnr
+    M.lsp_bindings[key] = M.lsp_bindings[key] or {}
+    table.insert(M.lsp_bindings[key], unbind)
   end
 
-  map("n", "gD", function()
-    vim.lsp.buf.declaration()
-  end, lsp_opts({ desc = "LSP declaration" }))
-
-  map("n", "gd", function()
+  lspmap("n", "gd", function()
     return telescope_builtin("lsp_definitions") or vim.lsp.buf.definition()
-  end, lsp_opts({ desc = "LSP definition" }))
+  end, { desc = "LSP definition" })
 
-  -- This is done for us in
-  -- $VIMRUNTIME/lua/vim/lsp.lua
-  -- as of https://github.com/neovim/neovim/pull/24331
-  --map("n", "K", vim.lsp.buf.hover, lsp_opts({ desc = "LSP hover" }))
-
-  map("n", "gi", function()
+  lspmap("n", "gi", function()
     return telescope_builtin("lsp_implementations")
       or vim.lsp.buf.implementation()
-  end, lsp_opts({ desc = "LSP implementation" }))
+  end, { desc = "LSP implementation" })
 
-  map({ "n", "i" }, "<C-g>", function()
+  lspmap({ "n", "i" }, "<C-g>", function()
     vim.lsp.buf.signature_help()
-  end, lsp_opts({ desc = "LSP signature_help" }))
+  end, { desc = "LSP signature_help" })
 
   --map('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   --map('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
@@ -415,16 +439,16 @@ M.bind_lsp = function(bufnr)
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, bufopts) ]]
 
-  map("n", "<Leader>D", function()
+  lspmap("n", "<Leader>D", function()
     return telescope_builtin("lsp_type_definitions")
       or vim.lsp.buf.type_definition()
-  end, lsp_opts({ desc = "LSP type_definition" }))
+  end, { desc = "LSP type_definition" })
 
-  map("n", "<Leader>rn", function()
+  lspmap("n", "<Leader>rn", function()
     vim.lsp.buf.rename()
-  end, lsp_opts({ desc = "LSP rename" }))
+  end, { desc = "LSP rename" })
 
-  map("n", "<Leader><Leader>", function()
+  lspmap("n", "<Leader><Leader>", function()
     local ap_ok, ap = pcall(require, "actions-preview")
     if ap_ok then
       ap.code_actions()
@@ -438,27 +462,23 @@ M.bind_lsp = function(bufnr)
     end
 
     vim.lsp.buf.code_action()
-  end, lsp_opts({ desc = "LSP Code Action" }))
+  end, { desc = "LSP Code Action" })
 
-  map("n", "gr", function()
+  lspmap("n", "gr", function()
     return telescope_builtin("lsp_references")
       ---@diagnostic disable-next-line: missing-parameter
       or vim.lsp.buf.references()
-  end, lsp_opts({ desc = "LSP references" }))
+  end, { desc = "LSP references" })
 
-  map(
-    "n",
-    "<A-=>",
-    function()
-      require("dko.utils.format").run_pipeline({ async = false })
-    end,
-    lsp_opts({
-      desc = "Fix and format buffer with dko.utils.format.run_pipeline",
-    })
-  )
+  lspmap("n", "<A-=>", function()
+    require("dko.utils.format").run_pipeline({ async = false })
+  end, {
+    desc = "Fix and format buffer with dko.utils.format.run_pipeline",
+  })
 end
 
--- autocmd callback
+---autocmd callback
+---@param args LspAutocmdArgs
 M.bind_on_lspattach = function(args)
   --[[
     {
@@ -485,14 +505,39 @@ M.bind_on_lspattach = function(args)
   end
 end
 
--- @TODO
-M.unbind_on_lspdetach = function()
-  -- local bufnr = args.buf
-  -- local clients = vim.lsp.get_clients({ bufnr = bufnr })
-  -- if #clients == 0 then -- Last LSP attached
-  -- unbind mappings...
-  -- vim.b.did_bind_mappings = false
-  -- end
+---@param args LspAutocmdArgs
+M.unbind_on_lspdetach = function(args)
+  --[[
+    {
+      buf = 1,
+      data = {
+        client_id = 4
+      },
+      event = "LspDetach",
+      file = "/home/davidosomething/.dotfiles/README.md",
+      group = 13,
+      id = 23,
+      match = "/home/davidosomething/.dotfiles/README.md"
+    }
+  ]]
+  local bufnr = args.buf
+  -- check for clients with definition support, since that's one of the primary
+  -- purposes of keybinding...
+  local clients = vim.lsp.get_clients({
+    bufnr = bufnr,
+    method = vim.lsp.protocol.Methods.textDocument_definition,
+  })
+  if #clients == 0 then -- Last LSP attached
+    vim.notify(
+      ("No %s providers remaining. Unbinding %d lsp mappings"):format(
+        vim.lsp.protocol.Methods.textDocument_definition,
+        #M.lsp_bindings["b" .. bufnr]
+      ),
+      vim.log.levels.INFO,
+      { title = "[LSP]", render = "wrapped-compact" }
+    )
+    M.unbind_lsp(bufnr)
+  end
 end
 
 -- on_attach binding for ts_ls
