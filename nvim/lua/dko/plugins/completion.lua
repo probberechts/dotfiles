@@ -20,6 +20,7 @@ local SOURCE_MAP = {
   nvim_lsp = "ʟsᴘ",
   nvim_lua = "ʟᴜᴀ",
   path = "ᴘᴀᴛʜ",
+  copilot = "AI",
 }
 -- plugin caches
 local nhc_ok, nhc
@@ -58,10 +59,39 @@ return {
         },
 
         sources = cmp.config.sources({
+          {
+            name = "copilot",
+            -- keyword_length = 0,
+            max_item_count = 3,
+            trigger_characters = {
+              {
+                ".",
+                ":",
+                "(",
+                "'",
+                '"',
+                "[",
+                ",",
+                "#",
+                "*",
+                "@",
+                "|",
+                "=",
+                "-",
+                "{",
+                "/",
+                "\\",
+                "+",
+                "?",
+                " ",
+                "\t",
+                "\n",
+              },
+            },
+          },
           { name = "snippy" },
           { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
-          { name = "copilot" },
         }, { -- group 2 only if nothing in above had results
           { name = "buffer" },
         }),
@@ -77,6 +107,11 @@ return {
             border = require("dko.settings").get("border"),
             scrollbar = "║",
           },
+        },
+
+        experimental = {
+          native_menu = false,
+          ghost_text = false,
         },
 
         formatting = {
