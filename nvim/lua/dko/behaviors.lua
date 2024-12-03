@@ -255,7 +255,20 @@ if has_ui then
 
   autocmd({ "BufWritePre", "FileWritePre" }, {
     desc = "Format with LSP on save",
-    callback = require("dko.utils.format").format_on_save,
+    callback = function()
+      -- callback gets arg
+      -- {
+      --   buf = 1,
+      --   event = "BufWritePre",
+      --   file = "nvim/lua/dko/behaviors.lua",
+      --   id = 127,
+      --   match = "$HOME/.dotfiles/nvim/lua/dko/behaviors.lua"
+      -- }
+      if not vim.b.enable_format_on_save then
+        return
+      end
+      require("dko.utils.format").run_pipeline({ async = false })
+    end,
     group = augroup("dkolsp"),
   })
 
