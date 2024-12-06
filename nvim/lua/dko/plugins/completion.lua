@@ -22,6 +22,19 @@ local SOURCE_MAP = {
   path = "ᴘᴀᴛʜ",
   copilot = "AI",
 }
+
+local cmpWindowSettings = {
+  border = require("dko.settings").get("border"),
+  scrollbar = "║",
+  -- the default winhighlight is weird https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/default.lua#L111-L122
+  winhighlight = table.concat({
+    "Normal:Normal",
+    "FloatBorder:FloatBorder",
+    "CursorLine:PmenuSel",
+    "Search:None",
+  }, ","),
+}
+
 -- plugin caches
 local nhc_ok, nhc
 
@@ -99,18 +112,8 @@ return {
         mapping = require("dko.mappings").setup_cmp(),
 
         window = {
-          completion = {
-            border = require("dko.settings").get("border"),
-            scrollbar = "║",
-            -- the default winhighlight is weird https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/default.lua#L111-L122
-            winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-          },
-          documentation = {
-            border = require("dko.settings").get("border"),
-            scrollbar = "║",
-            -- the default winhighlight is weird https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/default.lua#L111-L122
-            winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-          },
+          completion = cmpWindowSettings,
+          documentation = cmpWindowSettings,
         },
 
         experimental = {
@@ -128,11 +131,13 @@ return {
           ---@param item CmpItem
           format = function(entry, item)
             local raw_kind = item.kind
+
             -- convert item.kind into a symbol
+            ---@diagnostic disable-next-line: unused-local
             local sym, symhl, did_fallback
             ---@diagnostic disable-next-line: undefined-field
             if _G.MiniIcons then
-              ---@diagnostic disable-next-line: undefined-field
+              ---@diagnostic disable-next-line: undefined-field, unused-local
               sym, symhl, did_fallback = _G.MiniIcons.get("lsp", item.kind)
               -- else
               -- sym = require("lspkind").symbol_map[item.kind]
