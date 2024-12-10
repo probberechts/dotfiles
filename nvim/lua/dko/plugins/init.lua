@@ -396,9 +396,46 @@ return {
   -- Writing
   -- =========================================================================
 
-  { "reedes/vim-pencil" },
+  {
+    "reedes/vim-pencil",
+    ft = { "markdown", "mdx", "tex", "bib" },
+    config = function()
+      vim.cmd([[let g:pencil#conceallevel = 2]]) -- no conceal
+      vim.cmd([[autocmd Filetype markdown PencilSoft]])
+      vim.cmd([[autocmd Filetype tex Pencil]])
+      vim.cmd([[autocmd Filetype bib Pencil]])
 
-  { "junegunn/goyo.vim" },
+      -- vim.cmd[[autocmd Filetype markdown set nobreakindent]] -- this is set by pencil and its slow af
+
+      -- Wrapping
+      vim.cmd([[autocmd Filetype markdown set linebreak]])
+      vim.cmd([[autocmd Filetype markdown set breakindentopt=list:-1]])
+    end,
+  },
+
+  {
+    "folke/zen-mode.nvim",
+    config = function()
+      require("zen-mode").setup({
+        window = {
+          options = {
+            signcolumn = "no", -- disable signcolumn
+            number = false, -- disable number column
+            relativenumber = false, -- disable relative numbers
+            cursorline = false, -- disable cursorline
+            cursorcolumn = false, -- disable cursor column
+            foldcolumn = "0", -- disable fold column
+            list = false, -- disable whitespace characters
+          },
+        },
+        plugins = {
+          twilight = { enabled = true }, -- start Twilight when zen mode opens
+        },
+      })
+    end,
+  },
+
+  { "folke/twilight.nvim" },
 
   -- Override <A-hjkl> to move lines in any mode
   -- NB: Normally in insert mode, <A-hjkl> will exit insert and move cursor.
@@ -496,7 +533,11 @@ return {
     "chrisgrieser/nvim-various-textobjs",
     cond = has_ui,
     config = function()
-      require("various-textobjs").setup({ useDefaultKeymaps = false })
+      require("various-textobjs").setup({
+        keymaps = {
+          useDefaults = false,
+        },
+      })
       require("dko.mappings").bind_nvim_various_textobjs()
     end,
   },
