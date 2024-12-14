@@ -5,7 +5,6 @@ if vim.fn.getftype(lazypath) ~= "dir" then
     "git",
     "clone",
     "--filter=blob:none",
-    "--branch=stable",
     lazyrepo,
     lazypath,
   })
