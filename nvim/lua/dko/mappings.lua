@@ -782,7 +782,7 @@ M.bind_nvim_various_textobjs = function()
     local END = "outer"
     ---@type "withBlanks"|"noBlanks"
     local BLANKS = "noBlanks"
-    require("various-textobjs").indentation(START, END, BLANKS)
+    require("various-textobjs").indentation(START, END)
     vim.cmd.normal("$") -- jump to end of line like vim-textobj-indent
   end, { desc = "textobj: indent" })
 
@@ -793,7 +793,7 @@ M.bind_nvim_various_textobjs = function()
     local END = "inner"
     ---@type "withBlanks"|"noBlanks"
     local BLANKS = "noBlanks"
-    require("various-textobjs").indentation(START, END, BLANKS)
+    require("various-textobjs").indentation(START, END)
     vim.cmd.normal("$") -- jump to end of line like vim-textobj-indent
   end, { desc = "textobj: indent" })
 
@@ -801,6 +801,7 @@ M.bind_nvim_various_textobjs = function()
     if vim.fn.indent(".") == 0 then
       return "vapk:!sort<CR>"
     else
+      --- uses various-textobjs ii .indentation
       return "vii:!sort<CR>"
     end
   end, {
