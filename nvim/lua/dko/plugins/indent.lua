@@ -6,41 +6,26 @@ local has_ui = #uis > 0
 
 --- Provider to show indent levels
 --- @type ''|'hlchunk'|'indentmini'|'snacks'
-local indent = ""
-local indent_char = "█"
+local indent = "snacks"
 
 --- Provider to show current chunk
 --- As of 2024-12-11, indentmini is still much faster than the rest and no
 --- stupid animations.
 --- @type ''|'hlchunk'|'indentmini'|'snacks'
-local chunk = "indentmini"
+local chunk = "snacks"
 local chunk_char = "│"
 
 return {
   {
     "folke/snacks.nvim",
-    --- merged
     opts = {
       indent = {
-        enabled = indent == "snacks" or chunk == "snacks",
-        char = indent_char,
-        only_current = true,
-        --- Only the current scope, not all indents
-        only_scope = indent ~= "snacks",
-        scope = {
-          enabled = true,
-          animate = {
-            enabled = false,
-            duration = {
-              step = 1,
-              total = 1,
-            },
-          },
+        -- yes there's an indent nested inside
+        indent = {
+          enabled = indent == "snacks" or chunk == "snacks",
+          char = indent ~= "snacks" and " " or chunk_char,
         },
-      },
-      chunk = {
-        enabled = chunk == "snacks",
-        only_current = true,
+        chunk = {},
       },
     },
   },
@@ -48,8 +33,7 @@ return {
   -- https://github.com/nvimdev/indentmini.nvim
   {
     "nvimdev/indentmini.nvim",
-    cond = has_ui,
-    enabled = chunk == "indentmini" or indent == "indentmini",
+    cond = has_ui and chunk == "indentmini" or indent == "indentmini",
     event = "BufEnter",
     config = function()
       local function color()
@@ -82,8 +66,7 @@ return {
   -- https://github.com/shellRaining/hlchunk.nvim
   {
     "shellRaining/hlchunk.nvim",
-    cond = has_ui,
-    enabled = chunk == "hlchunk",
+    cond = has_ui and chunk == "hlchunk",
     event = "UIEnter",
     config = function()
       -- local exclude_filetype = {
