@@ -31,7 +31,7 @@ return {
 
   {
     "folke/snacks.nvim",
-    config = function()
+    config = function(_, opts)
       vim.api.nvim_create_user_command("Gitbrowse", function()
         local gbok, gb = pcall(require, "snacks.gitbrowse")
         if not gbok then
@@ -55,6 +55,9 @@ return {
         end
         gb.open({ what = "repo" })
       end, { desc = "Open repo root in origin git site" })
+
+      --- opts will be merged from other specs, e.g. from ./select.lua
+      require("snacks").setup(opts)
     end,
   },
 
@@ -87,16 +90,6 @@ return {
       "MunifTanjim/nui.nvim",
       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
     },
-  },
-
-  -- Replace vim.ui.select and vim.ui.input, which are used by things like
-  -- vim.lsp.buf.code_action and rename
-  -- Alternatively could use https://github.com/nvim-telescope/telescope-ui-select.nvim
-  -- https://github.com/stevearc/dressing.nvim
-  {
-    "stevearc/dressing.nvim",
-    cond = has_ui,
-    event = "VeryLazy",
   },
 
   -- {
