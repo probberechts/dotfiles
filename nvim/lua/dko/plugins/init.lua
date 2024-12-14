@@ -29,6 +29,9 @@ return {
 
   {
     "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {},
     config = function(_, opts)
       vim.api.nvim_create_user_command("Gitbrowse", function()
         local gbok, gb = pcall(require, "snacks.gitbrowse")
@@ -56,27 +59,14 @@ return {
 
       --- opts will be merged from other specs, e.g. from
       --- ./indent.lua
-      --- ./select.lua
+      --- ./components.lua
       require("snacks").setup(opts)
     end,
   },
 
   -- =========================================================================
-  -- ui: components
+  -- ui: diagnostic
   -- =========================================================================
-
-  {
-    "echasnovski/mini.icons",
-    lazy = true,
-    cond = has_ui,
-    init = function()
-      package.preload["nvim-web-devicons"] = function()
-        require("mini.icons").mock_nvim_web_devicons()
-        return package.loaded["nvim-web-devicons"]
-      end
-    end,
-    config = true,
-  },
 
   {
     "nvim-neo-tree/neo-tree.nvim",
