@@ -810,6 +810,14 @@ M.bind_nvim_various_textobjs = function()
     remap = true, -- since ii is a mapping too
   })
 
+  map("v", "<Leader>s", function()
+    return ":!sort<CR>"
+  end, {
+    desc = "Sort selection",
+    expr = true,
+    remap = true, -- since ii is a mapping too
+  })
+
   map(
     { "o", "x" },
     "ik",
