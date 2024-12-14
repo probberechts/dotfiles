@@ -1,25 +1,34 @@
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
---- @type 'hlchunk'|'indentmini'
-local enabled = "hlchunk"
+--- @type 'hlchunk'|'indentmini'|'snacks'
+local provider = "hlchunk"
 
 return {
   -- indent guides
   -- every plugin has issues, leave a bunch of configs here and swapping as
   -- needed
 
+  {
+    "folke/snacks.nvim",
+    cond = has_ui,
+    enabled = provider == "snacks",
+    opts = {
+      indent = {},
+    },
+  },
+
   -- https://github.com/nvimdev/indentmini.nvim
   {
     "nvimdev/indentmini.nvim",
     cond = has_ui,
-    enabled = enabled == "indentmini",
+    enabled = provider == "indentmini",
     event = "BufEnter",
     config = function()
       local function color()
         vim.cmd.highlight("IndentLine guifg=bg")
         -- vim.cmd.highlight(
-        --   ("default IndentLine guifg=%s"):format(
+        --   ("IndentLine guifg=%s"):format(
         --     require("dko.colors").is_dark() and "#242426" or "#f4f2ef"
         --   )
         -- )
@@ -36,7 +45,9 @@ return {
       color()
 
       require("indentmini").setup({
-        -- char = "█",
+        --char = "█",
+
+        -- only draw the last level of indent lines for the block
         only_current = true,
       })
     end,
@@ -46,7 +57,7 @@ return {
   {
     "shellRaining/hlchunk.nvim",
     cond = has_ui,
-    enabled = enabled == "hlchunk",
+    enabled = provider == "hlchunk",
     event = "UIEnter",
     config = function()
       -- local exclude_filetype = {

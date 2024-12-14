@@ -1,3 +1,6 @@
+local uis = vim.api.nvim_list_uis()
+local has_ui = #uis > 0
+
 return {
   {
     "zbirenbaum/copilot.lua",
@@ -21,6 +24,7 @@ return {
   -- https://github.com/olimorris/codecompanion.nvim
   {
     "olimorris/codecompanion.nvim",
+    cond = has_ui,
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -28,28 +32,26 @@ return {
       "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
       { "stevearc/dressing.nvim", opts = {} }, -- Optional: Improves `vim.ui.select`
     },
-    config = function()
-      require("codecompanion").setup({
-        -- display = {
-        --   diff = {
-        --     provider = "mini_diff",
-        --   },
-        -- },
-        -- opts = {
-        -- log_level = "DEBUG",
-        -- },
-        strategies = {
-          chat = {
-            adapter = "copilot",
-          },
-          inline = {
-            adapter = "copilot",
-          },
-          agent = {
-            adapter = "copilot",
-          },
+    opts = {
+      -- display = {
+      --   diff = {
+      --     provider = "mini_diff",
+      --   },
+      -- },
+      -- opts = {
+      -- log_level = "DEBUG",
+      -- },
+      strategies = {
+        chat = {
+          adapter = "copilot",
         },
-      })
-    end,
+        inline = {
+          adapter = "copilot",
+        },
+        agent = {
+          adapter = "copilot",
+        },
+      },
+    },
   },
 }
