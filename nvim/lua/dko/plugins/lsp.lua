@@ -12,48 +12,10 @@ local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
 return {
-  -- Using my ale-shim instead
-  -- https://github.com/dense-analysis/ale
-  -- coc.nvim configured to pipe its diagnostics to ALE
-  -- ALE then pipes the diagnostics to vim.diagnostic
-  -- We define diagnostic signs in dko.diagnostic
-  -- {
-  --   "dense-analysis/ale",
-  --   enabled = false,
-  --   init = function()
-  --     vim.g.ale_disable_lsp = 1
-  --     -- only use explicitly enabled linters
-  --     vim.g.ale_linters_explicit = 1
-  --
-  --     -- coc
-  --     vim.g.ale_use_neovim_diagnostics_api = 1
-  --
-  --     -- diagnostic display
-  --     vim.g.ale_echo_cursor = 0
-  --     vim.g.ale_set_balloons = 0
-  --     vim.g.ale_set_highlights = 0
-  --     vim.g.ale_set_loclist = 0
-  --     vim.g.ale_set_quickfix = 0
-  --     vim.g.ale_set_signs = 1
-  --     vim.g.ale_sign_error = "✖"
-  --     vim.g.ale_sign_warning = ""
-  --     vim.g.ale_sign_info = "⚑"
-  --     vim.g.ale_virtualtext_cursor = "disabled"
-  --   end,
-  -- },
-
-  -- provides modules only
+  -- just provides lua objects to config lspconfig, doesn't call or access other
+  -- plugins fns
   -- https://github.com/creativenull/efmls-configs-nvim
   { "creativenull/efmls-configs-nvim" },
-
-  -- trying this out
-  -- https://github.com/hsaker312/diagnostics-details.nvim/
-  {
-    "hsaker312/diagnostics-details.nvim",
-    cond = has_ui,
-    cmd = "DiagnosticsDetailsOpenFloat",
-    opts = {},
-  },
 
   -- e.g. for go.mod and swagger yaml
   -- https://github.com/icholy/lsplinks.nvim
@@ -73,10 +35,8 @@ return {
   -- https://github.com/aznhe21/actions-preview.nvim
   {
     "aznhe21/actions-preview.nvim",
-    cond = has_ui,
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-    },
+    cond = has_ui and dkosettings.get("lsp.code_action") == "actions-preview",
+    dependencies = "nvim-telescope/telescope.nvim",
   },
 
   -- This keeps timing out on initial open
@@ -84,10 +44,10 @@ return {
   -- https://www.reddit.com/r/neovim/comments/1eaxity/rachartiertinycodeactionnvim_a_simple_way_to_run/
   {
     "rachartier/tiny-code-action.nvim",
-    cond = has_ui,
+    cond = has_ui and dkosettings.get("lsp.code_action") == "tiny-code-action",
     dependencies = {
-      { "nvim-lua/plenary.nvim" },
-      { "nvim-telescope/telescope.nvim" },
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
     },
     event = "LspAttach",
     opts = { lsp_timeout = 4000 },

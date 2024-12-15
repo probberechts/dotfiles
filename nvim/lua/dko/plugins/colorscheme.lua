@@ -9,7 +9,7 @@ return {
       --   lazy = true,
       --   dependencies = { "rktjmp/lush.nvim" },
       -- },
-      { "ntk148v/komau.vim", lazy = true },
+      "ntk148v/komau.vim",
     },
     dev = true,
     lazy = false,

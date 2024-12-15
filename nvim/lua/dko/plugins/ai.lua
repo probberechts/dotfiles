@@ -24,6 +24,12 @@ return {
   -- https://github.com/olimorris/codecompanion.nvim
   {
     "olimorris/codecompanion.nvim",
+    cmd = {
+      "CodeCompanion",
+      "CodeCompanionActions",
+      "CodeCompanionChat",
+      "CodeCompanionCmd",
+    },
     cond = has_ui,
     dependencies = {
       "nvim-lua/plenary.nvim",
