@@ -59,6 +59,8 @@ __symlink() {
   *arwin*)
     dko-symlink "mac/hammerspoon" \
       ".hammerspoon"
+    dko-symlink "mac/keyboard/karabiner/karabiner.json" \
+      ".config/karabiner/karabiner.json"
     ;;
   esac
 
