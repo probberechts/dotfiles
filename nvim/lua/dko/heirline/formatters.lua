@@ -3,10 +3,14 @@ return {
   condition = function()
     return vim.b.formatters ~= nil and #vim.b.formatters > 0
   end,
-  update = { "User", pattern = "FormatterChanged" },
+  update = { "User", pattern = "FormattersChanged" },
   {
     provider = function()
-      return " 󰳻 "
+      if vim.b.enable_format_on_save then
+        return " 󰳻 "
+      else
+        return " ⏼"
+      end
     end,
     hl = "dkoStatusKey",
   },

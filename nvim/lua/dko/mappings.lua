@@ -475,6 +475,13 @@ M.bind_lsp = function(bufnr)
   end, {
     desc = "Fix and format buffer with dko.utils.format.run_pipeline",
   })
+
+  lspmap("n", "<Leader>uf", function()
+    vim.b.enable_format_on_save = not vim.b.enable_format_on_save
+    vim.cmd.doautocmd("User", "FormattersChanged")
+  end, {
+    desc = "Toggle autoformatting on save",
+  })
 end
 
 ---autocmd callback
