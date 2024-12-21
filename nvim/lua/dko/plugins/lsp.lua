@@ -12,10 +12,26 @@ local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
 return {
-  -- just provides lua objects to config lspconfig, doesn't call or access other
-  -- plugins fns
-  -- https://github.com/creativenull/efmls-configs-nvim
-  { "creativenull/efmls-configs-nvim" },
+  -- ===========================================================================
+  -- $/progress
+  -- ===========================================================================
+
+  -- https://github.com/deathbeam/lspecho.nvim
+  -- using fidget.nvim instead
+  --{ "deathbeam/lspecho.nvim" },
+
+  -- ===========================================================================
+  -- textDocument/codeAction
+  -- ===========================================================================
+
+  -- Decided on fzf-lua instead of these individual plugins
+  -- https://github.com/aznhe21/actions-preview.nvim
+  -- https://github.com/rachartier/tiny-code-action.nvim keeps timing out on initial open https://www.reddit.com/r/neovim/comments/1eaxity/rachartiertinycodeactionnvim_a_simple_way_to_run/
+  -- "nvimdev/lspsaga.nvim" for cursor-based action
+
+  -- ===========================================================================
+  -- textDocument/documentLink
+  -- ===========================================================================
 
   -- e.g. for go.mod and swagger yaml
   -- https://github.com/icholy/lsplinks.nvim
@@ -28,61 +44,17 @@ return {
     },
   },
 
-  -- https://github.com/deathbeam/lspecho.nvim
-  -- using fidget.nvim instead
-  --{ "deathbeam/lspecho.nvim" },
+  -- ===========================================================================
+  -- Multi LSP
+  -- ===========================================================================
 
-  -- https://github.com/aznhe21/actions-preview.nvim
-  {
-    "aznhe21/actions-preview.nvim",
-    cond = has_ui and dkosettings.get("lsp.code_action") == "actions-preview",
-    dependencies = "nvim-telescope/telescope.nvim",
-  },
-
-  -- This keeps timing out on initial open
-  -- https://github.com/rachartier/tiny-code-action.nvim
-  -- https://www.reddit.com/r/neovim/comments/1eaxity/rachartiertinycodeactionnvim_a_simple_way_to_run/
-  {
-    "rachartier/tiny-code-action.nvim",
-    cond = has_ui and dkosettings.get("lsp.code_action") == "tiny-code-action",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-    },
-    event = "LspAttach",
-    opts = { lsp_timeout = 4000 },
-  },
-
-  -- This has a cursor based code_action instead line based, so you get more
-  -- specific actions.
-  -- {
-  --   "nvimdev/lspsaga.nvim",
-  --   event = "LspAttach",
-  --   dependencies = {
-  --     "nvim-treesitter/nvim-treesitter", -- optional
-  --     "echasnovski/mini.icons",
-  --     "nvim-tree/nvim-web-devicons", -- optional (and using mini.icons)
-  --   },
-  --   config = function()
-  --     require("lspsaga").setup({
-  --       implement = {
-  --         enable = false,
-  --       },
-  --       lightbulb = {
-  --         enable = false,
-  --       },
-  --       symbol_in_winbar = {
-  --         enable = false,
-  --       },
-  --     })
-  --   end,
-  -- },
+  -- just provides lua objects to config lspconfig, doesn't call or access other
+  -- plugins fns
+  -- https://github.com/creativenull/efmls-configs-nvim
+  { "creativenull/efmls-configs-nvim" },
 
   {
     "neovim/nvim-lspconfig",
-    dependencies = {
-      "creativenull/efmls-configs-nvim",
-    },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       -- border on :LspInfo window
