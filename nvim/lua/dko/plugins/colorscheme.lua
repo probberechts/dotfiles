@@ -1,3 +1,7 @@
+local dkosettings = require("dko.settings")
+
+local dev = vim.env.NVIM_DEV ~= nil
+
 return {
   {
     "navarasu/onedark.nvim",
@@ -11,12 +15,12 @@ return {
       -- },
       "ntk148v/komau.vim",
     },
-    dev = true,
+    dev = dev,
     lazy = false,
     priority = 1000,
     init = function()
-      require("dko.settings").set("colors.dark", "onedark")
-      require("dko.settings").set("colors.light", "komau")
+      dkosettings.set("colors.dark", "onedark")
+      dkosettings.set("colors.light", "komau")
     end,
     config = function()
       require("onedark").setup({
