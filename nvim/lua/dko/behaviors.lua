@@ -232,7 +232,7 @@ if has_ui then
     pattern = "FormattersChanged",
     desc = "Notify neovim a formatter has been added for the buffer",
     callback = function()
-      -- noop - heirline listens for this event
+      vim.cmd.redrawstatus({ bang = true })
     end,
     group = augroup("dkoformatter"),
   })
@@ -288,6 +288,7 @@ if has_ui then
   vim
     .iter({
       require("dko.heirline.diagnostics").update,
+      --require("dko.heirline.formatters").update,
       require("dko.heirline.lsp").update,
     })
     :each(function(events)
