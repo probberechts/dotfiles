@@ -834,12 +834,22 @@ M.bind_nvim_various_textobjs = function()
     "<cmd>lua require('various-textobjs').key(true)<CR>",
     { desc = "textobj: object key" }
   )
+
+  -- last yank or paste
+  map(
+    { "o", "x" },
+    "iP",
+    "<cmd>lua require('various-textobjs').lastChange()<CR>",
+    { desc = "textobj: last paste" }
+  )
+
   map(
     { "o", "x" },
     "iv",
     "<cmd>lua require('various-textobjs').value(true)<CR>",
     { desc = "textobj: object value" }
   )
+
   map(
     { "o", "x" },
     "is",
@@ -1072,31 +1082,6 @@ M.bind_telescope = function()
     end
     t.extensions.yank_history.yank_history()
   end, { desc = "Telescope: yanky.nvim" })
-end
-
--- ===========================================================================
--- Plugin: textobjs
--- ===========================================================================
-
-M.bind_textobj = function()
-  local function textobjMap(obj, char)
-    char = char or obj:sub(1, 1)
-    map(
-      { "o", "x" },
-      "a" .. char,
-      "<Plug>(textobj-" .. obj .. "-a)",
-      { desc = "textobj: around " .. obj }
-    )
-    map(
-      { "o", "x" },
-      "i" .. char,
-      "<Plug>(textobj-" .. obj .. "-i)",
-      { desc = "textobj: inside " .. obj }
-    )
-  end
-
-  textobjMap("paste", "P")
-  textobjMap("url")
 end
 
 -- ===========================================================================
