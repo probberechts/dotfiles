@@ -5,12 +5,13 @@ return {
 
     self.cwd = vim.uv.cwd()
   end,
+  hl = "StatusLineNC",
 
   require("dko.heirline.cwd"),
   require("dko.heirline.git"),
   require("dko.heirline.bufferstats"),
 
-  { provider = "%=", hl = "StatusLineNC" },
+  { provider = "%=" },
 
   require("dko.heirline.clipboard"),
   require("dko.heirline.remote"),
