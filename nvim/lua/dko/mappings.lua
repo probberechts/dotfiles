@@ -890,8 +890,22 @@ M.bind_nvim_various_textobjs = function()
 end
 
 -- =============================================================================
+-- Plugin: oil.nvim
+-- =============================================================================
+
+M.bind_oil = function()
+  map("n", "<A-o>", function()
+    local _, oil = pcall(require, "oil")
+    if oil then
+      oil.toggle_float()
+    end
+  end, { desc = "Toggle floating oil.nvim" })
+end
+
+-- =============================================================================
 -- picker / finder
 -- =============================================================================
+
 M.picker = {
   buffers = "<A-b>",
   code_actions = "<A-a>",
@@ -983,14 +997,6 @@ M.bind_telescope = function()
   -- ---------------------------------------------------------------------------
   -- Extension mappings
   -- ---------------------------------------------------------------------------
-
-  emap("n", "<A-e>", function()
-    if t.extensions.file_browser then
-      t.extensions.file_browser.file_browser({
-        hidden = true, -- show hidden
-      })
-    end
-  end, { desc = "Telescope: pick existing buffer" })
 
   emap("n", "<A-y>", function()
     if not t.extensions.yank_history then
