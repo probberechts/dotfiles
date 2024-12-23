@@ -1,13 +1,6 @@
 local dkobuffer = require("dko.utils.buffer")
 local dkosettings = require("dko.settings")
 
-local Methods = vim.lsp.protocol.Methods
-
----@class LspAutocmdArgs
----@field buf number
----@field data { client_id: number }
----@field event "LspAttach"|"LspDetach"
----@field file string e.g. "$HOME/.dotfiles/nvim/lua/dko/behaviors.lua"
 ---Map and return with unbind function
 ---@return function # unbind
 local function map(modes, lhs, rhs, opts)
@@ -39,12 +32,14 @@ local M = {}
 
 map("n", "<Esc><Esc>", function()
   vim.cmd.doautoall("User EscEscStart")
+
   -- Clear / search term
   vim.fn.setreg("/", "")
   -- Stop highlighting searches
   vim.cmd.nohlsearch()
-  vim.cmd.redraw({ bang = true })
+
   vim.cmd.doautoall("User EscEscEnd")
+  vim.cmd.redraw({ bang = true })
 end, { desc = "Clear UI" })
 
 -- ===========================================================================
@@ -138,6 +133,7 @@ end, { desc = "Edit mappings.lua" })
 -- =============================================================================
 -- doctor
 -- =============================================================================
+
 map("n", "<A-\\>", function()
   require("dko.doctor").toggle_float()
 end, { desc = "Toggle dko.doctor float" })
@@ -217,6 +213,12 @@ map(
 -- Buffer: Edit contents
 -- ===========================================================================
 
+map("n", "<A-=>", function()
+  require("dko.utils.format").run_pipeline({ async = false })
+end, {
+  desc = "Fix and format buffer with dko.utils.format.run_pipeline",
+})
+
 local visualTabOpts = {
   desc = "<Tab> indents selected lines in Visual",
   remap = true,
@@ -256,13 +258,13 @@ map("x", "<Leader>C", function()
   vim.api.nvim_feedkeys('gv""P', "nx", false)
 end, { desc = "Convert selection to smallcaps" })
 
--- map("n", "dd", function()
---   if vim.api.nvim_get_current_line():match("^%s*$") then
---     return '"_dd'
---   else
---     return "dd"
---   end
--- end, { desc = "Smart dd, don't yank empty lines", expr = true })
+map("n", "dd", function()
+  if vim.api.nvim_get_current_line():match("^%s*$") then
+    return '"_dd'
+  else
+    return "dd"
+  end
+end, { desc = "Smart dd, don't yank empty lines", expr = true })
 
 -- ===========================================================================
 -- <Tab> behavior
@@ -322,7 +324,6 @@ map("n", "[d", function()
     float = dkosettings.get("diagnostics.goto_float"),
   })
 end, { desc = "Go to prev diagnostic and open float" })
-
 -- override default mapping with float enabled
 map("n", "]d", function()
   vim.diagnostic.goto_next({
@@ -398,6 +399,7 @@ end
 ---List of unbind functions, keyed by "b"..bufnr
 ---@type table<string, fun()[]>
 M.lsp_bindings = {}
+
 ---Run all the unbind functions for the bufnr
 ---@param bufnr number
 M.unbind_lsp = function(bufnr)
@@ -416,7 +418,7 @@ local function handle_lsp_defintions()
   return telescope_builtin("lsp_definitions") or vim.lsp.buf.definition()
 end
 
--- LspAttach autocmd callback
+-- Bindings for vim.lsp. Conflicts with bind_coc
 ---@param bufnr number
 M.bind_lsp = function(bufnr)
   if vim.b.did_bind_lsp then -- First LSP attached
@@ -470,98 +472,114 @@ M.bind_lsp = function(bufnr)
   end, { desc = "LSP Code Action" })
 
   lspmap("n", "gr", function()
+    if dkosettings.get("finder") == "fzf" then
+      return require("fzf-lua").lsp_references()
+    end
     return telescope_builtin("lsp_references")
       ---@diagnostic disable-next-line: missing-parameter
       or vim.lsp.buf.references()
   end, { desc = "LSP references" })
+end
 
-  lspmap("n", "<A-=>", function()
-    require("dko.utils.format").run_pipeline({ async = false })
+-- Bind "K" to
+-- jump into active coc float, or
+-- show definition float, or
+-- jump/show LSP float
+M.bind_hover = function(opts)
+  -- default vim.ksp is done for us in $VIMRUNTIME/lua/vim/lsp.lua
+  -- as of https://github.com/neovim/neovim/pull/24331
+  --map("n", "K", vim.lsp.buf.hover, lsp_opts({ desc = "LSP hover" }))
+
+  map("n", "K", function()
+    -- Jump into active coc float OR do a definitionHover
+    -- This part is taken from coc#float$jump
+    -- https://github.com/neoclide/coc.nvim/blob/master/autoload/coc/float.vim#L28C1-L35C12
+    vim.lsp.buf.hover()
+  end, { desc = "coc hover action", buffer = opts.buf, silent = true })
+end
+
+-- Bind <C-Space> to open nvim-cmp
+-- Bind <C-n> <C-p> to pick based on coc or nvim-cmp open
+-- Bind <C-j> <C-k> to scroll coc or nvim-cmp attached docs window
+M.bind_completion = function(opts)
+  local _, cmp = pcall(require, "cmp")
+
+  map("n", "<C-Space>", function()
+    vim.cmd.startinsert({ bang = true })
+    vim.schedule(cmp.complete)
+  end, { desc = "In normal mode, `A`ppend and start nvim-cmp completion" })
+
+  map("i", "<C-Space>", function()
+    cmp.complete()
+  end, { desc = "In insert mode, start nvim-cmp completion" })
+
+  map("i", "<Plug>(DkoCmpNext)", function()
+    cmp.select_next_item()
+  end)
+  map("i", "<Plug>(DkoCmpPrev)", function()
+    cmp.select_prev_item()
+  end)
+  map("i", "<C-n>", function()
+    if cmp.visible() then
+      return "<Plug>(DkoCmpNext)"
+    end
+  end, { expr = true, buffer = opts.buf, remap = true, silent = true })
+  map("i", "<C-p>", function()
+    if cmp.visible() then
+      return "<Plug>(DkoCmpPrev)"
+    end
+  end, { expr = true, buffer = opts.buf, remap = true, silent = true })
+
+  map("i", "<Plug>(DkoCmpScrollUp)", function()
+    cmp.mapping.scroll_docs(-4)
+  end)
+  map("i", "<Plug>(DkoCmpScrollDown)", function()
+    cmp.mapping.scroll_docs(4)
+  end)
+  map("i", "<C-k>", function()
+    if cmp.visible() then
+      return "<Plug>(DkoCmpScrollUp)"
+    end
   end, {
-    desc = "Fix and format buffer with dko.utils.format.run_pipeline",
+    expr = true,
+    buffer = opts.buf,
+    nowait = true,
+    remap = true,
+    silent = true,
   })
-
-  lspmap("n", "<Leader>uf", function()
-    vim.b.enable_format_on_save = not vim.b.enable_format_on_save
-    vim.cmd.doautocmd("User", "FormattersChanged")
+  map("i", "<C-j>", function()
+    if cmp.visible() then
+      return "<Plug>(DkoCmpScrollDown)"
+    end
   end, {
-    desc = "Toggle autoformatting on save",
+    expr = true,
+    buffer = opts.buf,
+    nowait = true,
+    remap = true,
+    silent = true,
+  })
+  map("n", "<C-j>", function() end, {
+    expr = true,
+    buffer = opts.buf,
+    nowait = true,
+    remap = true,
+    silent = true,
+  })
+  map("n", "<C-k>", function() end, {
+    expr = true,
+    buffer = opts.buf,
+    nowait = true,
+    remap = true,
+    silent = true,
   })
 end
 
----autocmd callback
----@param args LspAutocmdArgs
-M.bind_on_lspattach = function(args)
-  --[[
-    {
-      buf = 1,
-      data = {
-        client_id = 1
-      },
-      event = "LspAttach",
-      file = "/home/davidosomething/.dotfiles/nvim/lua/dko/behaviors.lua",
-      group = 11,
-      id = 13,
-      match = "/home/davidosomething/.dotfiles/nvim/lua/dko/behaviors.lua"
-    }
-    ]]
-  local bufnr = args.buf
-  local client = vim.lsp.get_client_by_id(args.data.client_id)
-  if not client then -- just to shut up type checking
-    return
-  end
-
-  if not vim.b.did_bind_mappings then -- First LSP attached
-    M.bind_lsp(bufnr)
-    vim.b.did_bind_mappings = true
-  end
-end
-
----@param args LspAutocmdArgs
-M.unbind_on_lspdetach = function(args)
-  --[[
-    {
-      buf = 1,
-      data = {
-        client_id = 4
-      },
-      event = "LspDetach",
-      file = "/home/davidosomething/.dotfiles/README.md",
-      group = 13,
-      id = 23,
-      match = "/home/davidosomething/.dotfiles/README.md"
-    }
-  ]]
-  local bufnr = args.buf
-  local key = "b" .. bufnr
-
-  -- No mappings on buffer
-  if M.lsp_bindings[key] == nil then
-    vim.b.did_bind_lsp = false -- just in case
-    return
-  end
-
-  -- check for clients with definition support, since that's one of the primary
-  -- purposes of keybinding...
-  local clients = vim.lsp.get_clients({
-    bufnr = bufnr,
-    method = Methods.textDocument_definition,
-  })
-  if #clients == 0 then -- Last LSP attached
-    vim.notify(
-      ("No %s providers remaining. Unbinding %d lsp mappings"):format(
-        Methods.textDocument_definition,
-        #M.lsp_bindings[key]
-      ),
-      vim.log.levels.INFO,
-      { title = "[LSP]", render = "wrapped-compact" }
-    )
-    M.unbind_lsp(bufnr)
-  end
-end
+-- =============================================================================
+-- ts_ls
+-- =============================================================================
 
 -- on_attach binding for ts_ls
--- ---@param client table
+---@param client table
 ---@param bufnr integer
 ---@diagnostic disable-next-line: unused-local
 M.bind_ts_ls_lsp = function(client, bufnr)
@@ -709,11 +727,10 @@ M.bind_inspecthi = function()
 end
 
 -- ===========================================================================
--- Plugin: nvim-cmp
+-- Plugin: nvim-cmp + cmp-snippy
 -- ===========================================================================
 
----@return table used in cmp.setup({})
-M.setup_cmp = function()
+M.bind_snippy = function()
   local snippy_ok, snippy = pcall(require, "snippy")
   if not snippy_ok then
     return
@@ -722,43 +739,26 @@ M.setup_cmp = function()
   if not cmp_ok then
     return
   end
+  map({ "i", "s" }, "<C-b>", function()
+    if snippy.can_jump(-1) then
+      snippy.previous()
+    end
+    -- DO NOT FALLBACK (i.e. do not insert ^B)
+  end, { desc = "snippy: previous field" })
 
-  map("n", "<C-Space>", function()
-    vim.cmd.startinsert({ bang = true })
-    vim.schedule(cmp.complete)
-  end, { desc = "In normal mode, `A`ppend and start completion" })
-
-  local snippy_mappings = snippy_ok
-      and {
-        -- snippy: previous field
-        ["<C-b>"] = cmp.mapping(function()
-          if snippy.can_jump(-1) then
-            snippy.previous()
-          end
-          -- DO NOT FALLBACK (i.e. do not insert ^B)
-        end, { "i", "s" }),
-
-        -- snippy: expand or next field
-        ["<C-f>"] = cmp.mapping(function(fallback)
-          -- If a snippet is highlighted in PUM, expand it
-          if cmp.confirm({ select = false }) then
-            return
-          end
-          -- If in a snippet, jump to next field
-          if snippy.can_expand_or_advance() then
-            snippy.expand_or_advance()
-            return
-          end
-          fallback()
-        end, { "i", "s" }),
-      }
-    or {}
-
-  return cmp.mapping.preset.insert(vim.tbl_extend("force", {
-    ["<C-k>"] = cmp.mapping.scroll_docs(-4),
-    ["<C-j>"] = cmp.mapping.scroll_docs(4),
-    ["<C-Space>"] = cmp.mapping.complete(),
-  }, snippy_mappings))
+  map({ "i", "s" }, "<C-f>", function()
+    -- If a snippet is highlighted in PUM, expand it
+    if cmp.confirm({ select = false }) then
+      return
+    end
+    -- If in a snippet, jump to next field
+    if snippy.can_expand_or_advance() then
+      snippy.expand_or_advance()
+      return
+    end
+  end, {
+    desc = "snippy: expand or next field",
+  })
 end
 
 -- =============================================================================
@@ -793,7 +793,6 @@ M.bind_nvim_various_textobjs = function()
     ---@type "inner"|"outer" exclude the endline
     local END = "outer"
     ---@type "withBlanks"|"noBlanks"
-    local BLANKS = "noBlanks"
     require("various-textobjs").indentation(START, END)
     vim.cmd.normal("$") -- jump to end of line like vim-textobj-indent
   end, { desc = "textobj: indent" })
@@ -804,7 +803,6 @@ M.bind_nvim_various_textobjs = function()
     ---@type "inner"|"outer" exclude the endline
     local END = "inner"
     ---@type "withBlanks"|"noBlanks"
-    local BLANKS = "noBlanks"
     require("various-textobjs").indentation(START, END)
     vim.cmd.normal("$") -- jump to end of line like vim-textobj-indent
   end, { desc = "textobj: indent" })
@@ -859,12 +857,12 @@ M.bind_nvim_various_textobjs = function()
     { desc = "textobj: camel-_Snake" }
   )
 
-  --[[ map(
+  map(
     { "o", "x" },
     "iu",
     "<cmd>lua require('various-textobjs').url()<CR>",
     { desc = "textobj: url" }
-  ) ]]
+  )
 
   -- replaces netrw's gx
   map("n", "gx", function()
@@ -1074,7 +1072,8 @@ M.bind_telescope = function()
     emap("n", M.picker.git_status, function()
       tb.git_status({ layout_strategy = "vertical" })
     end, { desc = "Telescope: pick from git status files" })
-    emap("n", "<A-v>", function()
+
+    emap("n", M.picker.vim, function()
       tb.find_files({
         layout_strategy = "vertical",
         prompt_title = "Find in neovim configs",
@@ -1083,13 +1082,6 @@ M.bind_telescope = function()
       })
     end, { desc = "Telescope: nvim/ files" })
   end
-
-  emap("n", M.picker.vim, function()
-    if not t.extensions.yank_history then
-      t.load_extension("yank_history")
-    end
-    t.extensions.yank_history.yank_history()
-  end, { desc = "Telescope: yanky.nvim" })
 end
 
 -- ===========================================================================
@@ -1167,6 +1159,7 @@ M.bind_toggleterm = function()
         end),
         winbar = settings.winbar,
       })
+
     emap("n", settings.keybind, function()
       if vim.bo.buftype ~= "terminal" then
         original = vim.api.nvim_get_current_win()
@@ -1191,6 +1184,7 @@ end
 -- =============================================================================
 -- Plugin: treewalker
 -- =============================================================================
+
 M.bind_treewalker = function()
   local tw = require("treewalker")
   map("n", "<A-Down>", tw.move_down, { noremap = true })
@@ -1278,6 +1272,8 @@ M.zoomwintab = {
 }
 
 -- ===========================================================================
+
+-- ===========================================================================
 -- Plugin: neotest.vim
 -- ===========================================================================
 
@@ -1307,6 +1303,6 @@ M.bind_neotest = function()
   end, { desc = "Run last test and open output" })
 end
 
--- ===========================================================================
+-- ===========================================================================-
 
 return M

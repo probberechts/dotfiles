@@ -110,8 +110,6 @@ return {
           { name = "buffer" },
         }),
 
-        mapping = require("dko.mappings").setup_cmp(),
-
         window = {
           completion = cmpWindowSettings,
           documentation = cmpWindowSettings,
