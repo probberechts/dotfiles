@@ -1,3 +1,7 @@
+local dkomappings = require("dko.mappings")
+local dkosettings = require("dko.settings")
+local dkoformat = require("dko.utils.format")
+
 -- ===========================================================================
 -- Change vim behavior via autocommands
 -- ===========================================================================
@@ -5,52 +9,10 @@
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
-local groups = {}
-local augroup = function(name, opts)
-  if not groups[name] then
-    opts = opts or {}
-    groups[name] = vim.api.nvim_create_augroup(name, opts)
-  end
-  return groups[name]
-end
-
+local augroup = require("dko.utils.autocmd").augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 if has_ui then
-  -- @TODO keep an eye on https://github.com/neovim/neovim/issues/23581
-  autocmd("WinLeave", {
-    desc = "Toggle close->open loclist so it is always under the correct window",
-    callback = function()
-      if vim.bo.buftype == "quickfix" then
-        -- Was in loclist already
-        return
-      end
-      local loclist_winid = vim.fn.getloclist(0, { winid = 0 }).winid
-      if loclist_winid == 0 then
-        return
-      end
-
-      local leaving = vim.api.nvim_get_current_win()
-      autocmd("WinEnter", {
-        callback = function()
-          if vim.bo.buftype == "quickfix" then
-            -- Left main window and went into the loclist
-            return
-          end
-          local entering = vim.api.nvim_get_current_win()
-          vim.o.eventignore = "all"
-          vim.api.nvim_set_current_win(leaving)
-          vim.cmd.lclose()
-          vim.cmd.lwindow()
-          vim.api.nvim_set_current_win(entering)
-          vim.o.eventignore = ""
-        end,
-        once = true,
-      })
-    end,
-    group = augroup("dkowindow"),
-  })
-
   autocmd("User", {
     pattern = "EscEscEnd",
     desc = "Close DKODoctor floats on <Esc><Esc>",
@@ -67,17 +29,6 @@ if has_ui then
         vim.cmd("tabdo wincmd =")
       end)
     end,
-    group = augroup("dkowindow"),
-  })
-
-  autocmd("QuitPre", {
-    desc = "Auto close corresponding loclist when quitting a window",
-    callback = function()
-      if vim.bo.filetype ~= "qf" then
-        vim.cmd("silent! lclose")
-      end
-    end,
-    nested = true,
     group = augroup("dkowindow"),
   })
 
@@ -107,28 +58,6 @@ if has_ui then
     pattern = "*.min.*",
     desc = "Disable syntax on minified files",
     command = "syntax manual",
-    group = augroup("dkoreading"),
-  })
-
-  -- https://vi.stackexchange.com/questions/11892/populate-a-git-commit-template-with-variables
-  autocmd("BufRead", {
-    pattern = "COMMIT_EDITMSG",
-    desc = "Replace tokens in commit-template",
-    callback = function()
-      local tokens = {}
-      tokens.BRANCH = vim
-        .system({ "git", "rev-parse", "--abbrev-ref", "HEAD" })
-        :wait().stdout
-        :gsub("\n", "")
-
-      local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-      for i, line in ipairs(lines) do
-        lines[i] = line:gsub("%$%{(%w+)%}", function(s)
-          return s:len() > 0 and tokens[s] or ""
-        end)
-      end
-      vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-    end,
     group = augroup("dkoreading"),
   })
 
@@ -243,25 +172,61 @@ if has_ui then
 
   autocmd("LspAttach", {
     desc = "Bind LSP related mappings",
-    callback = require("dko.mappings").bind_on_lspattach,
+    callback = dkomappings.bind_on_lspattach,
     group = augroup("dkolsp"),
   })
 
   autocmd("LspAttach", {
     desc = "Set flag to format on save when first capable LSP attaches to buffer",
-    callback = require("dko.utils.format").enable_on_lspattach,
+    callback = dkoformat.enable_on_lspattach,
     group = augroup("dkolsp"),
   })
 
   autocmd("LspDetach", {
     desc = "Unbind LSP related mappings on last client detach",
-    callback = require("dko.mappings").unbind_on_lspdetach,
+    callback = dkomappings.unbind_on_lspdetach,
     group = augroup("dkolsp"),
   })
 
   autocmd("LspDetach", {
     desc = "Unset flag to format on save when last capable LSP detaches from buffer",
-    callback = require("dko.utils.format").disable_on_lspdetach,
+    callback = dkoformat.disable_on_lspdetach,
+    group = augroup("dkolsp"),
+  })
+
+  autocmd("FileType", {
+    desc = "Set mappings/format on save for specific filetypes if coc.nvim is enabled",
+    callback = function(opts)
+      --- order matters here
+      if
+        dkosettings.get("coc.enabled")
+        and vim.tbl_contains(dkosettings.get("coc.fts"), vim.bo.filetype)
+      then
+        vim.cmd.CocStart()
+        dkomappings.bind_coc(opts)
+        --- @TODO move this to a tools-based registration
+        -- dkoformat.add_formatter("coc")
+        -- vim.b.enable_format_on_save = true
+      else
+        -- explicitly disable coc
+        vim.b.coc_enabled = 0
+        vim.b.coc_diagnostic_disable = 1
+        vim.b.coc_suggest_disable = 1
+      end
+      dkomappings.bind_snippy()
+      dkomappings.bind_completion(opts)
+      dkomappings.bind_hover(opts)
+    end,
+  })
+
+  autocmd("User", {
+    pattern = "EscEscEnd",
+    desc = "Close coc.nvim floats on <Esc><Esc>",
+    callback = function()
+      if dkosettings.get("coc.enabled") then
+        vim.fn["coc#float#close_all"]()
+      end
+    end,
     group = augroup("dkolsp"),
   })
 
@@ -274,17 +239,18 @@ if has_ui then
       --   event = "BufWritePre",
       --   file = "nvim/lua/dko/behaviors.lua",
       --   id = 127,
-      --   match = "$HOME/.dotfiles/nvim/lua/dko/behaviors.lua"
+      --   match = "/home/davidosomething/.dotfiles/nvim/lua/dko/behaviors.lua"
       -- }
       if not vim.b.enable_format_on_save then
         return
       end
-      require("dko.utils.format").run_pipeline({ async = false })
+      dkoformat.run_pipeline({ async = false })
     end,
     group = augroup("dkolsp"),
   })
 
   -- temporary fix, winbars not updating
+
   vim
     .iter({
       "dko.heirline.diagnostics",
@@ -329,3 +295,6 @@ if has_ui then
       end
     end)
 end
+
+require("dko.behaviors.git")
+require("dko.behaviors.qfloclist")
