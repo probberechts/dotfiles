@@ -11,6 +11,7 @@ return {
     -- term://~/.dotfiles/nvim//96469:/bin/zsh;#toggleterm#88888
     self.filepath = vim.api.nvim_buf_get_name(0)
     self.icon, self.icon_color = "", ""
+    ---@diagnostic disable-next-line: undefined-field
     self.icon = _G.MiniIcons and _G.MiniIcons.get("file", self.filepath) or ""
     self.filetype_text = vim.list_contains(hidden_filetypes, vim.bo.filetype)
         and ""
