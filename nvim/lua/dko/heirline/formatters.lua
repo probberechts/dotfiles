@@ -1,5 +1,5 @@
 local utils = require("heirline.utils")
-local hl = require("dko.heirline.utils").hl
+local dkohl = require("dko.heirline.utils").hl
 
 -- List format-on-save clients for the buffer
 return {
@@ -20,7 +20,7 @@ return {
     end,
     hl = function()
       -- empty table means probably LspStop happened
-      return hl("DiffDelete")
+      return dkohl("DiffDelete")
     end,
   },
   {
@@ -32,6 +32,7 @@ return {
       for i, f in ipairs(vim.b.formatters) do
         local child = utils.surround({ "", "" }, function()
           return utils.get_highlight("dkoStatusKey").bg
+            or utils.get_highlight("StatusLine").bg
         end, {
           provider = ("󱃖 %s"):format(f),
           hl = "dkoStatusKey",
