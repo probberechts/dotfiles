@@ -18,9 +18,12 @@ local settings = {
   heirline = {
     show_buftype = false,
   },
-  --- @type ''|'dressing'|'snacks'
-  input = "dressing", -- snacks has issues with treesitter
-  --- @type ''|'dressing'|'fzf'|'snacks'
+
+  --- @type ''|'snacks'
+  input = "snacks", -- snacks has issues with treesitter
+
+  --- Also the picker for vim.lsp.buf.code_action() / <leader><leader>
+  --- @type ''|'fzf'|'snacks'
   select = "fzf",
 }
 
