@@ -1,6 +1,15 @@
 # Global gitconfig
 
-# Aliases --------------------------------------------------------------------
+# ============================================================================
+# Formatting
+# ============================================================================
+
+[pretty]
+	ld      = %C(yellow)%h %C(reset)%s %C(green)(%cr) %C(blue)<%an>%C(magenta)%d%C(reset)
+
+# ============================================================================
+# Aliases
+# ============================================================================
 
 [alias]
     co = checkout
@@ -66,7 +75,9 @@
     # Displays committers in descending order of number of commits
     who = shortlog --numbered --summary --email --no-merges --since="3 months"
 
-# Color ------------------------------------------------------------------------
+# ============================================================================
+# Color
+# ============================================================================
 
 [color]
   branch      = auto
@@ -83,7 +94,9 @@
   newNormal    = green bold
   newHighlight = green bold 22
 
-# Repo settings and command options --------------------------------------------
+# ============================================================================
+# Repo settings and command options
+# ============================================================================
 
 [blame]
   date = short
@@ -105,12 +118,30 @@
 # pager = less -x4 ; removed so git will use the env GIT_PAGER
 # pager = delta ; removed -- added as GIT_PAGER for zsh only
   ignorecase = false
-  excludesfile = "~/.dotfiles/git/dot.gitignore"
+
+[diff]
+	algorithm = histogram
+	colorMoved = plain
+	compactionHeuristic = true
+	renames = true
+	renameLimit = 12650
+
+[filter "media"]
+	clean     = git media clean %f
+	smudge    = git media smudge %f
+	required  = true
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	required  = true
+	process = git-lfs filter-process
 
 [init]
 	defaultBranch = main
 
 [push]
+	autoSetupRemote = true
   default = simple
 
 [rebase]
@@ -119,10 +150,15 @@
 [rerere]
 	enabled = 1
 
-[url "ssh://git@github.com/"]
-        insteadOf = https://github.com/
+[tag]
+	sort = version:refname
 
-# Programs ---------------------------------------------------------------------
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+
+# ============================================================================
+# Programs (assumes may be overridden by OS settings)
+# ============================================================================
 
 [gui]
   commitmsgwidth = 80
@@ -137,13 +173,12 @@
 [pager]
   status = true
 
-[pretty]
-  # tut: http://gitimmersion.com/lab_10.html
-  # ref: http://linux.die.net/man/1/git-log
-  # Result: <short-sha> <commit-message> (<pointer-names>) -- <commit-author-name>; <relative-time>
-  nice = "%C(yellow)%h%C(reset) %C(white)%s%C(cyan)%d%C(reset) -- %an; %ar"
+[hub]
+	protocol = ssh
 
-# User defaults (may be overridden by local)------------------------------------
+# ============================================================================
+# User defaults (may be overridden by local)
+# ============================================================================
 
 [user]
   name = Pieter Robberechts
@@ -151,11 +186,12 @@
 
 [credential]
   username = "probberechts"
+	helper = store
 
 [credential "https://git.overleaf.com"]
   username = "pieter.robberechts@cs.kuleuven.be"
 
-# Local ------------------------------------------------------------------------
+# ============================================================================
 
 [includeIf "gitdir:/Users/"]
   path = "~/.dotfiles/git/mac.gitconfig"
@@ -163,12 +199,4 @@
 [include]
   path = "~/.dotfiles/local/gitconfig"
 
-# vim: ft=gitconfig :
-[safe]
-	directory = .
-	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/kloppy-etsy
-	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/trackingutils
-	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/ETSY_public
-	directory = /cw/dtaijupiter/NoCsBack/dtai/maaike/projects/club-brugge-sap
-[hub]
-	protocol = ssh
+# vim: ft=gitconfig
