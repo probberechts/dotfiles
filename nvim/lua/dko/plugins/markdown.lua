@@ -21,9 +21,7 @@ return {
         go_prev_heading = "[[", -- (string|boolean) set cursor to previous section heading
       },
       on_attach = function(bufnr)
-        local map = vim.keymap.set
-        local opts = { buffer = bufnr }
-        map("n", "<c-x>", "<Cmd>MDTaskToggle<CR>", opts)
+        require("dko.mappings").bind_markdown(bufnr)
       end,
     },
   },
@@ -45,6 +43,7 @@ return {
     end,
   },
 
+  -- https://github.com/lukas-reineke/headlines.nvim
   {
     "lukas-reineke/headlines.nvim",
     cond = has_ui,
@@ -54,7 +53,7 @@ return {
       markdown = {
         bullets = {},
       },
-    }, -- or `opts = {}`
+    },
   },
 
   {
