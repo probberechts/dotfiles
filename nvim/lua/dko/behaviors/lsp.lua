@@ -160,7 +160,10 @@ autocmd("User", {
 
 autocmd({ "BufWritePre", "FileWritePre" }, {
   desc = "Format with LSP on save",
-  callback = function()
+  callback = function(args)
+    if not vim.uv.fs_stat(args.file) then
+      vim.b.newfile = 1
+    end
     -- callback gets arg
     -- {
     --   buf = 1,
