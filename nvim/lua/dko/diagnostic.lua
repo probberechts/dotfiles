@@ -1,6 +1,11 @@
-local icons = require("dko.icons")
+local dkoicons = require("dko.icons")
+local dkosettings = require("dko.settings")
+local dkostring = require("dko.utils.string")
+local smallcaps = dkostring.smallcaps
 
-local M = {}
+local M = {
+  message_formatters = {},
+}
 
 local sev_to_icon = {}
 M.signs = { linehl = {}, numhl = {}, text = {} }
@@ -8,7 +13,7 @@ M.signs = { linehl = {}, numhl = {}, text = {} }
 local SIGN_TYPES = { "Error", "Warn", "Info", "Hint" }
 for _, type in ipairs(SIGN_TYPES) do
   local hl = ("DiagnosticSign%s"):format(type)
-  local icon = icons[type]
+  local icon = dkoicons[type]
 
   local key = type:upper()
   local code = vim.diagnostic.severity[key]
@@ -40,7 +45,7 @@ local function float_format(diagnostic)
     message = "Line with postspace.",
     namespace = 12,
     severity = 4,
-    source = "Lua Diagnostics.",
+    source = "Lua Diagnostics.", -- or "tsserver"
     user_data = {
       lsp = {
         code = "trailing-space"
@@ -54,6 +59,7 @@ local function float_format(diagnostic)
   -- e.g. ts_ls in dko/plugins/lsp.lua
 
   local symbol = sev_to_icon[diagnostic.severity] or "-"
+
   local source = diagnostic.source
   if source then
     if source.sub(source, -1, -1) == "." then
@@ -64,10 +70,22 @@ local function float_format(diagnostic)
     source = "NIL.SOURCE"
     vim.print(diagnostic)
   end
-  local source_tag =
-    require("dko.utils.string").smallcaps(("%s"):format(source))
+
+  local source_tag = smallcaps(("%s"):format(source))
   local code = diagnostic.code and ("[%s]"):format(diagnostic.code) or ""
-  return ("%s %s %s\n%s"):format(symbol, source_tag, code, diagnostic.message)
+
+  local message = diagnostic.message
+  local formatter = M.message_formatters[source]
+  message = formatter ~= nil and formatter(diagnostic) or diagnostic.message
+
+  -- e.g.
+  -- 1. ✖ ᴛssᴇʀᴠᴇʀ [2741]
+  --    Property 'first' is missing in type '{}' but required in type 'Deep'.
+  return ("%s %s %s\n%s"):format(symbol, source_tag, code, message)
+
+  -- 1. ✖ Property 'first' is missing in type '{}' but required in type 'Deep'.
+  --    ᴛssᴇʀᴠᴇʀ [2741]
+  -- return ("%s %s\n%s %s"):format(symbol, message, source_tag, code)
 end
 
 vim.diagnostic.config({
@@ -78,6 +96,10 @@ vim.diagnostic.config({
 
   -- virtual_lines = { only_current_line = true }, -- for lsp_lines.nvim
   virtual_text = false,
+
+  jump = {
+    float = dkosettings.get("diagnostics.goto_float"),
+  },
 
   float = {
     border = require("dko.settings").get("border"),
