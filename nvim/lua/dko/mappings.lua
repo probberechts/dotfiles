@@ -3,6 +3,8 @@ local dkosettings = require("dko.settings")
 
 local Methods = vim.lsp.protocol.Methods
 
+local M = {}
+
 ---Map and return with unbind function
 ---@return function # unbind
 local function map(modes, lhs, rhs, opts)
@@ -11,6 +13,8 @@ local function map(modes, lhs, rhs, opts)
     vim.keymap.del(modes, lhs, opts)
   end
 end
+
+M.map = map
 
 ---wrap handler with buffer assertions
 ---@return function # unbind
@@ -29,8 +33,6 @@ local function emap(modes, keys, handler, opts)
     return handler
   end, opts)
 end
-
-local M = {}
 
 map("n", "<Esc><Esc>", function()
   vim.cmd.doautoall("User EscEscStart")
@@ -370,8 +372,6 @@ end, { desc = "Copy treesitter captures under cursor" })
 -- External mappings
 -- =============================================================================
 
-local M = {}
-
 -- =============================================================================
 -- FT
 -- =============================================================================
@@ -397,89 +397,6 @@ M.ft.lua = function()
     expr = true,
     remap = true, -- follow into gd mapping
   })
-end
-
--- ===========================================================================
--- Buffer: LSP integration
--- Mix of https://github.com/neovim/nvim-lspconfig#suggested-configuration
--- and :h lsp
--- ===========================================================================
-
----List of unbind functions, keyed by "b"..bufnr
----@type table<string, fun()[]>
-M.lsp_bindings = {}
-
----Run all the unbind functions for the bufnr
----@param bufnr number
-M.unbind_lsp = function(bufnr)
-  local key = "b" .. bufnr
-  for _, unbind in ipairs(M.lsp_bindings[key]) do
-    unbind()
-  end
-  M.lsp_bindings[key] = nil
-  vim.b.did_bind_lsp = false
-end
-
-local function handle_lsp_defintions()
-  if dkosettings.get("finder") == "fzf" then
-    return require("fzf-lua").lsp_definitions()
-  end
-  return vim.lsp.buf.definition()
-end
-
--- Bindings for vim.lsp. Conflicts with bind_coc
----@param bufnr number
-M.bind_lsp = function(bufnr)
-  if vim.b.did_bind_lsp then -- First LSP attached
-    return
-  end
-  vim.b.did_bind_lsp = true
-
-  local function lspmap(modes, lhs, rhs, opts)
-    opts.silent = true
-    opts.buffer = bufnr
-    local unbind = map(modes, lhs, rhs, opts)
-    local key = "b" .. bufnr
-    M.lsp_bindings[key] = M.lsp_bindings[key] or {}
-    table.insert(M.lsp_bindings[key], unbind)
-  end
-
-  lspmap("n", "gd", handle_lsp_defintions, { desc = "LSP definition" })
-
-  -- gri is default as of 0.11
-  lspmap("n", "gri", function()
-    if dkosettings.get("finder") == "fzf" then
-      return require("fzf-lua").lsp_implementations()
-    end
-    return vim.lsp.buf.implementation()
-  end, { desc = "LSP implementation" })
-
-  --map('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  --map('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  --[[ map('n', '<space>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts) ]]
-
-  lspmap("n", "<Leader>D", function()
-    if dkosettings.get("finder") == "fzf" then
-      return require("fzf-lua").lsp_typedefs()
-    end
-    return vim.lsp.buf.type_definition()
-  end, { desc = "LSP type_definition" })
-
-  -- gra is default in 0.11, can use either
-  lspmap("n", "<Leader><Leader>", function()
-    vim.lsp.buf.code_action()
-  end, { desc = "LSP Code Action" })
-
-  lspmap("n", "grr", function()
-    if dkosettings.get("finder") == "fzf" then
-      return require("fzf-lua").lsp_references()
-    end
-    return vim.lsp.buf.references()
-      ---@diagnostic disable-next-line: missing-parameter
-      or vim.lsp.buf.references()
-  end, { desc = "LSP references" })
 end
 
 -- Bind "K" to

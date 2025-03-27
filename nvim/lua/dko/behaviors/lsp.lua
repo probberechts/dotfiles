@@ -1,4 +1,5 @@
 local dkosettings = require("dko.settings")
+local dkolspmappings = require("dko.mappings.lsp")
 local dkomappings = require("dko.mappings")
 local dkoformat = require("dko.utils.format")
 local augroup = require("dko.utils.autocmd").augroup
@@ -36,7 +37,7 @@ autocmd("LspAttach", {
     local bufnr = args.buf
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     if client then -- just to shut up type checking
-      dkomappings.bind_lsp(bufnr)
+      dkolspmappings.bind_lsp(bufnr)
     end
   end,
   group = augroup("dkolsp"),
@@ -83,7 +84,7 @@ autocmd("LspDetach", {
     local key = "b" .. bufnr
 
     -- No mappings on buffer
-    if dkomappings.lsp_bindings[key] == nil then
+    if dkolspmappings.bound.lsp[key] == nil then
       vim.b.did_bind_lsp = false -- just in case
       return
     end
@@ -95,15 +96,14 @@ autocmd("LspDetach", {
       method = Methods.textDocument_definition,
     })
     if #clients == 0 then -- Last LSP attached
-      vim.notify(
-        ("No %s providers remaining. Unbinding %d lsp mappings"):format(
-          Methods.textDocument_definition,
-          dkomappings.lsp_bindings[key]
-        ),
-        vim.log.levels.INFO,
-        { title = "[LSP]", render = "wrapped-compact" }
-      )
-      dkomappings.unbind_lsp(bufnr)
+      if vim.fn.bufwinnr(bufnr) > -1 then
+        vim.notify(
+          ("No %s providers remaining."):format(Methods.textDocument_definition),
+          vim.log.levels.INFO,
+          { title = "[LSP]", render = "wrapped-compact" }
+        )
+        dkolspmappings.unbind_lsp(bufnr, "lsp")
+      end
     end
   end,
   group = augroup("dkolsp"),
@@ -133,43 +133,9 @@ autocmd("LspDetach", {
 autocmd("FileType", {
   desc = "Set mappings/format on save for specific filetypes if coc.nvim is enabled",
   callback = function(opts)
-    --- order matters here
-    if
-      dkosettings.get("coc.enabled")
-      and vim.tbl_contains(dkosettings.get("coc.fts"), vim.bo.filetype)
-    then
-      vim.cmd.CocStart()
-      dkomappings.bind_coc(opts)
-      --- @TODO move this to a tools-based registration
-      -- dkoformat.add_formatter("coc")
-      -- vim.b.enable_format_on_save = true
-    else
-      -- explicitly disable coc
-      vim.b.coc_enabled = 0
-      vim.b.coc_diagnostic_disable = 1
-      vim.b.coc_suggest_disable = 1
-    end
     dkomappings.bind_snippy()
     dkomappings.bind_completion(opts)
     dkomappings.bind_hover(opts)
-  end,
-  group = augroup("dkolsp"),
-})
-
--- Triggered after the coc services have started.
--- If you want to trigger an action of coc after Vim has started, this
--- autocmd should be used because coc is always started asynchronously.
-autocmd("User", {
-  pattern = "CocNvimInit",
-  callback = function()
-    require("dko.behaviors.escesc").add(function()
-      if
-        dkosettings.get("coc.enabled")
-        and vim.fn.exists("*coc#float#close_all")
-      then
-        vim.fn["coc#float#close_all"]()
-      end
-    end, "Close coc.nvim floats on <Esc><Esc>")
   end,
   group = augroup("dkolsp"),
 })
