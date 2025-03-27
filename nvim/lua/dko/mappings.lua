@@ -1,9 +1,17 @@
 local dkobuffer = require("dko.utils.buffer")
-local dkosettings = require("dko.settings")
-
-local Methods = vim.lsp.protocol.Methods
 
 local M = {}
+
+---@param name 'fzf-lua'|'snacks'
+---@param method string
+---@param args? any
+---@return function -- fun()
+M.plugin = function(name, method, args)
+  return function()
+    return name == "snacks" and _G["Snacks"]["picker"][method](args)
+      or require(name)[method](args)
+  end
+end
 
 ---Map and return with unbind function
 ---@return function # unbind
@@ -330,8 +338,8 @@ map("n", "<C-W>d", function()
   vim.diagnostic.open_float()
 end, { desc = "Open diagnostic float at cursor" })
 map("n", "<C-W><C-D>", "<C-W>d", {
-  remap = true,
   desc = "Open diagnostic float at cursor",
+  remap = true,
 })
 
 -- ===========================================================================
@@ -371,33 +379,6 @@ end, { desc = "Copy treesitter captures under cursor" })
 -- =============================================================================
 -- External mappings
 -- =============================================================================
-
--- =============================================================================
--- FT
--- =============================================================================
-
-M.ft = {}
-
-M.ft.lua = function()
-  map("n", "gf", function()
-    local line = vim.api.nvim_get_current_line()
-    if line:match("require%(") then
-      local bufnr = vim.api.nvim_get_current_buf()
-      local has_definition_handler = #vim.lsp.get_clients({
-        bufnr = bufnr,
-        method = Methods.textDocument_definition,
-      }) > 0
-      if has_definition_handler then
-        return "gd"
-      end
-    end
-  end, {
-    buffer = true,
-    desc = "[ft.lua] Use gd if lsp bound and line line contains 'require('",
-    expr = true,
-    remap = true, -- follow into gd mapping
-  })
-end
 
 -- Bind <C-Space> to open nvim-cmp
 -- Bind <C-n> <C-p> to pick based on coc or nvim-cmp open
@@ -586,9 +567,7 @@ M.bind_gitsigns = function(bufnr)
     if vim.wo.diff then
       return "]h"
     end
-    vim.schedule(function()
-      require("gitsigns").next_hunk()
-    end)
+    vim.schedule_wrap(require("gitsigns").next_hunk)
     return "<Ignore>"
   end, { expr = true, desc = "Next hunk" })
 
@@ -596,9 +575,7 @@ M.bind_gitsigns = function(bufnr)
     if vim.wo.diff then
       return "[h"
     end
-    vim.schedule(function()
-      require("gitsigns").prev_hunk()
-    end)
+    vim.schedule_wrap(require("gitsigns").prev_hunk)
     return "<Ignore>"
   end, { expr = true, desc = "Prev hunk" })
 
@@ -843,59 +820,6 @@ M.bind_fzf_terminal_mappings = function()
   end
 end
 
-M.bind_fzf = function()
-  local fzf = require("fzf-lua")
-
-  if dkosettings.get("finder") ~= "fzf" then
-    return
-  end
-
-  emap("n", M.picker.buffers, function()
-    fzf.buffers()
-  end, { desc = "fzf: pick existing buffer" })
-
-  emap("n", M.picker.code_actions, function()
-    fzf.lsp_code_actions()
-  end, { desc = "fzf: pick code action" })
-
-  emap("n", M.picker.files, function()
-    fzf.files()
-  end, { desc = "fzf: files in cwd" })
-
-  emap("n", M.picker.git_files, function()
-    fzf.git_files()
-  end, { desc = "fzf: git files" })
-
-  emap("n", M.picker.grep, function()
-    fzf.live_grep_resume()
-  end, { desc = "fzf: live grep CWD" })
-
-  emap("n", M.picker.mru, function()
-    fzf.oldfiles({
-      include_current_session = true,
-      stat_file = true, -- verify files exist on disk
-    })
-  end, { desc = "fzf: pick from previously opened files" })
-
-  emap("n", M.picker.project, function()
-    fzf.files({
-      cwd = require("dko.utils.project").root(),
-    })
-  end, {
-    desc = "fzf: project root",
-  })
-
-  emap("n", M.picker.git_status, function()
-    fzf.git_status()
-  end, { desc = "fzf: pick from git status files" })
-
-  emap("n", M.picker.vim, function()
-    fzf.files({
-      cwd = vim.fn.stdpath("config"),
-    })
-  end, { desc = "fzf: nvim/ files" })
-end
-
 -- =============================================================================
 -- Plugin: snacks.nvim
 -- =============================================================================
@@ -907,50 +831,6 @@ M.bind_snacks_notifier = function()
     desc = "Open the snacks notifier history window",
     nowait = true,
   })
-end
-
-M.bind_snacks_picker = function()
-  if dkosettings.get("finder") ~= "snacks" then
-    return
-  end
-
-  local sp = _G["Snacks"].picker
-
-  emap("n", M.picker.buffers, function()
-    sp.buffers()
-  end, { desc = "snacks: pick existing buffer" })
-
-  emap("n", M.picker.code_actions, function()
-    sp.code_actions()
-  end, { desc = "snacks: pick code action" })
-
-  emap("n", M.picker.files, function()
-    sp.files()
-  end, { desc = "snacks: files in cwd" })
-
-  emap("n", M.picker.git_files, function()
-    sp.git_files()
-  end, { desc = "snacks: git files" })
-
-  emap("n", M.picker.mru, function()
-    sp.smart()
-  end, { desc = "snacks: pick from previously opened files" })
-
-  emap("n", M.picker.project, function()
-    sp.files({
-      dirs = { require("dko.utils.project").root() },
-    })
-  end, { desc = "snacks: project root" })
-
-  emap("n", M.picker.git_status, function()
-    sp.git_status()
-  end, { desc = "snacks: pick from git status files" })
-
-  emap("n", M.picker.vim, function()
-    sp.files({
-      dirs = { vim.fn.stdpath("config") },
-    })
-  end, { desc = "snacks: nvim/ files" })
 end
 
 -- ===========================================================================
