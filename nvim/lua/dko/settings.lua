@@ -16,7 +16,7 @@ settings.diagnostics = {
   goto_float = true,
 }
 
----@type 'fzf' | 'telescope'
+---@type 'fzf' | 'snacks'
 settings.finder = "fzf"
 
 settings.heirline = {
