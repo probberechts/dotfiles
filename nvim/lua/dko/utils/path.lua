@@ -1,4 +1,11 @@
+local dkostring = require("dko.utils.string")
+
 local M = {}
+
+M.longest_subdir = function(path)
+  local dirs = vim.split(path, "/")
+  return dkostring.longest(dirs)
+end
 
 ---Run pathshorten at decreasing lengths until fits in space
 ---@param space integer
@@ -11,7 +18,6 @@ M.fit = function(space, path)
   for _, segment in ipairs(segments) do
     longest = segment:len() > longest and segment:len() or longest
   end
-
 
   local len = longest
   while len > 0 and type(final) ~= "string" do
