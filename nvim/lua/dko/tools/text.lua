@@ -8,23 +8,69 @@ tools.register({
     return {
       settings = {
         ["harper-ls"] = {
+          codeActions = {
+            ForceStable = true,
+          },
           linters = {
-            spell_check = false,
-            spelled_numbers = false,
-            an_a = true,
-            sentence_capitalization = false,
-            unclosed_quotes = true,
-            wrong_quotes = false,
-            long_sentences = false,
-            repeated_words = true,
-            spaces = false,
-            matcher = true,
-            correct_number_suffix = true,
-            number_suffix_capitalization = true,
-            multiple_sequential_pronouns = true,
+            Matcher = false, -- e.g. deps to dependencies
+            SentenceCapitalization = false,
+            SpellCheck = false,
+          },
+          userDictPath = os.getenv("DOTFILES") .. "/harper-ls/dictionary.txt",
+        },
+      },
+    }
+  end,
+})
+
+tools.register({
+  mason_type = "lsp",
+  name = "texlab",
+  runner = "mason-lspconfig",
+  lspconfig = function()
+    return {
+      settings = {
+        texlab = {
+          -- build = {
+          -- executable = "latexmk",
+          -- args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
+          -- onSave = true,
+          -- },
+        },
+      },
+    }
+  end,
+})
+
+tools.register({
+  mason_type = "lsp",
+  name = "ltex",
+  runner = "mason-lspconfig",
+  lspconfig = function()
+    return {
+      settings = {
+        ltex = {
+          capabilities = require("cmp_nvim_lsp").default_capabilities(),
+          checkFrequency = "edit",
+          language = "en-US",
+          completionEnabled = true,
+          additionalRules = {
+            enablePickyRules = true,
           },
         },
       },
+    }
+  end,
+})
+
+tools.register({
+  mason_type = "tool",
+  name = "bibtex-tidy",
+  fts = { "bib" },
+  efm = function()
+    return {
+      formatCommand = "bibtex-tidy --quiet -",
+      formatStdin = true,
     }
   end,
 })
