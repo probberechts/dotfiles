@@ -34,6 +34,9 @@ virtualenv_info() {
 # pip
 # ==============================================================================
 
+# https://pip.pypa.io/en/stable/topics/configuration/#pip-config-file
+export PIP_CONFIG_FILE="${XDG_CONFIG_HOME}/pip/pip.conf"
+
 __dko_has "pip" && {
   if [ -n "$ZSH_VERSION" ]; then
     eval "$(python3 -m pip completion --zsh)"
@@ -41,5 +44,9 @@ __dko_has "pip" && {
     eval "$(python3 -m pip completion --bash)"
   fi
 }
+
+# ==============================================================================
+
+DKO_SOURCE="${DKO_SOURCE} }"
 
 # vim: ft=sh :
