@@ -34,7 +34,7 @@ alias mkdir="nocorrect mkdir"
 # ============================================================================
 
 # file is required and missing on busybox
-__dko_has 'file' && __dko_has 'git' && {
+__dko_has 'git' && {
   declare -A ZINIT
   ZINIT[HOME_DIR]="${XDG_DATA_HOME}/zinit"
   ZINIT[COMPINIT_OPTS]=-C;
@@ -390,3 +390,5 @@ up() {
 
 DKO_SOURCE="${DKO_SOURCE} }"
 #vim: ft=zsh
+
+. "$HOME/.local/share/../bin/env"
