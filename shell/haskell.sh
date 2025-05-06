@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # shell/haskell.sh
 #
 # uses vars from shell/vars and functions from shell/functions

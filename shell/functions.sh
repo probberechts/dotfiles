@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Shell functions
 # Sourced in bash and zsh by loader
 
