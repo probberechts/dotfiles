@@ -88,8 +88,6 @@ function {
     atpull'%atclone' \
     '@sharkdp/fd' \
     \
-    'junegunn/fzf' \
-    \
     mv'jq* -> jq' \
     'jqlang/jq' \
     \
