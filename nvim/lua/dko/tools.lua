@@ -201,7 +201,6 @@ M.get_tools = function()
 end
 
 -- LSPs to install with mason via mason-lspconfig
--- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 ---@return string[]
 M.get_mason_lsps = function()
   return M.groups_to_tools(
