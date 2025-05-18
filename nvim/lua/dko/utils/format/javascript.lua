@@ -3,7 +3,7 @@ local dkonode = require("dko.utils.node")
 local toast = require("dko.utils.notify").toast
 
 local function format_with_lsp()
-  if vim.lsp.get_clients({ bufnr = 0, name = "eslint" }) == 0 then
+  if #vim.lsp.get_clients({ bufnr = 0, name = "eslint" }) == 0 then
     toast("eslint-lsp not attached", vim.log.levels.WARN, {
       group = "format",
       title = "[LSP] eslint-lsp",
