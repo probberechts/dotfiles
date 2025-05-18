@@ -49,6 +49,8 @@ __symlink() {
     ".config/mise/config.toml"
   dko-symlink "shell/dot.inputrc" \
     ".config/readline/inputrc"
+  dko-symlink "tmux/tmux.conf" \
+    ".config/tmux/tmux.conf"
 
   # (n)vim
   dko-symlink "nvim" \
