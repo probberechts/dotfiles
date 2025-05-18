@@ -32,16 +32,12 @@ local dkotable = require("dko.utils.table")
 ---@field autostart? boolean
 ---@field package _on_attach? fun(client: vim.lsp.Client, bufnr: integer)
 
----@alias LspconfigDef fun(): lspconfig.Config gets passed to lsp's setup()
-
 ---@alias MasonToolType
 ---|'"lsp"'
 ---|'"tool"'
 
----@alias ToolName string
-
 ---@class Tool
----@field name ToolName -- tool or lspconfig name
+---@field name string -- tool or lspconfig name
 ---@field mason_type? MasonToolType -- if present, try to install with mason
 ---@field require? string -- an executable name or _, for mason install
 ---@field runner? 'lspconfig' | 'mason-lspconfig'
@@ -57,13 +53,10 @@ local M = {}
 ---@type { tool: ToolGroups[], lsp: ToolGroups[] }
 M.install_groups = { tool = {}, lsp = {} }
 
----@alias LspconfigMiddleware fun(table): table
----@alias LspconfigResolver fun(middleware?: LspconfigMiddleware): LspconfigDef
-
----@type table<string, LspconfigResolver>
+---@type table<string, boolean>
 M.mason_lspconfig_resolvers = {}
 
----@type table<string, LspconfigResolver>
+---@type table<string, boolean>
 M.lspconfig_resolvers = {}
 
 local runner_to_resolvers_map = {
@@ -77,12 +70,7 @@ local efm_configs = {}
 ---@type table<ft, boolean>
 local efm_filetypes = {}
 
-local function noop_resolver()
-  return function()
-    -- noop
-  end
-end
-
+---@return lspconfig.Config
 local function middleware_pass(lspconfig)
   return lspconfig or {}
 end
@@ -119,12 +107,7 @@ M.register = function(config)
   -- ===========================================================================
   if config.runner then
     local config_map = runner_to_resolvers_map[config.runner]
-    config_map[config.name] = function(middleware)
-      middleware = middleware or middleware_pass
-      local lspconfig = config.lspconfig and config.lspconfig() or {}
-      local middleware_applied = middleware(lspconfig)
-      return middleware_applied
-    end
+    config_map[config.name] = true
   end
 end
 
