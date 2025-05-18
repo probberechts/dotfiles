@@ -8,7 +8,7 @@ M.is_docker_exec = function()
 end
 
 M.is_remote = function()
-  return vim.env.SSH_TTY ~= nil
+  return vim.env.SSH_CONNECTION ~= nil
     or M.is_docker_exec()
     or vim.env.NVIM_INSTALL_ALL ~= nil
 end
