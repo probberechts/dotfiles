@@ -51,4 +51,5 @@ tools.register({
   name = "ruff",
   mason_type = "lsp",
   require = "python",
+  runner = "mason-lspconfig",
 })
