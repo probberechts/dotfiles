@@ -1,6 +1,3 @@
-local dkomappings = require("dko.mappings")
-local dkosettings = require("dko.settings")
-
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
@@ -17,7 +14,7 @@ return {
           show_hidden = true,
         },
       })
-      dkomappings.bind_oil()
+      require("dko.mappings").bind_oil()
     end,
   },
 
@@ -42,7 +39,9 @@ return {
         --- something weird about the cursor positioning of this compared to the
         --- built-in ]d [d
         suffix = BRACKETED_DISABLED,
-        options = { float = dkosettings.get("diagnostics.goto_float") },
+        options = {
+          float = require("dko.settings").get("diagnostics.goto_float"),
+        },
       },
       -- file = { suffix = "f" },
       indent = { suffix = BRACKETED_DISABLED }, -- confusing
@@ -141,7 +140,7 @@ return {
   --         show_source = true,
   --       },
   --     })
-  --     dkosettings.set("diagnostics.goto_float", false)
+  --     require("dko.settings").set("diagnostics.goto_float", false)
   --   end,
   -- },
 
@@ -183,7 +182,7 @@ return {
           max_win_width = 0.5,
         },
         style = {
-          border = dkosettings.get("border"),
+          border = require("dko.settings").get("border"),
           hide_buffer_id = true,
           highlights = {
             background = "dkoBgAlt",
@@ -231,7 +230,7 @@ return {
   {
     "yorickpeterse/nvim-window",
     cond = has_ui,
-    keys = vim.tbl_values(dkomappings.nvim_window),
+    keys = vim.tbl_values(require("dko.mappings").nvim_window),
     config = function()
       require("nvim-window").setup({})
       require("dko.mappings").bind_nvim_window()
@@ -257,7 +256,7 @@ return {
     config = function()
       require("toggleterm").setup({
         float_opts = {
-          border = dkosettings.get("border"),
+          border = require("dko.settings").get("border"),
         },
         -- built-in mappings only work on LAST USED terminal, so it confuses
         -- the buffer terminal with the floating terminal
@@ -274,7 +273,7 @@ return {
   {
     "aaronik/treewalker.nvim",
     config = function()
-      dkomappings.bind_treewalker()
+      require("dko.mappings").bind_treewalker()
     end,
   },
 
