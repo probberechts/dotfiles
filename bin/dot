@@ -6,7 +6,7 @@
 
 # ==============================================================================
 
-latest_xcode_major="15"
+latest_xcode_major="16"
 
 # ==============================================================================
 # Command functions
@@ -32,10 +32,9 @@ __dko_dotfiles__usage() {
     daily       -- secret, Packages / Developer Tools
 
   Packages / Developer Tools
+    mise        -- update mise and mise-installed tools
     gem         -- update rubygems and global gems for current ruby
-    go          -- golang
     pip         -- update all versions of pip (OS dependent)
-    pipx        -- update pipx-installed cli tools
     neovim      -- update neovim to latest prerelease build
 
   System: Debian/Ubuntu
@@ -95,10 +94,37 @@ __dko_dotfiles__update_secret() {
 __dko_dotfiles__update_daily() {
   __dko_dotfiles__update_secret
 
-  __dko_dotfiles__go__require_go && __dko_dotfiles__go__update_go_packages
-
+  __dko_dotfiles__tools__require_mise && __dko_dotfiles__tools__update_mise
+  __dko_dotfiles__py__update_pip
   __dko_dotfiles__ruby__require_rubygems && __dko_dotfiles__ruby__update_gems
 
+}
+
+# ----------------------------------------------------------------------------
+# Tools: mise
+# ----------------------------------------------------------------------------
+
+__dko_dotfiles__tools__require_mise() {
+  __dko_has mise && return 0
+  __dko_warn "mise is not installed"
+  return 1
+}
+
+__dko_dotfiles__tools__update_mise() {
+  __dko_status "Updating mise"
+  __dko_dotfiles__tools__require_mise || return 1
+
+  __dko_status "Updating mise itself"
+  mise self-update --yes || {
+    __dko_err "Could not update mise"
+    return 1
+  }
+
+  __dko_status "Updating mise tools"
+  mise upgrade || {
+    __dko_err "Could not update mise tools"
+    return 1
+  }
 }
 
 # ----------------------------------------------------------------------------
@@ -133,27 +159,6 @@ __dko_dotfiles__ruby__update_gems() {
 }
 
 # ----------------------------------------------------------------------------
-# Go
-# ----------------------------------------------------------------------------
-
-# pass any arg to silence
-__dko_dotfiles__go__require_go() {
-  __dko_has go && return 0
-  __dko_warn "go is not installed"
-  return 1
-}
-
-__dko_dotfiles__go__update_go_packages() {
-  __dko_status "Updating go packages"
-  __dko_dotfiles__go__require_go || return 1
-
-  go get -u all || {
-    __dko_err "Could not update go packages"
-    return 1
-  }
-}
-
-# ----------------------------------------------------------------------------
 # Python
 # ----------------------------------------------------------------------------
 
@@ -167,12 +172,9 @@ __dko_dotfiles__py__update_pip() {
   python -m pip install --upgrade pip
 }
 
-__dko_dotfiles__py__update_pipx() {
-  __dko_status "Updating pipx tools"
-  ! __dko_has pipx &&
-    __dko_warn "pipx not found" && return 1
-  pipx upgrade-all
-}
+# ----------------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------------
 
 __dko_dotfiles__update_neovim() {
   if __dko_has brew; then
@@ -190,6 +192,8 @@ __dko_dotfiles__update_neovim() {
     fi
   elif __dko_has pamac; then
     pamac build neovim-git
+  else
+    __dko_usage "use 'get-nvim' to download the latests release"
   fi
 
   local res=$?
@@ -316,11 +320,6 @@ __dko_dotfiles__darwin__update_brew_postupgrade() {
     brew unlink curl && brew link --force curl
   fi
 
-  # re-init goenv
-  if grep -q "goenv" <<<"$outdated"; then
-    goenv rehash
-  fi
-
   # do not use zsh git completion, the bash one is better
   if grep -q "git" <<<"$outdated"; then
     "${DOTFILES}/bin/dko-fix-git-completion"
@@ -348,10 +347,9 @@ __dko_dotfiles() {
   dotfiles) __dko_dotfiles__update ;;
   secret) __dko_dotfiles__update_secret ;;
   daily) __dko_dotfiles__update_daily ;;
+  mise) __dko_dotfiles__tools__update_mise ;;
   gem) __dko_dotfiles__ruby__update_gems ;;
-  go) __dko_dotfiles__go__update_go_packages ;;
   pip) __dko_dotfiles__py__update_pip ;;
-  pipx) __dko_dotfiles__py__update_pipx ;;
   neovim) __dko_dotfiles__update_neovim ;;
 
   *)

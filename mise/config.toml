@@ -8,6 +8,7 @@ node = "20"
 ruby = "3.2"
 go = "latest"
 "aqua:junegunn/fzf" = "latest"
+uv = "latest"
 
 [settings]
 experimental = true
