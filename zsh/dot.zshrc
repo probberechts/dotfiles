@@ -394,5 +394,3 @@ up() {
 
 DKO_SOURCE="${DKO_SOURCE} }"
 #vim: ft=zsh
-
-. "$HOME/.local/share/../bin/env"
