@@ -9,6 +9,7 @@ ruby = "3.2"
 go = "latest"
 uv = "latest"
 "aqua:neovim/neovim" = "latest"
+"aqua:tree-sitter/tree-sitter" = "latest"
 
 [settings]
 experimental = true
