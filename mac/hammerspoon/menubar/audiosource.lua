@@ -6,8 +6,15 @@ print("== menubar.audiosource")
 local audiosourceBar = hs.menubar.new()
 
 local function nextAudiosource()
-  hs.execute("/opt/homebrew/bin/SwitchAudioSource -n")
+  local _, status = hs.execute("/opt/homebrew/bin/SwitchAudioSource -n")
+  if not status then
+    hs.notify.show(
+      "Failed to SwitchAudioSource",
+      "Is SwitchAudioSource installed?"
+    )
+  end
 end
+audiosourceBar:setClickCallback(nextAudiosource)
 
 local function setAudiosourceBarTitle(e)
   if e ~= "dOut" then
@@ -24,20 +31,16 @@ local function setAudiosourceBarTitle(e)
   end
   audiosourceBar:setTitle(title)
 end
-
-audiosourceBar:setClickCallback(nextAudiosource)
-
 setAudiosourceBarTitle("dOut")
 
-local audioWatcher = hs.audiodevice.watcher
-audioWatcher.setCallback(setAudiosourceBarTitle)
-audioWatcher.start()
+hs.audiodevice.watcher.setCallback(setAudiosourceBarTitle)
+hs.audiodevice.watcher.start()
 
-local audiosource = {
+local M = {
   name = "audiosource",
+  destructor = function()
+    hs.audiodevice.watcher.stop()
+    audiosourceBar:delete()
+  end,
 }
-function audiosource.destructor()
-  audioWatcher.stop()
-  audiosourceBar:delete()
-end
-return audiosource
+return M
