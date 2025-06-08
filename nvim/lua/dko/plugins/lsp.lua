@@ -31,6 +31,7 @@ return {
 
   -- e.g. for go.mod and swagger yaml
   -- https://github.com/icholy/lsplinks.nvim
+  -- Used in dko.utils.lsp
   {
     "icholy/lsplinks.nvim",
     cond = has_ui,
