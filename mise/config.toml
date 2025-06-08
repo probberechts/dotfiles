@@ -8,6 +8,7 @@ node = "20"
 ruby = "3.2"
 go = "latest"
 uv = "latest"
+"aqua:neovim/neovim" = "latest"
 
 [settings]
 experimental = true
