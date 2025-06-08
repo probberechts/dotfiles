@@ -20,7 +20,7 @@ export DKO_SOURCE="${DKO_SOURCE} -> .bashrc {"
 # BASH settings
 # ============================================================================
 
-export HISTFILE="${HOME}/.local/bash_history"
+export HISTFILE="${XDG_STATE_HOME}/bash_history"
 
 # ----------------------------------------------------------------------------
 # Options
