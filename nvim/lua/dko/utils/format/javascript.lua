@@ -1,41 +1,48 @@
-local function format_with_lsp()
-  if #vim.lsp.get_clients({ bufnr = 0, name = "eslint" }) == 0 then
-    require("dko.utils.notify").toast(
-      "eslint-lsp not attached",
-      vim.log.levels.WARN,
-      {
-        group = "format",
-        title = "[LSP] eslint-lsp",
-        render = "wrapped-compact",
-      }
-    )
-    return false
-  end
+local M = {}
 
-  vim.cmd.EslintFixAll()
-  local formatter = vim.b.has_eslint_plugin_prettier
-      and "eslint-plugin-prettier"
-    or "eslint-lsp"
-  require("dko.utils.notify").toast(formatter, vim.log.levels.INFO, {
-    group = "format",
-    title = "[LSP] eslint-lsp",
-    render = "wrapped-compact",
-  })
-  return true
-end
-
-return function()
-  -- Find and buffer cache prettier presence
+M.has_eslint_plugin_prettier = function()
   if vim.b.has_eslint_plugin_prettier == nil then
     vim.b.has_eslint_plugin_prettier =
       require("dko.utils.node").has_eslint_plugin("prettier")
   end
+  return vim.b.has_eslint_plugin_prettier
+end
 
-  -- Run eslint via nvim-lsp eslint-lsp
-  format_with_lsp()
+---@return boolean
+M.format_with_lsp = function()
+  local level = vim.log.levels.ERROR
+  local message = "eslint-lsp"
+
+  local eslint_lsps = vim.lsp.get_clients({ bufnr = 0, name = "eslint" })
+  if #eslint_lsps == 0 then
+    message = ("eslint-lsp not attached %s"):format(
+      vim.b.has_eslint_plugin_prettier and "and eslint-plugin-prettier present"
+        or ""
+    )
+  elseif vim.fn.exists(":LspEslintFixAll") then
+    vim.cmd.LspEslintFixAll()
+    message = M.has_eslint_plugin_prettier() and "eslint-plugin-prettier"
+      or message
+    level = vim.log.levels.INFO
+  else
+    message = "Missing :LspEslintFixAll from nvim-lspconfig"
+  end
+
+  require("dko.utils.notify").toast(message, level, {
+    group = "format",
+    title = "[LSP] eslint-lsp",
+    render = "wrapped-compact",
+  })
+  return level ~= vim.log.levels.ERROR
+end
+
+M.format = function()
+  if M.format_with_lsp() then
+    return true
+  end
 
   -- Finally, run prettier via efm if eslint-plugin-prettier not found
-  if not vim.b.has_eslint_plugin_prettier then
+  if not M.has_eslint_plugin_prettier() then
     local did_efm_format =
       require("dko.utils.format.efm").format({ pipeline = "javascript" })
     if not did_efm_format then
@@ -52,3 +59,5 @@ return function()
     return did_efm_format
   end
 end
+
+return M
