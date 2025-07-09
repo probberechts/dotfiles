@@ -270,7 +270,6 @@ return {
     init = function()
       vim.g.matchup_matchparen_deferred = 1
       vim.g.matchup_matchparen_status_offscreen = 0
-      -- see behaviors.lua for treesitter integration
     end,
   },
 
@@ -340,23 +339,6 @@ return {
   -- =========================================================================
   -- Writing
   -- =========================================================================
-
-  {
-    "reedes/vim-pencil",
-    ft = { "markdown", "mdx", "tex", "bib" },
-    config = function()
-      vim.cmd([[let g:pencil#conceallevel = 2]]) -- no conceal
-      vim.cmd([[autocmd Filetype markdown PencilSoft]])
-      vim.cmd([[autocmd Filetype tex Pencil]])
-      vim.cmd([[autocmd Filetype bib Pencil]])
-
-      -- vim.cmd[[autocmd Filetype markdown set nobreakindent]] -- this is set by pencil and its slow af
-
-      -- Wrapping
-      vim.cmd([[autocmd Filetype markdown set linebreak]])
-      vim.cmd([[autocmd Filetype markdown set breakindentopt=list:-1]])
-    end,
-  },
 
   {
     "folke/zen-mode.nvim",
