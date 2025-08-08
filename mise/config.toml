@@ -1,6 +1,6 @@
 [tools]
 python = "latest"
-node = "20"
+node = "22"
 "pipx:poetry" = "latest"
 "pipx:jupyterlab" = "latest"
 "pipx:nox" = "latest"
@@ -15,3 +15,4 @@ uv = "latest"
 experimental = true
 python_compile = false
 idiomatic_version_file_enable_tools = ["python"]
+gpg_verify = false
