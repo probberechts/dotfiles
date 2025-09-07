@@ -38,9 +38,9 @@ return {
   --   config = true,
   -- },
 
-  -- https://github.com/echasnovski/mini.icons
+  -- https://github.com/nvim-mini/mini.icons
   {
-    "echasnovski/mini.icons",
+    "nvim-mini/mini.icons",
     lazy = true,
     cond = has_ui,
     init = function()
@@ -52,7 +52,7 @@ return {
     opts = {
       file = {
         -- bad glyph for maple mono
-        -- https://github.com/echasnovski/mini.icons/blob/ec61af6e606fc89ee3b1d8f2f20166a3ca917a36/lua/mini/icons.lua#L932C36-L932C37
+        -- https://github.com/nvim-mini/mini.icons/blob/ec61af6e606fc89ee3b1d8f2f20166a3ca917a36/lua/mini/icons.lua#L932C36-L932C37
         [".prettierignore"] = { glyph = "", hl = "MiniIconsOrange" },
       },
     },

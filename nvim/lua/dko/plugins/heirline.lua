@@ -31,7 +31,7 @@ return {
   {
     "rebelot/heirline.nvim",
     cond = has_ui,
-    dependencies = "echasnovski/mini.icons",
+    dependencies = "nvim-mini/mini.icons",
     init = function()
       local NEVER = 0
       vim.o.showtabline = NEVER
