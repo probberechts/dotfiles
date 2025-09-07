@@ -7,9 +7,7 @@
 export DKO_SOURCE="${DKO_SOURCE} -> zinit.zsh {"
 
 function {
-  local man_dir="${ZPFX}/share/man/man1"
-  # Make man dir in /polaris
-  mkdir -p "$man_dir"
+  local man1="${ZINIT[MAN_DIR]}/man1"
 
   zinit lucid as"program" from"gh-r" \
     atclone'./direnv hook zsh > zhook.zsh' \
@@ -38,7 +36,7 @@ function {
     mv'gh* -> usr' \
     pick"usr/bin/gh" \
     atclone"
-      cp -vf usr/**/*.1 \"${man_dir}\";
+      cp -vf **/*.1 \"$man1\";
       ./usr/bin/gh completion --shell zsh > _gh
       " \
     atpull'%atclone' \
@@ -70,8 +68,8 @@ function {
     mv'bat* -> bat' \
     pick'bat/bat' \
     atclone"
-      cp -vf bat/bat.1 \"${man_dir}\";
-      cp -vf bat/autocomplete/bat.zsh \"bat/autocomplete/_bat\"
+      cp -vf **/*.1 \"$man1\";
+      cp -vf bat/autocomplete/bat.zsh _bat
       " \
     atpull'%atclone' \
     atload"$bat_manpager" \
@@ -84,7 +82,7 @@ function {
     'dandavison/delta' \
     \
     mv'fd* -> fd' pick'fd/fd' \
-    atclone"cp -vf fd/fd.1 \"${man_dir}\"" \
+    atclone"cp -vf **/*.1 \"$man1\"" \
     atpull'%atclone' \
     '@sharkdp/fd' \
     \
@@ -94,7 +92,7 @@ function {
     'jqlang/jq' \
     \
     mv'ripgrep* -> rg' pick'rg/rg' \
-    atclone"cp -vf rg/doc/rg.1 \"${man_dir}\"" \
+    atclone"cp -vf **/*.1 \"$man1\"" \
     atpull'%atclone' \
     'BurntSushi/ripgrep' \
     \
@@ -115,7 +113,7 @@ function {
   zinit ice lucid from'gh-r' as'program' bpick"$mise_bpick" \
   pick'mise/bin/mise' \
   atclone"
-    cp -vf mise/man/man1/mise.1 $ZINIT[MAN_DIR]/man1;
+    cp -vf **/*.1 \"$man1\";
     ./mise/bin/mise completion zsh > _mise
     " \
   atpull'%atclone' \
