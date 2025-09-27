@@ -166,9 +166,6 @@ export INPUTRC="${DOTFILES}/shell/dot.inputrc"
 
 # ruby moved to shell/ruby loaded in shell/before
 
-# for shellcheck
-export SHELLCHECK_OPTS="--exclude=SC1090,SC2148"
-
 # yarn cache
 # https://github.com/yarnpkg/yarn/issues/3208
 export YARN_CACHE_FOLDER="${XDG_CACHE_HOME}/yarn"
