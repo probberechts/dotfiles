@@ -51,16 +51,6 @@ return {
   -- https://github.com/creativenull/efmls-configs-nvim
   { "creativenull/efmls-configs-nvim" },
 
-  {
-    "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      -- border on :LspInfo window
-      require("lspconfig.ui.windows").default_options.border =
-        require("dko.settings").get("border")
-    end,
-  },
-
   -- @TODO remove?
   -- https://github.com/pmizio/typescript-tools.nvim
   -- {
@@ -83,23 +73,18 @@ return {
   --   end,
   -- },
 
-  -- https://github.com/marilari88/twoslash-queries.nvim
-  -- attached in ../utils/typescript.lua
-  {
-    "marilari88/twoslash-queries.nvim",
-    cond = has_ui,
-    opts = { multi_line = true },
-  },
-
   {
     "mason-org/mason-lspconfig.nvim",
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp", -- provides some capabilities
+      {
+        -- provides some capabilities
+        "hrsh7th/cmp-nvim-lsp",
+        cond = require("dko.settings").get("completion.engine") == "cmp",
+      },
       "neovim/nvim-lspconfig", -- wait for lspconfig
 
       -- @TODO move these somewhere else
       "b0o/schemastore.nvim", -- wait for schemastore for jsonls
-      "marilari88/twoslash-queries.nvim", -- ts_ls comment with  ^? comment
     },
     config = function()
       local dkotools = require("dko.tools")
@@ -113,10 +98,11 @@ return {
       -- =====================================================================
       -- Enable lsps
       -- =====================================================================
-      local cnl = require("cmp_nvim_lsp")
       local function resolve_config_and_enable(configs)
         for name in pairs(configs) do
-          vim.lsp.config(name, cnl.default_capabilities())
+          if require("dko.settings").get("completion.engine") == "cmp" then
+            vim.lsp.config(name, require("cmp_nvim_lsp").default_capabilities())
+          end
           vim.lsp.enable(name)
         end
       end
