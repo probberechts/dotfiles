@@ -20,23 +20,23 @@ return {
       inlayHints = {
         parameterNames = {
           --- @type 'none' | 'literals' | 'all'
-          enabled = "literals",
+          enabled = "all",
         },
         parameterTypes = {
-          enabled = true,
+          enabled = false, --- use K
         },
         variableTypes = {
-          --- just use hover to see it
-          enabled = false,
+          enabled = false, --- use K
         },
         propertyDeclarationTypes = {
           enabled = true,
         },
         functionLikeReturnTypes = {
-          --- just use hover to see it
-          enabled = false,
+          enabled = false, --- use K
         },
-        enumMemberValues = { enabled = true },
+        enumMemberValues = {
+          enabled = true,
+        },
       },
       preferences = {
         importModuleSpecifier = "non-relative", -- "project-relative",
