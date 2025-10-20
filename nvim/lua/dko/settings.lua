@@ -22,6 +22,10 @@ settings.diagnostics = {
 ---@type 'fzf' | 'snacks'
 settings.finder = "snacks"
 
+---fzf has a preview, snacks doesn't
+---@type 'fzf' | 'snacks' | 'tiny-code-action' | 'actions-preview'
+settings.code_action_finder = "tiny-code-action"
+
 settings.heirline = {
   show_buftype = false,
 }
@@ -35,7 +39,7 @@ settings.notify = "snacks"
 
 --- Also the picker for vim.lsp.buf.code_action() / <leader><leader>
 --- @type ''|'fzf'|'snacks'
-settings.select = "fzf"
+settings.select = "snacks"
 
 -- =============================================================================
 
