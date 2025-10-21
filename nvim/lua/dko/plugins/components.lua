@@ -26,6 +26,11 @@ return {
       },
       input = { enabled = input == "snacks" },
       picker = { ui_select = select == "snacks" },
+      styles = {
+        input = {
+          border = dkosettings.get("border"),
+        },
+      },
     },
   },
 
