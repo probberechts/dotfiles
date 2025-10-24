@@ -13,6 +13,7 @@ return {
       "nvim-mini/mini.icons",
       -- https://cmp.saghen.dev/configuration/snippets#friendly-snippets
       -- "rafamadriz/friendly-snippets",
+      "fang2hou/blink-copilot",
     },
 
     -- use a release tag to download pre-built binaries
@@ -116,9 +117,15 @@ return {
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { "lsp", "path", "snippets", "buffer" },
+        default = { "lsp", "path", "copilot", "snippets", "buffer" },
         providers = {
           snippets = { opts = { friendly_snippets = false } },
+          copilot = {
+            name = "copilot",
+            module = "blink-copilot",
+            score_offset = 100,
+            async = true,
+          },
         },
       },
 

@@ -63,7 +63,8 @@ local cmp_dependencies = {
 return {
   {
     "hrsh7th/nvim-cmp",
-    cond = #vim.api.nvim_list_uis() > 0,
+    cond = dkosettings.get("completion.engine") == "cmp"
+      and #vim.api.nvim_list_uis() > 0,
     dependencies = cmp_dependencies,
     config = function()
       local cmp = require("cmp")
@@ -129,6 +130,7 @@ return {
             cmp.ItemField.Abbr,
             cmp.ItemField.Menu,
           },
+
           ---@param item CmpItem
           format = function(entry, item)
             local raw_kind = item.kind
@@ -143,13 +145,16 @@ return {
               -- else
               -- sym = require("lspkind").symbol_map[item.kind]
             end
+
             -- =================================================================
             -- customize source text at end of entry
             -- =================================================================
+
             --- printed at end, sᴏᴜʀᴄᴇ of sᴏᴜʀᴄᴇ.ᴛʏᴘᴇ
             local source
             --- printed at end, ᴛʏᴘᴇ of sᴏᴜʀᴄᴇ.ᴛʏᴘᴇ
             local itemtype = ""
+
             -- [color] thing    ᴄᴏʟᴏʀ
             if nhc_ok == nil then
               nhc_ok, nhc = pcall(require, "nvim-highlight-colors")
@@ -162,6 +167,7 @@ return {
                 source = "ᴄᴏʟᴏʀ"
               end
             end
+
             -- [color] thing    ᴛᴡ
             if not source then
               local twc_ok, twc = pcall(require, "tailwindcss-colorizer-cmp")
@@ -174,6 +180,7 @@ return {
                 end
               end
             end
+
             -- [icon] thing    sᴏᴜʀᴄᴇ.ᴛʏᴘᴇ
             if not source then
               item.kind = sym
