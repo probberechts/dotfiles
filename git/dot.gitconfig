@@ -197,6 +197,6 @@
   path = "~/.dotfiles/git/mac.gitconfig"
 
 [include]
-  path = "~/.dotfiles/local/gitconfig"
+	path = "~/.local/share/ldotdir/gitconfig"
 
 # vim: ft=gitconfig

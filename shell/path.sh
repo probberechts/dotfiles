@@ -53,6 +53,6 @@ PATH="${GOPATH}/bin:${PATH}"
 
 # pipx uses this one by default
 PATH="${HOME}/.local/bin:${PATH}"
-PATH="${DOTFILES}/bin:${DOTFILES}/local/bin:${PATH}"
+PATH="${DOTFILES}/bin:${LDOTDIR}/bin:${PATH}"
 
 # vim: ft=sh :
