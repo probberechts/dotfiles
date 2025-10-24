@@ -7,7 +7,6 @@ local select = dkosettings.get("select")
 local input = dkosettings.get("input")
 
 return {
-  -- https://github.com/folke/snacks.nvim/blob/main/docs/input.md
   {
     "folke/snacks.nvim",
     opts = {
@@ -25,6 +24,7 @@ return {
         -- chunk is the rounded border outside scope, I just want active indent
         -- chunk = {},
       },
+      -- https://github.com/folke/snacks.nvim/blob/main/docs/input.md
       input = { enabled = input == "snacks" },
       picker = { ui_select = select == "snacks" },
       styles = {
