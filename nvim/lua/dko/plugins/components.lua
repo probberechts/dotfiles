@@ -19,7 +19,8 @@ return {
       indent = {
         -- yes there's an indent nested inside
         indent = {
-          only_scope = true, -- only show indent guides of the scope
+          -- only show indent guides of the scope
+          only_scope = true,
         },
         -- chunk is the rounded border outside scope, I just want active indent
         -- chunk = {},
