@@ -10,6 +10,16 @@ tools.register({
   end,
 })
 
+tools.register({
+  mason_type = "tool",
+  require = "npm",
+  name = "biome",
+  fts = { "json", "jsonc" },
+  efm = function()
+    return require("efmls-configs.formatters.biome")
+  end,
+})
+
 -- not used for formatting - prefer prettier since it does one-line arrays
 -- when they fit
 tools.register({
