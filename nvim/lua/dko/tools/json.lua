@@ -15,9 +15,7 @@ tools.register({
   require = "npm",
   name = "biome",
   fts = { "json", "jsonc" },
-  efm = function()
-    return require("efmls-configs.formatters.biome")
-  end,
+  efm = require("dko.tools.biome"),
 })
 
 -- not used for formatting - prefer prettier since it does one-line arrays
