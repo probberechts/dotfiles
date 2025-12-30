@@ -2,9 +2,7 @@ local tools = require("dko.tools")
 
 tools.register({
   name = "stylelint_lsp",
-  mason_type = "lsp",
-  require = "npm",
-  runner = "mason-lspconfig",
+  runner = "lspconfig",
   lspconfig = function()
     ---@type lspconfig.Config
     return {
