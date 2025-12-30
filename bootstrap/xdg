@@ -3,7 +3,7 @@
 # Create XDG dirs
 #
 
-set -eu
+set -e
 
 if [[ -z "$DOTFILES" ]]; then
   cd -- "$(dirname "$0")/.." || exit 1
@@ -18,3 +18,4 @@ fi
 }
 
 mkdir -p -- "$XDG_STATE_HOME"
+[[ "$FONTCONFIG_PATH" != "" ]] && mkdir -p -- "$FONTCONFIG_PATH"
