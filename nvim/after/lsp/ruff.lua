@@ -7,6 +7,8 @@ local args = {}
 if ruff_config_path then
   args = { "--config=" .. ruff_config_path }
 end
+
+---@type vim.lsp.Config
 return {
   ---note: local on_attach happens AFTER autocmd LspAttach
   on_attach = function(client)

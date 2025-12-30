@@ -65,6 +65,7 @@ alias se="sudo -e"
 
 # editor
 alias ehosts='se /etc/hosts'
+alias epj='e package.json'
 alias essh='e "${HOME}/.ssh/config"'
 alias etmux='e "${DOTFILES}/tmux/tmux.conf"'
 alias eze='e "${ZDOTDIR}/dot.zshenv"'
