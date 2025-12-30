@@ -1,6 +1,6 @@
 [tools]
 python = "latest"
-node = "22"
+node = "latest"
 "pipx:poetry" = "latest"
 "pipx:jupyterlab" = "latest"
 "pipx:nox" = "latest"
