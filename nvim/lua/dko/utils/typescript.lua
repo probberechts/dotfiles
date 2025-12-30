@@ -36,7 +36,7 @@ end
 
 M.ts_ls = {}
 
----@type lspconfig.Config
+---@type vim.lsp.Config
 M.ts_ls.config = {
   on_attach = function(client, bufnr)
     local twoslashok, twoslash = pcall(require, "twoslash-queries")

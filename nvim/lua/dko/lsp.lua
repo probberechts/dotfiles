@@ -1,6 +1,14 @@
 local lsp = vim.lsp
 local Methods = lsp.protocol.Methods
 
+local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+---@diagnostic disable-next-line: duplicate-set-field
+function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+  opts = opts or {}
+  opts.border = require("dko.settings").get("pumborder")
+  return orig_util_open_floating_preview(contents, syntax, opts, ...)
+end
+
 ---@alias dkonotify.MessageType
 ---| 1 # Error
 ---| 2 # Warning
@@ -43,7 +51,7 @@ vim.lsp.handlers[Methods.window_showMessage] = function(_, result, ctx, _)
 end
 
 --- Register formatters that were dynamically registered (capability added later
---- than the LspAttach autocmd).Add commentMore actions
+--- than the LspAttach autocmd).
 --- see :h LspAttach
 vim.lsp.handlers[Methods.client_registerCapability] = (function(overridden)
   return function(err, res, ctx)
@@ -61,3 +69,54 @@ vim.lsp.handlers[Methods.client_registerCapability] = (function(overridden)
     return result
   end
 end)(vim.lsp.handlers[Methods.client_registerCapability])
+
+local M = {}
+
+---@param client vim.lsp.Client
+---@param overrides table
+---@param options? table
+---@return boolean -- success
+---@return function -- call to restore original settings
+M.change_client_settings = function(client, overrides, options)
+  local opts = options or {}
+  local original = client.config.settings or {}
+  local next = vim.tbl_deep_extend("force", {}, original, overrides)
+  local success =
+    client:notify(Methods.workspace_didChangeConfiguration, { settings = next })
+  if not success then
+    if not opts.silent then
+      require("dko.utils.notify").toast(
+        "Failed to update client settings",
+        vim.log.levels.ERROR,
+        { group = "lsp", render = "wrapped-compact" }
+      )
+    end
+    return false, function() end
+  end
+
+  --- Need to update local cache (or else call the lsp method to get updated
+  --- settings)
+  client.config.settings = next
+
+  --- For debugging purposes, can print this out to see what we updated to
+  if not opts.internal then
+    vim.b.change_client_settings = next
+  end
+  if not opts.silent then
+    require("dko.utils.notify").toast(
+      "Successfully updated client settings",
+      vim.log.levels.INFO,
+      { group = "lsp", render = "wrapped-compact" }
+    )
+  end
+  local restore = function()
+    M.change_client_settings(
+      client,
+      original,
+      { silent = true, internal = true }
+    )
+  end
+  return true, restore
+end
+
+return M
