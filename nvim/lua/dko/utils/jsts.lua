@@ -10,7 +10,8 @@ M.fts = {
 }
 
 ---@see https://github.com/rachartier/tiny-code-action.nvim#filters
-M.filter_code_actions = function(action, client)
+---@param action { title: string, isPreferred: boolean }
+M.filter_code_actions = function(action)
   ---Don't suggest importing from node_modules/
   if action.title:find('Add import from "node_modules/') then
     return false
@@ -21,21 +22,28 @@ end
 ---Each item is weighted exponentially higher than the next
 M.code_action_priority_list = {
   "Update import",
+  "Add all missing imports",
   'Add import from "@',
   'Add import from "%.',
+  'Add import from "',
   "Fix this prettier",
   "Fix all",
   "for this line",
   "for the entire file",
+  "Remove braces",
+  "Remove unused",
   "Convert parameters",
+  "Convert to anonymous",
   "Add missing function",
   "Infer function",
-  "Extract to type alias",
+  "Extract to",
   "Change spelling",
   "Fix all detected spelling errors",
   "Show documentation",
-  "Add all missing imports",
+  "Add all missing function",
+  "Add braces",
   "Generate",
+  "Show documentation",
   "Move to a new file",
 }
 
