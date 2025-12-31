@@ -35,6 +35,7 @@ rust = "latest"
 "pipx:jedi-language-server" = "latest"
 "pipx:yamllint" = "latest"
 "aqua:tombi-toml/tombi" = "latest"
+"github:skanehira/version-lsp" = "latest"
 
 [settings]
 experimental = true
