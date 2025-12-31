@@ -25,6 +25,7 @@ return {
   require("dko.heirline.winbar-filepath"),
   require("dko.heirline.winbar-terminal"),
   { provider = "%=" },
+  require("dko.heirline.lightbulb"),
   require("dko.heirline.winbar-formatters"),
   require("dko.heirline.winbar-diagnostics"),
 }
