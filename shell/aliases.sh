@@ -101,7 +101,7 @@ __alias_ls() {
 
   if [ "$DOTFILES_OS" = "Linux" ] && [ "$DOTFILES_DISTRO" != "busybox" ]; then
     literal="-N"
-    timestyle="--time-style=\"+%Y%m%d\""
+    timestyle='--time-style="+%Y%m%d"'
   fi
 
   # shellcheck disable=SC2139
