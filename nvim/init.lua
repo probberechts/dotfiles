@@ -31,6 +31,7 @@ require("dko.tools.python")
 require("dko.tools.rust")
 require("dko.tools.sh")
 require("dko.tools.text")
+require("dko.tools.toml")
 require("dko.tools.yaml")
 
 -- plugins might rely or trigger things from my settings above

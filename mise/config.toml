@@ -34,6 +34,7 @@ rust = "latest"
 "pipx:isort" = "latest"
 "pipx:jedi-language-server" = "latest"
 "pipx:yamllint" = "latest"
+"aqua:tombi-toml/tombi" = "latest"
 
 [settings]
 experimental = true
