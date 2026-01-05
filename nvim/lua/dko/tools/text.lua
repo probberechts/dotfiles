@@ -10,9 +10,13 @@ tools.register({
   runner = "lspconfig",
 })
 
+-- Harper does not support latex yet
+-- https://github.com/Automattic/harper/discussions/1164
+-- TODO: switch to ltex-plus once java 21 is available
 tools.register({
   name = "ltex",
   runner = "lspconfig",
+  fts = { "tex" },
 })
 
 tools.register({
@@ -20,7 +24,7 @@ tools.register({
   name = "bibtex-tidy",
   efm = function()
     return {
-      formatCommand = "bibtex-tidy --quiet -",
+      formatCommand = "bibtex-tidy --quiet --sort-fields --blank-lines --curly -",
       formatStdin = true,
     }
   end,

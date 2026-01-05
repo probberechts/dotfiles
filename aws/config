@@ -1,3 +1,23 @@
 [default]
 region = eu-central-1
 output = json
+
+[profile clubbrugge]
+sso_start_url = https://clubbrugge.awsapps.com/start#
+sso_region = eu-central-1
+sso_account_id = 894029434172
+sso_role_name = ku-leuven-data-exchange
+region = eu-central-1
+output = json
+
+[profile ku-leuven-metrics-development-590961820640]
+sso_session = csap-metrics-development
+sso_account_id = 590961820640
+sso_role_name = ku-leuven-metrics-development
+region = eu-central-1
+output = json
+
+[sso-session csap-metrics-development]
+sso_start_url = https://clubbrugge.awsapps.com/start/#
+sso_region = eu-central-1
+sso_registration_scopes = sso:account:access
