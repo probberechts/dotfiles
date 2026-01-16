@@ -60,6 +60,7 @@ local cmp_dependencies = {
   -- "onsails/lspkind.nvim",
 }
 
+---@type LazySpec
 return {
   {
     "hrsh7th/nvim-cmp",

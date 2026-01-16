@@ -1,6 +1,7 @@
 local uis = vim.api.nvim_list_uis()
 local has_ui = #uis > 0
 
+---@type LazySpec
 return {
   -- https://github.com/angelinuxx/npm-lens.nvim
   -- Parses JSON output of npm outdated --json
