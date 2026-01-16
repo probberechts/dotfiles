@@ -20,7 +20,7 @@ tools.register({
 })
 
 tools.register({
-  fts = { "bib" },
+  fts = { "bibtex" },
   name = "bibtex-tidy",
   efm = function()
     return {
