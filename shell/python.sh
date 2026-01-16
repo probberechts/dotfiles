@@ -47,6 +47,27 @@ __dko_has "pip" && {
 }
 
 # ==============================================================================
+# jupyter
+# ==============================================================================
+
+alias jl='jupyter lab'
+alias jk-list='jupyter kernelspec list'
+alias jk-rm='jupyter kernelspec uninstall'
+
+jk-install() {
+    local NAME="${1:-${PWD}}"
+
+    if ! python -c "import ipykernel" &> /dev/null; then
+        echo "Error: ipykernel not found in this environment."
+        echo "Run 'pip install ipykernel' first."
+        return 1
+    fi
+
+    python -m ipykernel install --user --display-name "$NAME" --name "${PWD##*/}"
+    echo "Successfully installed kernel: $NAME"
+}
+
+# ==============================================================================
 
 DKO_SOURCE="${DKO_SOURCE} }"
 
