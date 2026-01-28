@@ -6,6 +6,7 @@ M.filetype_to_parser = {
   dosini = "ini",
   dotenv = "bash",
   fstab = "ini",
+  gitconfig = "git_config",
   javascriptreact = "jsx",
   typescriptreact = "tsx",
   udevrules = "udev",
