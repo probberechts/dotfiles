@@ -3,15 +3,21 @@ local buffer_queue = {}
 local M = {}
 
 M.filetype_to_parser = {
+  ["yaml.docker-compose"] = "yaml",
   dosini = "ini",
   dotenv = "bash",
   fstab = "ini",
   gitconfig = "git_config",
   javascriptreact = "jsx",
+
+  -- tree-sitter-json supports comments, so good enough
+  -- https://github.com/tree-sitter/tree-sitter-json/issues/59
+  jsonc = "json",
+
+  sh = "bash",
   sshconfig = "ssh_config",
   typescriptreact = "tsx",
   udevrules = "udev",
-  ["yaml.docker-compose"] = "yaml",
 }
 for ft, parser in pairs(M.filetype_to_parser) do
   vim.treesitter.language.register(parser, ft)
