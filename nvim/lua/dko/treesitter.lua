@@ -9,6 +9,7 @@ M.filetype_to_parser = {
   javascriptreact = "jsx",
   typescriptreact = "tsx",
   udevrules = "udev",
+  ["yaml.docker-compose"] = "yaml",
 }
 for ft, parser in pairs(M.filetype_to_parser) do
   vim.treesitter.language.register(parser, ft)
