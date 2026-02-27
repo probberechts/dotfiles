@@ -4,7 +4,13 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
-    build = ":TSUpdate",
+    build = function()
+      -- Don't try to TSUpdate before plugin has been installed, only on plugin
+      -- updates.
+      if pcall(require, "nvim-treesitter.install") then
+        vim.cmd("TSUpdate")
+      end
+    end,
     config = function()
       -- Some other plugins use treesitter features, so need these even if never
       -- opened a buffer with the corresponding ft
