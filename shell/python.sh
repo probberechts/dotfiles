@@ -50,7 +50,7 @@ __dko_has "pip" && {
 # jupyter
 # ==============================================================================
 
-alias jl='jupyter lab'
+alias jl='jupyter-lab'
 alias jk-list='jupyter kernelspec list'
 alias jk-rm='jupyter kernelspec uninstall'
 
