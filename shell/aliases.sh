@@ -61,7 +61,7 @@ alias py="python"
 # sudo ops
 alias mine="sudo chown -R \"\$USER\""
 alias root="sudo -s"
-alias se="sudo -e"
+alias se='SUDO_EDITOR="$(which nvim)" sudo -e'
 
 # editor
 alias ehosts='se /etc/hosts'
