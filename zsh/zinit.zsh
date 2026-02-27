@@ -107,17 +107,17 @@ function {
   local mise_bpick=""
   [[ $DOTFILES_OS == "Linux" ]] && mise_bpick="*-linux-x64.tar.gz"
   [[ $DOTFILES_OS == "Darwin" ]] && {
-  mise_bpick="*-macos-x64.tar.gz"
-  [[ $DOTFILES_DISTRO == "arm64" ]] && mise_bpick="*-macos-arm64.tar.gz"
+    mise_bpick="*-macos-x64.tar.gz"
+    [[ $DOTFILES_DISTRO == "arm64" ]] && mise_bpick="*-macos-arm64.tar.gz"
   }
   zinit ice lucid from'gh-r' as'program' bpick"$mise_bpick" \
-  pick'mise/bin/mise' \
-  atclone"
-    cp -vf **/*.1 \"$man1\";
-    ./mise/bin/mise completion zsh > _mise
-    " \
-  atpull'%atclone' \
-  atload'eval "$(mise activate zsh)"'
+    pick'mise/bin/mise' \
+    atclone"
+        cp -vf **/*.1 \"$man1\";
+        ./mise/bin/mise completion zsh > _mise
+        " \
+    atpull'%atclone' \
+    atload'eval "$(mise activate zsh)"'
   zinit light 'jdx/mise'
 
   # ----------------------------------------------------------------------------
