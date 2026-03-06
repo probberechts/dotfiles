@@ -31,6 +31,21 @@ gitexport() {
   rsync -a "${1:-./}" "$to_dir" --exclude "$to_dir" --exclude .git
 }
 
+# 1: port
+killport() {
+  # -t terse, just get pid
+  # -i by internet addr
+  # -sTCP:LISTEN  only the server listening, not clients connecting/browsers
+  #               viewing
+  local pid
+  pid=$(lsof -t -iTCP:"$1" -sTCP:LISTEN)
+  if [[ -z $pid ]]; then
+    __dko_warn "Could not find a process on port $1"
+  else
+    kill -9 "$pid"
+  fi
+}
+
 # ============================================================================
 # Dotfiles
 # ============================================================================
