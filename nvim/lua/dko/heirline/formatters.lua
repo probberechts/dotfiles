@@ -21,7 +21,7 @@ return {
       return #vim.b.formatters > 0
     end,
     hl = function()
-      return require("dko.heirline.utils").hl()
+      return require("dko.heirline.utils").hl("dkoStatusKey")
     end,
     provider = function()
       local items = {}
@@ -48,7 +48,7 @@ return {
           end
         end
       end
-      return "󱃖 "
+      return " 󱃖 "
         .. require("dko.utils.string").smallcaps(table.concat(items, ","))
         .. " "
     end,

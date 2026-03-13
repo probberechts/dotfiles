@@ -16,6 +16,9 @@ return {
         vim.bo.filetype,
         { numbers = false }
       )
+
+    self.filename = self.filepath == "" and "ᴜɴɴᴀᴍᴇᴅ"
+      or vim.fn.fnamemodify(self.filepath, ":t")
   end,
   hl = function()
     return require("dko.heirline.utils").hl()
@@ -26,6 +29,5 @@ return {
   require("dko.heirline.winbar-terminal"),
   { provider = "%=" },
   require("dko.heirline.lightbulb"),
-  require("dko.heirline.winbar-formatters"),
   require("dko.heirline.winbar-diagnostics"),
 }
