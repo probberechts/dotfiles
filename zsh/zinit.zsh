@@ -79,15 +79,15 @@ function {
     mise_bpick="*-macos-x64.tar.gz"
     [[ $DOTFILES_DISTRO == "arm64" ]] && mise_bpick="*-macos-arm64.tar.gz"
   }
-  zinit ice lucid from'gh-r' as'program' bpick"$mise_bpick" \
+  # no lucid
+  zinit ice from'gh-r' as'program' bpick"$mise_bpick" \
     pick'mise/bin/mise' \
-    atclone"
+    atclone'
         cp -vf **/*.1 \"$man1\";
         ./mise/bin/mise completion zsh > _mise;
-        ./mise/bin/mise up;
-        " \
+        ' \
     atpull'%atclone' \
-    atload'eval "$(mise activate zsh)"'
+    atload'eval "$(mise activate zsh)"' >Activating >Re-generating >OK
   zinit light 'jdx/mise'
 
   # ----------------------------------------------------------------------------
