@@ -1,30 +1,32 @@
+[settings]
+experimental = false
+gpg_verify = false
+
+# tombi: format.rules.table-keys-order = "ascending"
 [tools]
 "aqua:Automattic/harper/harper-ls" = "latest"
-"aqua:JohnnyMorganz/StyLua" = "latest"
-"aqua:LuaLS/lua-language-server" = "latest"
-"aqua:artempyanykh/marksman" = "latest"
-"aqua:astral-sh/ruff" = "latest"
-"aqua:astral-sh/uv" = "latest"
-"aqua:biomejs/biome" = "latest"
-"aqua:google/yamlfmt" = "latest"
-"aqua:koalaman/shellcheck" = "latest"
-"aqua:mvdan/sh" = "latest"
 "aqua:neovim/neovim" = "latest"
-"aqua:rust-lang/rust-analyzer" = "latest"
-"aqua:tombi-toml/tombi" = "latest"
-"aqua:tree-sitter/tree-sitter" = "0.25"
+biome = "latest"
 "cargo:selene" = "latest"
+delta = "latest"
+fd = "latest"
+fzf = "latest"
+github-cli = "latest"
 "github:skanehira/version-lsp" = "latest"
+go = "latest"
 "go:github.com/mattn/efm-langserver" = "latest"
 "http:git-relevant" = { version = "0.0.0", url = "https://raw.githubusercontent.com/davidosomething/git-relevant/refs/heads/master/git-relevant" }
 "http:git-take" = { version = "0.0.0", url = "https://raw.githubusercontent.com/davidosomething/git-take/refs/heads/master/git-take" }
+jq = "latest"
+lua-language-server = "latest"
+marksman = "latest"
+node = "latest"
 "npm:@google/gemini-cli" = "latest"
 "npm:@mdx-js/language-server" = "latest"
 "npm:@vtsls/language-server" = "latest"
 "npm:bibtex-tidy" = "latest"
 "npm:gh-actions-language-server" = "latest"
 "npm:markdownlint-cli" = "latest"
-"npm:prettier" = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:yaml-language-server" = "latest"
 "pipx:basedpyright" = "latest"
@@ -33,18 +35,18 @@
 "pipx:nox" = "latest"
 "pipx:poetry" = "latest"
 "pipx:td-watson" = "latest"
-"pipx:yamllint" = "latest"
-fd = "latest"
-github-cli = "latest"
-go = "latest"
-jq = "latest"
-node = "latest"
+prettier = "latest"
 python = "latest"
 ripgrep = { version = "latest", postinstall = "[ -n \"${XDG_DATA_HOME}\" ] && mkdir -p ${XDG_DATA_HOME}/zsh/site-functions && rg --generate complete-zsh > ${XDG_DATA_HOME}/zsh/site-functions/_rg || true" }
 ruby = "3.2"
+ruff = "latest"
 rust = "latest"
-
-[settings]
-experimental = false
-idiomatic_version_file_enable_tools = ["python"]
-gpg_verify = false
+rust-analyzer = "latest"
+shellcheck = "latest"
+shfmt = "latest"
+stylua = "latest"
+tombi = "latest"
+tree-sitter = "latest"
+uv = "latest"
+yamlfmt = "latest"
+yamllint = "latest"
