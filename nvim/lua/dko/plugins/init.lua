@@ -340,6 +340,20 @@ return {
   -- Writing
   -- =========================================================================
 
+  --- A yank-ring
+  --- https://github.com/gbprod/yanky.nvim
+  {
+    "gbprod/yanky.nvim",
+    cond = has_ui and not require("dko.utils.vte").is_remote(),
+    event = { "BufReadPost", "BufNewFile" },
+    config = function()
+      require("yanky").setup({
+        highlight = { timer = 300 },
+      })
+      require("dko.mappings").bind_yanky()
+    end,
+  },
+
   {
     "folke/zen-mode.nvim",
     config = function()
