@@ -82,10 +82,10 @@ function {
   # no lucid
   zinit ice from'gh-r' as'program' bpick"$mise_bpick" \
     pick'mise/bin/mise' \
-    atclone'
+    atclone"
         cp -vf **/*.1 \"$man1\";
         ./mise/bin/mise completion zsh > _mise;
-        ' \
+        " \
     atpull'%atclone' \
     atload'eval "$(mise activate zsh)"' >Activating >Re-generating >OK
   zinit light 'jdx/mise'
