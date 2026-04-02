@@ -28,23 +28,7 @@ function {
   # Git
   # ----------------------------------------------------------------------------
 
-  # Note: the mv for @cli/cli normalizes the macOS structure to be the same as
-  # the linux ones (there is also a .backup folder in the archive we want to
-  # ignore)
   zinit lucid as'program' for \
-    from'gh-r' \
-    mv'gh* -> usr' \
-    pick"usr/bin/gh" \
-    atclone"
-      cp -vf **/*.1 \"$man1\";
-      ./usr/bin/gh completion --shell zsh > _gh
-      " \
-    atpull'%atclone' \
-    '@cli/cli' \
-    \
-    'davidosomething/git-relevant' \
-    'davidosomething/git-take' \
-    \
     pick"${ZPFX}/bin/git-*" \
     src'etc/git-extras-completion.zsh' \
     make"PREFIX=${ZPFX}" \
@@ -81,21 +65,6 @@ function {
     pick'delta/delta' \
     'dandavison/delta' \
     \
-    mv'fd* -> fd' pick'fd/fd' \
-    atclone"cp -vf **/*.1 \"$man1\"" \
-    atpull'%atclone' \
-    '@sharkdp/fd' \
-    \
-    'junegunn/fzf' \
-    \
-    mv'jq* -> jq' \
-    'jqlang/jq' \
-    \
-    mv'ripgrep* -> rg' pick'rg/rg' \
-    atclone"cp -vf **/*.1 \"$man1\"" \
-    atpull'%atclone' \
-    'BurntSushi/ripgrep' \
-    \
     pick'zoxide/zoxide' \
     atload'eval "$(zoxide init --cmd j zsh)"' \
     'ajeetdsouza/zoxide' \
@@ -114,7 +83,8 @@ function {
     pick'mise/bin/mise' \
     atclone"
         cp -vf **/*.1 \"$man1\";
-        ./mise/bin/mise completion zsh > _mise
+        ./mise/bin/mise completion zsh > _mise;
+        ./mise/bin/mise up;
         " \
     atpull'%atclone' \
     atload'eval "$(mise activate zsh)"'

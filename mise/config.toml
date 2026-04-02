@@ -16,6 +16,8 @@
 "cargo:selene" = "latest"
 "github:skanehira/version-lsp" = "latest"
 "go:github.com/mattn/efm-langserver" = "latest"
+"http:git-relevant" = { version = "0.0.0", url = "https://raw.githubusercontent.com/davidosomething/git-relevant/refs/heads/master/git-relevant" }
+"http:git-take" = { version = "0.0.0", url = "https://raw.githubusercontent.com/davidosomething/git-take/refs/heads/master/git-take" }
 "npm:@google/gemini-cli" = "latest"
 "npm:@mdx-js/language-server" = "latest"
 "npm:@vtsls/language-server" = "latest"
@@ -32,9 +34,13 @@
 "pipx:poetry" = "latest"
 "pipx:td-watson" = "latest"
 "pipx:yamllint" = "latest"
+fd = "latest"
+github-cli = "latest"
 go = "latest"
+jq = "latest"
 node = "latest"
 python = "latest"
+ripgrep = "latest"
 ruby = "3.2"
 rust = "latest"
 
