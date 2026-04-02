@@ -583,10 +583,8 @@ M.bind_gitsigns = function()
     end
     ---@diagnostic disable-next-line: param-type-mismatch
     require("gitsigns").nav_hunk("next")
-    return "<Ignore>"
   end, {
     buffer = true,
-    expr = true,
     desc = "Next hunk",
   })
 
@@ -596,10 +594,8 @@ M.bind_gitsigns = function()
     end
     ---@diagnostic disable-next-line: param-type-mismatch
     require("gitsigns").nav_hunk("prev")
-    return "<Ignore>"
   end, {
     buffer = true,
-    expr = true,
     desc = "Prev hunk",
   })
 
