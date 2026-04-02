@@ -40,11 +40,11 @@ go = "latest"
 jq = "latest"
 node = "latest"
 python = "latest"
-ripgrep = "latest"
+ripgrep = { version = "latest", postinstall = "mkdir -p ${XDG_DATA_HOME}/zsh/site-functions && rg --generate complete-zsh > ${XDG_DATA_HOME}/zsh/site-functions/_rg" }
 ruby = "3.2"
 rust = "latest"
 
 [settings]
-experimental = true
+experimental = false
 idiomatic_version_file_enable_tools = ["python"]
 gpg_verify = false

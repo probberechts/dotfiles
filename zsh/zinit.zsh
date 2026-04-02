@@ -123,7 +123,6 @@ function {
   # don't add wait, messes with zsh-autosuggest
   zinit lucid atload"zicompinit; zicdreplay" for \
     'zdharma/fast-syntax-highlighting'
-
 }
 
 DKO_SOURCE="${DKO_SOURCE} }"
