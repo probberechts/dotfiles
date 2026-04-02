@@ -1,4 +1,3 @@
-
 -- Shared utilities for mapping modules
 local M = {}
 

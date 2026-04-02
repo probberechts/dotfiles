@@ -6,9 +6,7 @@ local M = {}
 dkotools.register({
   fts = require("dko.utils.jsts").fts,
   name = "prettier",
-  efm = function()
-    return require("efmls-configs.formatters.prettier")
-  end,
+  efm = require("dko.tools.prettier").efm,
 })
 
 dkotools.register({
@@ -20,14 +18,9 @@ dkotools.register({
 -- jumping into classnames from jsx/tsx
 -- dkotools.register({
 --   name = "cssmodules_ls",
---   mason_type = "lsp",
---   require = "npm",
 -- })
 
 -- Provides textDocument/documentColor that nvim-highlight-colors can use
--- Trigger tailwind completion manually using <C-Space> since coc is probably
--- handling default completion using @yaegassy/coc-tailwindcss3
---"cssls", -- conflicts with tailwindcss
 --"cssls", -- conflicts with tailwindcss
 dkotools.register({
   name = "tailwindcss",
@@ -44,11 +37,13 @@ dkotools.register({
   runner = "lspconfig",
 })
 
--- ts_ls with no integration, used for "pmizio/typescript-tools.nvim"
 -- dkotools.register({
 --   name = "ts_ls",
 --   runner = "lspconfig",
+--   ---
+--   ts_ls binary only for "pmizio/typescript-tools.nvim", add:
 --   skip_init = true,
+--   ---
 -- })
 
 return M

@@ -65,7 +65,9 @@ autocmd("LspAttach", {
     --- Not all formatters register capabilities at the time of this autocmd
     --- See the lsp handler overrides in ../lsp.lua for adding formatters during
     --- dynamic registration
-    require("dko.lsp").add_formatter(bufnr, client)
+    if client then
+      require("dko.lsp").add_formatter(bufnr, client)
+    end
   end,
   group = augroup("dkolsp"),
 })
@@ -135,7 +137,7 @@ autocmd("LspDetach", {
 })
 
 autocmd("FileType", {
-  desc = "Set mappings/format on save for specific filetypes if coc.nvim is enabled",
+  desc = "Set mappings/format on save for specific filetypes",
   callback = function(opts)
     local dkomappings = require("dko.mappings")
     dkomappings.bind_snippy()

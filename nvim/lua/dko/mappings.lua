@@ -403,8 +403,8 @@ end
 -- filetype changes).
 -- Call externals using pcall in case I remove cmp for testing.
 -- Bind <C-Space> to open nvim-cmp
--- Bind <C-n> <C-p> to pick based on coc or nvim-cmp open
--- Bind <C-j> <C-k> to scroll coc or nvim-cmp attached docs window
+-- Bind <C-n> <C-p> to pick
+-- Bind <C-j> <C-k> to scroll
 M.bind_completion = function(opts)
   local cmp_ok, cmp = pcall(require, "cmp")
   if not cmp_ok then
