@@ -4,7 +4,6 @@ brew "cmake"
 brew "coreutils"
 brew "curl"
 brew "findutils"
-brew "fzf"
 brew "git"
 brew "imagemagick"
 brew "mas"
@@ -15,8 +14,9 @@ brew "pandoc"
 brew "readline"
 brew "redis"
 brew "rsync"
-brew "shellcheck"
 brew "sqlite"
+# my hammerspoon config uses this
+brew "switchaudio-osx"
 brew "tmux"
 brew "tree"
 brew "wget"
@@ -24,6 +24,11 @@ brew "xz"
 brew "yarn"
 brew "zlib"
 brew "zsh"
+
+# ==========================================================================
+# casks
+# ==========================================================================
+
 cask "appcleaner"
 cask "basictex"
 cask "bitwarden"
