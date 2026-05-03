@@ -10,6 +10,7 @@ return {
       "nvim-neotest/neotest-python",
     },
     config = function()
+      ---@diagnostic disable-next-line: missing-fields
       require("neotest").setup({
         floating = {
           border = require("dko.settings").get("border"),
@@ -17,6 +18,7 @@ return {
           max_width = 0.9,
           options = {},
         },
+        ---@diagnostic disable-next-line: missing-fields
         summary = {
           open = "botright vsplit | vertical resize 60",
         },
