@@ -5,7 +5,7 @@ local settings = {}
 settings.border = "bold"
 
 settings.completion = {
-  --- @type "blink" | "built-in" | "cmp"
+  --- @type "blink" | "built-in"
   engine = "blink",
 }
 

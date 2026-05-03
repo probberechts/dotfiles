@@ -239,12 +239,6 @@ end, {
   desc = "Fix and format buffer with dko.utils.format.run_pipeline",
 })
 
-map("n", "<Leader>uf", function()
-  vim.b.enable_format_on_save = not vim.b.enable_format_on_save
-end, {
-  desc = "Toggle format on save",
-})
-
 local visualTabOpts = {
   desc = "<Tab> indents selected lines in Visual",
   remap = true,
@@ -399,155 +393,6 @@ end
 -- External mappings
 -- =============================================================================
 
--- This is run on FileType, so every buffer gets it (sometimes multiple times if
--- filetype changes).
--- Call externals using pcall in case I remove cmp for testing.
--- Bind <C-Space> to open nvim-cmp
--- Bind <C-n> <C-p> to pick
--- Bind <C-j> <C-k> to scroll
-M.bind_completion = function(opts)
-  local cmp_ok, cmp = pcall(require, "cmp")
-  if not cmp_ok then
-    return
-  end
-
-  map("n", "<C-Space>", function()
-    vim.cmd.startinsert({ bang = true })
-    if cmp_ok then
-      vim.schedule(cmp.complete)
-    end
-  end, { desc = "In normal mode, `A`ppend and start nvim-cmp completion" })
-
-  map("i", "<C-Space>", function()
-    if cmp_ok then
-      cmp.complete()
-    end
-  end, { desc = "In insert mode, start nvim-cmp completion" })
-
-  map("i", "<Plug>(DkoCmpNext)", function()
-    if cmp_ok then
-      cmp.select_next_item()
-    end
-  end)
-  map("i", "<Plug>(DkoCmpPrev)", function()
-    if cmp_ok then
-      cmp.select_prev_item()
-    end
-  end)
-  map("i", "<C-n>", function()
-    if cmp_ok and cmp.visible() then
-      return "<Plug>(DkoCmpNext)"
-    end
-  end, { expr = true, buffer = opts.buf, remap = true, silent = true })
-  map("i", "<C-p>", function()
-    if cmp_ok and cmp.visible() then
-      return "<Plug>(DkoCmpPrev)"
-    end
-  end, { expr = true, buffer = opts.buf, remap = true, silent = true })
-
-  map("i", "<Plug>(DkoCmpScrollUp)", function()
-    if cmp_ok then
-      cmp.mapping.scroll_docs(-4)
-    end
-  end)
-  map("i", "<Plug>(DkoCmpScrollDown)", function()
-    if cmp_ok then
-      cmp.mapping.scroll_docs(4)
-    end
-  end)
-  map("i", "<C-k>", function()
-    if cmp_ok and cmp.visible() then
-      return "<Plug>(DkoCmpScrollUp)"
-    end
-  end, {
-    expr = true,
-    buffer = opts.buf,
-    nowait = true,
-    remap = true,
-    silent = true,
-  })
-  map("i", "<C-j>", function()
-    if cmp_ok and cmp.visible() then
-      return "<Plug>(DkoCmpScrollDown)"
-    end
-  end, {
-    expr = true,
-    buffer = opts.buf,
-    nowait = true,
-    remap = true,
-    silent = true,
-  })
-  map("n", "<C-j>", function() end, {
-    expr = true,
-    buffer = opts.buf,
-    nowait = true,
-    remap = true,
-    silent = true,
-  })
-  map("n", "<C-k>", function() end, {
-    expr = true,
-    buffer = opts.buf,
-    nowait = true,
-    remap = true,
-    silent = true,
-  })
-end
-
--- =============================================================================
--- ts_ls
--- =============================================================================
-
--- on_attach binding for ts_ls
----@param client table
----@param bufnr integer
----@diagnostic disable-next-line: unused-local
-M.bind_ts_ls_lsp = function(client, bufnr)
-  -- Use TypeScript's Go To Source Definition so we don't end up in the
-  -- type declaration files.
-  map("n", "gd", function()
-    -- typescript-tools.nvim
-    if vim.fn.exists(":TSToolsGoToSourceDefinition") ~= 0 then
-      vim.cmd.TSToolsGoToSourceDefinition()
-      return
-    end
-
-    -- vtsls
-    if vim.tbl_contains(require("dko.tools").get_mason_lsps(), "vtsls") then
-      if
-        require("dko.utils.typescript").go_to_source_definition(
-          "vtsls",
-          "typescript.goToSourceDefinition"
-        )
-      then
-        return
-      end
-
-    -- ts_ls
-    elseif
-      require("dko.utils.typescript").go_to_source_definition(
-        "ts_ls",
-        "_typescript.goToSourceDefinition"
-      )
-    then
-      return
-    end
-
-    -- fallback to default lsp definitions
-    return handle_lsp_defintions()
-  end, {
-    desc = "Go To Source Definition (typescript.nvim)",
-    silent = true,
-    buffer = bufnr,
-  })
-
-  -- For typescript only (i.e. not JSON files)
-  -- use go to def for gf, lazy way of getting it to map import dir/ to
-  -- dir/index.ts automatically
-  if vim.startswith(vim.bo.filetype, "t") then
-    map("n", "gf", "gd", { remap = true })
-  end
-end
-
 -- ===========================================================================
 -- Plugin: Comment.nvim
 -- ===========================================================================
@@ -642,44 +487,14 @@ M.bind_markdown = function(bufnr)
   })
 end
 
--- ===========================================================================
--- Plugin: nvim-cmp + cmp-snippy
--- ===========================================================================
+-- =============================================================================
+-- Plugin: nvim-redraft
+-- =============================================================================
 
---- Bound in FileType autocmd
---- No guarantee snippy is present use pcall
-M.bind_snippy = function()
-  local snippy_ok, snippy = pcall(require, "snippy")
-  if not snippy_ok then
-    return
-  end
-
-  local cmp_ok, cmp = pcall(require, "cmp")
-  if not cmp_ok then
-    return
-  end
-
-  map({ "i", "s" }, "<C-b>", function()
-    if snippy.can_jump(-1) then
-      snippy.previous()
-    end
-    -- DO NOT FALLBACK (i.e. do not insert ^B)
-  end, { desc = "snippy: previous field" })
-
-  map({ "i", "s" }, "<C-f>", function()
-    -- If a snippet is highlighted in PUM, expand it
-    if cmp.confirm({ select = false }) then
-      return
-    end
-    -- If in a snippet, jump to next field
-    if snippy.can_expand_or_advance() then
-      snippy.expand_or_advance()
-      return
-    end
-  end, {
-    desc = "snippy: expand or next field",
-  })
-end
+M.nvim_redraft = {
+  edit = "<Leader>aes",
+  select_model = "<Leader>aem",
+}
 
 -- =============================================================================
 -- Plugin: nvim-window
@@ -731,7 +546,7 @@ M.bind_nvim_various_textobjs = function()
     if vim.fn.indent(".") == 0 then
       return "vapk:!sort<CR>"
     else
-      --- uses various-textobjs ii .indentation
+      --- uses various-textobjs ii indentation
       return "vii:!sort<CR>"
     end
   end, {
@@ -1001,8 +816,6 @@ M.zoomwintab = {
 }
 
 -- ===========================================================================
-
--- ===========================================================================
 -- Plugin: neotest.vim
 -- ===========================================================================
 
@@ -1032,6 +845,6 @@ M.bind_neotest = function()
   end, { desc = "Run last test and open output" })
 end
 
--- ===========================================================================-
+-- ===========================================================================
 
 return M
