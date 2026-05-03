@@ -51,6 +51,8 @@ __symlink() {
     ".config/readline/inputrc"
   dko-symlink "tmux/tmux.conf" \
     ".config/tmux/tmux.conf"
+  dko-symlink "zsh-patina" \
+    ".config/zsh-patina"
 
   # (n)vim
   dko-symlink "nvim" \
