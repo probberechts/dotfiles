@@ -74,9 +74,6 @@ alias ezl='e "${LDOTDIR}/zshrc"'
 alias ezr='e "${ZDOTDIR}/.zshrc"'
 alias ke="pkill -f 'nvim.sock'"
 
-# direnv
-alias tmux='direnv exec / tmux'
-
 # ============================================================================
 
 __alias_ls() {
