@@ -47,4 +47,21 @@ M.from_stylua_toml = function()
   end
 end
 
+M.set_word_processor_mode = function()
+  vim.opt_local.wrap = true
+  vim.opt_local.linebreak = true
+  vim.opt_local.breakindent = true
+
+  -- textwidth = 0 to avoid hard wrapping while typing
+  vim.opt_local.textwidth = 0
+  -- remove 't' from formatoptions to avoid hard wrapping
+  vim.opt_local.formatoptions:remove("t")
+
+  -- Don't show colorcolumn in text files
+  vim.opt_local.colorcolumn = ""
+
+  -- Enable spell checking
+  vim.opt_local.spell = true
+end
+
 return M

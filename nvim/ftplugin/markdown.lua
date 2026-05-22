@@ -7,3 +7,5 @@ if vim.b.has_markdownlint == nil then
 end
 vim.b.formatter = vim.b.has_markdownlint == true and "markdownlint"
   or "prettier"
+
+require("dko.editing").set_word_processor_mode()
