@@ -3,43 +3,41 @@ local has_ui = #uis > 0
 
 ---@diagnostic disable: unused-local
 
-local groq = {
-  client = {
-    base_url = "https://api.groq.com/openai/v1",
-    api_key = vim.fn.getenv("GROQ_API_KEY_DANTE_NVIM"),
-  },
-  request = {
-    temperature = 0.0001,
-    model = "llama-3.3-70b-versatile",
-    stream = true,
-  },
-}
+local function create_ai_config(base_url, api_key, model, temperature)
+  return {
+    client = {
+      base_url = base_url,
+      api_key = api_key,
+    },
+    request = {
+      temperature = temperature or 0.0001,
+      model = model,
+      stream = true,
+    },
+  }
+end
 
-local copilot = {
-  client = {
-    base_url = "https://api.githubcopilot.com",
-    api_key = nil,
-  },
-  request = {
-    temperature = 0.0001,
-    model = "gpt-4o",
-    stream = true,
-  },
-}
+local gemini = create_ai_config(
+  "https://generativelanguage.googleapis.com/v1beta/openai/",
+  vim.fn.getenv("GOOGLE_API_KEY") or vim.fn.getenv("GEMINI_API_KEY"),
+  "gemini-2.0-flash"
+)
 
-local lmstudio = {
-  client = {
-    base_url = "http://localhost:1234/v1",
-    api_key = "here-is-a-dummy-api-key",
-  },
-  request = {
-    temperature = 0.0001,
-    model = "llama-3.2-3b-instruct",
-    stream = true,
-  },
-}
+local groq = create_ai_config(
+  "https://api.groq.com/openai/v1",
+  vim.fn.getenv("GROQ_API_KEY_DANTE_NVIM"),
+  "llama-3.3-70b-versatile"
+)
 
--- present can be groq, copilot, or lmstudio
+local copilot = create_ai_config("https://api.githubcopilot.com", nil, "gpt-4o")
+
+local lmstudio = create_ai_config(
+  "http://localhost:1234/v1",
+  "here-is-a-dummy-api-key",
+  "llama-3.2-3b-instruct"
+)
+
+-- present can be gemini, groq, copilot, or lmstudio
 local preset = copilot
 
 local presets = {
@@ -274,114 +272,79 @@ return {
       })
     end,
   },
-  -- {
-  --   "zbirenbaum/copilot-cmp",
-  --   after = { "copilot.lua" },
-  --   config = function()
-  --     require("copilot_cmp").setup()
-  --   end,
-  -- },
 
-  -- https://github.com/olimorris/codecompanion.nvim
   {
-    "olimorris/codecompanion.nvim",
+    "yetone/avante.nvim",
+    event = "VeryLazy",
     lazy = false,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "hrsh7th/nvim-cmp",
-      { "stevearc/dressing.nvim", opts = {} },
-      "nvim-telescope/telescope.nvim",
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+      provider = "copilot",
+      providers = {
+        copilot = {
+          model = "gpt-4o",
+          extra_request_body = {
+            max_tokens = 4096,
+          },
+        },
+      },
     },
-    config = function()
-      local codecompanion = require("codecompanion")
-      local user = vim.env.USER or "User"
-      user = user:sub(1, 1):upper() .. user:sub(2)
-
-      vim.cmd([[cab cc CodeCompanion]])
-
-      codecompanion.setup({
-        -- log_level = "DEBUG",
-        strategies = {
-          chat = {
-            adapter = "copilot",
-            --     roles = {
-            --       llm = " Assistant ",
-            --       user = " " .. user .. " ",
-            --     },
-          },
-          inline = { adapter = "copilot" },
-          agent = { adapter = "copilot" },
-        },
-        pre_defined_prompts = {
-          ["Generate a Commit Message for Staged Files"] = {
-            strategy = "chat",
-            description = "staged file commit messages",
-            opts = {
-              index = 9,
-              default_prompt = true,
-              slash_cmd = "commit-staged",
-              auto_submit = true,
+    build = "make",
+    dependencies = {
+      "stevearc/dressing.nvim",
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      --- The below dependencies are optional,
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
+      {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
             },
-            prompts = {
-              {
-                role = "user",
-                contains_code = true,
-                content = function()
-                  return "You are an expert at following the Conventional Commit specification. "
-                    .. "Given the git diff listed below, please generate a commit message for me:"
-                    .. "\n\n```\n"
-                    .. vim.fn.system("git diff --staged")
-                    .. "\n```"
-                end,
-              },
-            },
+            -- required for Windows users
+            use_absolute_path = true,
           },
         },
-      })
-    end,
+      },
+      {
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
     keys = {
       {
-        "<leader>a",
-        "",
-        desc = "+ai",
-        mode = { "n", "v" },
-      },
-      {
-        "<leader>ai",
-        "<cmd>CodeCompanion<cr>",
-        desc = "Inline",
-        mode = { "n", "v" },
-      },
-      {
         "<leader>aa",
-        "<cmd>CodeCompanionChat Toggle<cr>",
-        desc = "Toggle Chat",
+        function()
+          require("avante.api").ask()
+        end,
+        desc = "avante: ask",
         mode = { "n", "v" },
       },
       {
-        "<leader>aA",
-        "<cmd>CodeCompanionActions<cr>",
-        desc = "Actions",
-        mode = { "n", "v" },
+        "<leader>ar",
+        function()
+          require("avante.api").refresh()
+        end,
+        desc = "avante: refresh",
       },
       {
-        "<leader>aC",
-        "<cmd>CodeCompanion /commit-staged<cr>",
-        desc = "Generate Commit",
-        mode = { "n" },
-      },
-      {
-        "ga",
-        "<cmd>CodeCompanionAdd<cr>",
-        desc = "Add to Chat",
-        mode = { "v" },
-      },
-      {
-        "<leader>rc",
-        "<cmd>Lazy reload codecompanion.nvim<cr>",
-        desc = "Reload",
-        mode = { "n" },
+        "<leader>ae",
+        function()
+          require("avante.api").edit()
+        end,
+        desc = "avante: edit",
+        mode = "v",
       },
     },
   },
