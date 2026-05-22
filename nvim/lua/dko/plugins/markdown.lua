@@ -30,6 +30,29 @@ return require("dko.utils.lazyspec")(function(ctx)
       },
     },
 
+    {
+      "iamcco/markdown-preview.nvim",
+      cmd = {
+        "MarkdownPreviewToggle",
+        "MarkdownPreview",
+        "MarkdownPreviewStop",
+      },
+      init = function()
+        vim.g.mkdp_filetypes = { "markdown" }
+      end,
+      build = function()
+        vim.fn["mkdp#util#install"]()
+      end,
+      ft = { "markdown" },
+      config = function()
+        vim.g.mkdp_open_to_the_world = 1
+        vim.g.mkdp_open_ip = "127.0.0.1"
+        vim.g.mkdp_port = 8080
+        vim.g.mkdp_browser = "none"
+        vim.g.mkdp_echo_preview_url = 1
+      end,
+    },
+
     -- off until we can have buffer specific conceallevel
     -- https://github.com/OXY2DEV/markview.nvim
     -- {

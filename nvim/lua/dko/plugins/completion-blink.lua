@@ -13,6 +13,7 @@ return require("dko.utils.lazyspec")(function(ctx)
         -- https://cmp.saghen.dev/configuration/snippets#friendly-snippets
         -- "rafamadriz/friendly-snippets",
         { "not-manu/filemention.nvim", event = "InsertEnter", opts = {} },
+        "fang2hou/blink-copilot",
       },
 
       -- use a release tag to download pre-built binaries

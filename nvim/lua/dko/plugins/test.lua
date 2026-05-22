@@ -13,13 +13,13 @@ return require("dko.utils.lazyspec")(function(ctx)
         --  },
         "nvim-treesitter/nvim-treesitter",
         -- == adapters ===========================================================
-        "marilari88/neotest-vitest",
+        "nvim-neotest/neotest-python",
       },
       config = function()
         ---@diagnostic disable-next-line: missing-fields
         require("neotest").setup({
           adapters = {
-            require("neotest-vitest"),
+            require("neotest-python"),
           },
           ---@diagnostic disable-next-line: missing-fields
           floating = {
