@@ -19,7 +19,6 @@ require("dko.mappings.finder").bind_finder()
 
 require("dko.tools.css")
 require("dko.tools.generic")
-require("dko.tools.gh_actions")
 require("dko.tools.html")
 require("dko.tools.java")
 require("dko.tools.javascript-typescript")
