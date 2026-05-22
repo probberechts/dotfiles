@@ -6,11 +6,19 @@ local tools = require("dko.tools")
 -- tools.register({ name = "gh_actions_ls", runner = "lspconfig" })
 -- this is upstream, custom config in ../../../lsp/actionsls.lua
 tools.register({ name = "actionsls", runner = "lspconfig" })
+tools.register({
+  name = "actionlint",
+  fts = { "yaml.ghactions" },
+  efm = function()
+    ---@type EfmLinter
+    return require("efmls-configs.linters.actionlint")
+  end,
+})
 -- ===========================================================================
 
 tools.register({
-  fts = { "yaml", "yaml.docker-compose" },
   name = "yamlfmt",
+  fts = { "yaml", "yaml.ghactions", "yaml.docker-compose" },
   efm = function()
     return {
       formatCanRange = false,
@@ -29,8 +37,8 @@ tools.register({
 
 -- yamlls linting is disabled in favor of this
 tools.register({
-  fts = { "yaml" },
   name = "yamllint",
+  fts = { "yaml", "yaml.ghactions", "yaml.docker-compose" },
   efm = function()
     return vim.tbl_extend("force", require("efmls-configs.linters.yamllint"), {
       lintSource = "efmls",

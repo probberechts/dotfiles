@@ -4,6 +4,7 @@ gpg_verify = false
 
 # tombi: format.rules.table-keys-order = "ascending"
 [tools]
+actionlint = "latest"
 "aqua:Automattic/harper/harper-ls" = "latest"
 "aqua:neovim/neovim" = "latest"
 biome = "latest"
