@@ -5,7 +5,6 @@
 # -> multisrc -> atload.
 
 export DKO_SOURCE="${DKO_SOURCE} -> zinit.zsh {"
-
 function {
   local man1="${ZINIT[MAN_DIR]}/man1"
 
@@ -58,13 +57,11 @@ function {
     atpull'%atclone' \
     atload"$bat_manpager" \
     '@sharkdp/bat' \
-    \
     atclone'delta/delta --generate-completion zsh > delta/_delta' \
     atpull'%atclone' \
     mv'delta* -> delta' \
     pick'delta/delta' \
     'dandavison/delta' \
-    \
     pick'zoxide/zoxide' \
     atload'eval "$(zoxide init --cmd j zsh)"' \
     'ajeetdsouza/zoxide' \
@@ -87,7 +84,7 @@ function {
         ./mise/bin/mise completion zsh > _mise;
         " \
     atpull'%atclone' \
-    atload'eval "$(mise activate zsh)"' >Activating >Re-generating >OK
+    atload'eval "$(mise activate zsh)"'
   zinit light 'jdx/mise'
 
   # ----------------------------------------------------------------------------
