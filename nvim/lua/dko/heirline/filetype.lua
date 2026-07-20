@@ -32,7 +32,7 @@ return {
 
   utils.surround({ "█", "█" }, function()
     --- red if no treesitter
-    local active = hl().bg
+    local active = hl().bg or utils.get_highlight("StatusLine").bg
     local inactive = utils.get_highlight("StatusLineNC").bg
     return require("dko.heirline.utils").hl(active, inactive)
   end, {
