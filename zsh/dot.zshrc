@@ -12,7 +12,7 @@ fpath+=("${XDG_DATA_HOME}/zsh/site-functions")
 # export to global and dedupe entries (lowercase are arrays that shadow PATH,
 # FPATH, etc). You MUST do both upper and lower ones, or else they will be out
 # of sync.
-typeset -gU cdpath PATH path FPATH fpath MANPATH manpath
+typeset -gU cdpath PATH path FPATH fpath MANPATH manpath  # shuck: ignore=C001
 
 . "${DOTFILES}/shell/interactive.sh"
 
@@ -66,7 +66,7 @@ __dko_has 'git' && {
 
 if __dko_has 'zinit'; then
   . "${ZDOTDIR}/zinit.zsh" 2>/dev/null
-  autoload -Uz _zinit && (( ${+_comps} )) && _comps[zinit]=_zinit
+  autoload -Uz _zinit && (( ${+_comps} )) && _comps['zinit']=_zinit
   # the last zinit plugin will run zicompinit which inits compinit
   alias zup='zini update --parallel'
 else
@@ -367,7 +367,7 @@ zstyle ':completion:*:processes-names' command \
 [ -r "${HOME}/.ssh/config" ] && {
   # Vanilla parsing of config file :)
   # @see {@link https://github.com/Eriner/zim/issues/46#issuecomment-219344931}
-  hosts=($h ${${${(@M)${(f)"$(cat ~/.ssh/config)"}:#Host *}#Host }:#*[*?]*})
+  hosts=(${${${(@M)${(f)"$(<~/.ssh/config)"}:#Host *}#Host }:#*[*?]*})
   #hosts=($(egrep '^Host ' "$HOME/.ssh/config" | grep -v '*' | awk '{print $2}' ))
   zstyle ':completion:*:ssh:*'    hosts $hosts
   zstyle ':completion:*:rsync:*'  hosts $hosts
@@ -392,6 +392,12 @@ up() {
   while (( limit-- )); do d="../${d}"; done
   cd "$d"
 }
+
+# ==========================================================================
+# worktrunk for zsh only
+# ==========================================================================
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
 
 # ============================================================================
 # Local
