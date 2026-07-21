@@ -2,6 +2,9 @@
 experimental = false
 gpg_verify = false
 
+[settings.github]
+use_git_credentials = true
+
 # tombi: format.rules.table-keys-order = "ascending"
 [tools]
 actionlint = "latest"
@@ -36,7 +39,7 @@ node = "latest"
 "pipx:nox" = { version = "latest", depends = ["python"] }
 "pipx:poetry" = { version = "latest", depends = ["python"] }
 "pipx:td-watson" = { version = "latest", depends = ["python"] }
-prettier = "latest"
+prettier = { version = "latest", depends = ["node"] }
 python = "latest"
 ripgrep = { version = "latest", postinstall = "[ -n \"${XDG_DATA_HOME}\" ] && mkdir -p ${XDG_DATA_HOME}/zsh/site-functions && rg --generate complete-zsh > ${XDG_DATA_HOME}/zsh/site-functions/_rg || true" }
 ruby = "3.2"
