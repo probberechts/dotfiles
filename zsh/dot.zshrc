@@ -49,7 +49,9 @@ alias eg="\e"
 (($+commands[git])) && {
   declare -A ZINIT
   ZINIT[HOME_DIR]="${XDG_DATA_HOME}/zinit"
+  ZINIT[ZCOMPDUMP_PATH]="${XDG_CACHE_HOME}/zsh/zcompdump"
   ZINIT[COMPINIT_OPTS]=-C
+  mkdir -p -- "${ZINIT[ZCOMPDUMP_PATH]:h}"
 
   # part of zinit's install, found by compaudit
   mkdir -p "${ZINIT[HOME_DIR]}" && chmod g-rwX "${ZINIT[HOME_DIR]}"
@@ -71,7 +73,8 @@ if (($+functions[zinit])); then
   # the last zinit plugin will run zicompinit which inits compinit
   alias zup='zini update --parallel'
 else
-  autoload -Uz compinit && compinit
+  mkdir -p -- "${XDG_CACHE_HOME}/zsh"
+  autoload -Uz compinit && compinit -d "${XDG_CACHE_HOME}/zsh/zcompdump"
 fi
 
 # ============================================================================
