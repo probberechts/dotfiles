@@ -31,9 +31,9 @@ export XDG_STATE_HOME="${HOME}/.local/state"
 # and should have those vars. I am just using the defaults but want them
 # explicitly defined.
 # shellcheck source=/dev/null
-[ -f "${XDG_CONFIG_HOME}/user-dirs.dirs" ] \
-  && . "${XDG_CONFIG_HOME}/user-dirs.dirs" \
-  && export \
+[ -f "${XDG_CONFIG_HOME}/user-dirs.dirs" ] &&
+  . "${XDG_CONFIG_HOME}/user-dirs.dirs" &&
+  export \
     XDG_DESKTOP_DIR \
     XDG_DOWNLOAD_DIR \
     XDG_TEMPLATES_DIR \
@@ -41,11 +41,11 @@ export XDG_STATE_HOME="${HOME}/.local/state"
     XDG_DOCUMENTS_DIR \
     XDG_MUSIC_DIR \
     XDG_PICTURES_DIR \
-    XDG_VIDEOS_DIR \
-  && DKO_SOURCE="${DKO_SOURCE} -> ${XDG_CONFIG_HOME}/user-dirs.dirs"
+    XDG_VIDEOS_DIR &&
+  DKO_SOURCE="${DKO_SOURCE} -> ${XDG_CONFIG_HOME}/user-dirs.dirs"
 
-[ -z "$XDG_DOWNLOAD_DIR" ] && [ -d "${HOME}/Downloads" ] \
-  && export XDG_DOWNLOAD_DIR="${HOME}/Downloads"
+[ -z "$XDG_DOWNLOAD_DIR" ] && [ -d "${HOME}/Downloads" ] &&
+  export XDG_DOWNLOAD_DIR="${HOME}/Downloads"
 
 # ============================================================================
 # dotfiles
@@ -56,9 +56,15 @@ export XDG_STATE_HOME="${HOME}/.local/state"
 export DOTFILES_OS="${DOTFILES_OS:-$(uname)}"
 
 case "$DOTFILES_OS" in
-  Darwin*) export DOTFILES_DISTRO="${DOTFILES_DISTRO:-$(uname -m)}" ;;
-  FreeBSD*) export DOTFILES_DISTRO="FreeBSD" ;;
-  OpenBSD*) export DOTFILES_DISTRO="OpenBSD" ;;
+  Darwin*)
+    export DOTFILES_DISTRO="${DOTFILES_DISTRO:-$(uname -m)}"
+    ;;
+  FreeBSD*)
+    export DOTFILES_DISTRO="FreeBSD"
+    ;;
+  OpenBSD*)
+    export DOTFILES_DISTRO="OpenBSD"
+    ;;
   *)
     # for pacdiff
     export DIFFPROG="nvim -d"

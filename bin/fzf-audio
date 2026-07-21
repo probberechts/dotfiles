@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+#
+# fzf-audio - fzf interface for SwitchAudioSource
+
+__fzf-audio() {
+  SwitchAudioSource -s \
+    "$(SwitchAudioSource -a | grep "(output)" |\
+    fzf --height=8 --cycle --no-mouse --no-multi |\
+    cut -f1 -d'(' | xargs)"
+}
+
+(( $+commands[SwitchAudioSource] )) && __fzf-audio

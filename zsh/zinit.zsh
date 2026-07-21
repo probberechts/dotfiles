@@ -45,25 +45,9 @@ function {
   export _ZO_DATA="${XDG_DATA_HOME}/zoxide"
 
   # Customized from instructions at https://github.com/sharkdp/bat#man
-  local bat_manpager="export MANPAGER=\"sh -c 'col -bx | bat --language man --paging always --style=grid'\"; export MANROFFOPT="-c""
-
   zinit lucid from'gh-r' as'program' for \
-    mv'bat* -> bat' \
-    pick'bat/bat' \
-    atclone"
-      cp -vf **/*.1 \"$man1\";
-      cp -vf bat/autocomplete/bat.zsh _bat
-      " \
-    atpull'%atclone' \
-    atload"$bat_manpager" \
-    '@sharkdp/bat' \
-    atclone'delta/delta --generate-completion zsh > delta/_delta' \
-    atpull'%atclone' \
-    mv'delta* -> delta' \
-    pick'delta/delta' \
-    'dandavison/delta' \
-    pick'zoxide/zoxide' \
     atload'eval "$(zoxide init --cmd j zsh)"' \
+    pick'zoxide/zoxide' \
     'ajeetdsouza/zoxide' \
     ;
 
