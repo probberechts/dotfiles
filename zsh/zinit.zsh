@@ -54,23 +54,6 @@ function {
   zinit snippet 'OMZP::cp'
   zinit snippet 'OMZP::extract'
 
-  local mise_bpick=""
-  [[ $DOTFILES_OS == "Linux" ]] && mise_bpick="*-linux-x64.tar.gz"
-  [[ $DOTFILES_OS == "Darwin" ]] && {
-    mise_bpick="*-macos-x64.tar.gz"
-    [[ $DOTFILES_DISTRO == "arm64" ]] && mise_bpick="*-macos-arm64.tar.gz"
-  }
-  # no lucid
-  zinit ice from'gh-r' as'program' bpick"$mise_bpick" \
-    pick'mise/bin/mise' \
-    atclone"
-        cp -vf **/*.1 \"$man1\";
-        ./mise/bin/mise completion zsh > _mise;
-        " \
-    atpull'%atclone' \
-    atload'eval "$(mise activate zsh)"'
-  zinit light 'jdx/mise'
-
   # ----------------------------------------------------------------------------
   # Completions
   # ----------------------------------------------------------------------------
@@ -120,6 +103,28 @@ function {
     pick"zsh-patina-*/zsh-patina" \
     atload'eval "$(zsh-patina activate)"'
   zinit light michel-kraemer/zsh-patina
+
+  # ----------------------------------------------------------------------------
+  # mise - must load after other PATH-modifying plugins (e.g. patina)
+  # so that mise shims take precedence
+  # ----------------------------------------------------------------------------
+
+  local mise_bpick=""
+  [[ $DOTFILES_OS == "Linux" ]] && mise_bpick="*-linux-x64.tar.gz"
+  [[ $DOTFILES_OS == "Darwin" ]] && {
+    mise_bpick="*-macos-x64.tar.gz"
+    [[ $DOTFILES_DISTRO == "arm64" ]] && mise_bpick="*-macos-arm64.tar.gz"
+  }
+  # no lucid
+  zinit ice from'gh-r' as'program' bpick"$mise_bpick" \
+    pick'mise/bin/mise' \
+    atclone"
+        cp -vf **/*.1 \"$man1\";
+	./mise/bin/mise completion zsh > _mise;
+        " \
+    atpull'%atclone' \
+    atload'eval "$(mise activate zsh)"'
+  zinit light 'jdx/mise'
 
   # completion that wants compinit
   zinit ice atload"zicompinit; zicdreplay; zpcdreplay" \
