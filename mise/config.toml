@@ -36,20 +36,20 @@ lua-language-server = "latest"
 marksman = "latest"
 neovim = "latest"
 node = "latest"
-"npm:@actions/languageserver" = { version = "latest", depends = ["node"] }
-"npm:@mdx-js/language-server" = { version = "latest", depends = ["node"] }
-"npm:@vtsls/language-server" = { version = "latest", depends = ["node"] }
-"npm:bibtex-tidy" = { version = "latest", depends = ["node"] }
-"npm:markdownlint-cli" = { version = "latest", depends = ["node"] }
-"npm:vscode-langservers-extracted" = { version = "latest", depends = ["node"] }
-"npm:yaml-language-server" = { version = "latest", depends = ["node"] }
+"npm:@actions/languageserver" = { version = "latest" }
+"npm:@mdx-js/language-server" = { version = "latest" }
+"npm:@vtsls/language-server" = { version = "latest" }
+"npm:bibtex-tidy" = { version = "latest" }
+"npm:markdownlint-cli" = { version = "latest" }
+"npm:vscode-langservers-extracted" = { version = "latest" }
+"npm:yaml-language-server" = { version = "latest" }
 "pipx:basedpyright" = { version = "latest", depends = ["python"] }
 "pipx:jedi-language-server" = { version = "latest", depends = ["python"] }
 "pipx:jupyterlab" = { version = "latest", depends = ["python"] }
 "pipx:nox" = { version = "latest", depends = ["python"] }
 "pipx:poetry" = { version = "latest", depends = ["python"] }
 "pipx:td-watson" = { version = "latest", depends = ["python"] }
-prettier = { version = "latest", depends = ["node"] }
+prettier = { version = "latest" }
 python = "latest"
 ripgrep = { version = "latest", postinstall = "[ -n \"${XDG_DATA_HOME}\" ] && mkdir -p ${XDG_DATA_HOME}/zsh/site-functions && rg --generate complete-zsh > ${XDG_DATA_HOME}/zsh/site-functions/_rg || true" }
 ruby = "3.2"
