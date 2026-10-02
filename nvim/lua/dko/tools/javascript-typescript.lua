@@ -35,6 +35,11 @@ dkotools.register({
 })
 
 dkotools.register({
+  name = "oxlint",
+  runner = "lspconfig",
+})
+
+dkotools.register({
   name = "eslint",
   runner = "lspconfig",
 })
