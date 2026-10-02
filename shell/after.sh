@@ -96,7 +96,10 @@ export FZF_ALT_C_OPTS="
 
 # ============================================================================
 
-__dko_has 'zoxide' && eval "$(zoxide init --cmd j zsh)"
+__dko_has 'zoxide' && {
+  export _ZO_DATA="${XDG_DATA_HOME}/zoxide"
+  eval "$(zoxide init --cmd j zsh)"
+}
 
 # ============================================================================
 
