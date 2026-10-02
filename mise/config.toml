@@ -1,11 +1,12 @@
 [env]
+# API keys (must be set in environment or mise.local.toml)
+# or define all of these in a file of ~/.config/mise/conf.d/*.toml
 EMAIL = { required = true }
 GIT_AUTHOR_NAME = { required = true }
-
-GIT_COMMITTER_NAME = "$GIT_AUTHOR_NAME"
-NPM_CONFIG_INIT_AUTHOR_NAME = "$GIT_AUTHOR_NAME"
-GIT_AUTHOR_EMAIL = "$EMAIL"
-GIT_COMMITTER_EMAIL = "$EMAIL"
+GIT_COMMITTER_NAME = { required = true }
+NPM_CONFIG_INIT_AUTHOR_NAME = { required = true }
+GIT_AUTHOR_EMAIL = { required = true }
+GIT_COMMITTER_EMAIL = { required = true }
 
 [settings]
 experimental = false
@@ -38,6 +39,7 @@ neovim = "latest"
 node = "latest"
 "npm:@actions/languageserver" = { version = "latest" }
 "npm:@mdx-js/language-server" = { version = "latest" }
+"npm:@tailwindcss/language-server" = { version = "latest" }
 "npm:@vtsls/language-server" = { version = "latest" }
 "npm:bibtex-tidy" = { version = "latest" }
 "npm:markdownlint-cli" = { version = "latest" }
@@ -52,9 +54,9 @@ node = "latest"
 prettier = { version = "latest" }
 python = "latest"
 ripgrep = { version = "latest", postinstall = "[ -n \"${XDG_DATA_HOME}\" ] && mkdir -p ${XDG_DATA_HOME}/zsh/site-functions && rg --generate complete-zsh > ${XDG_DATA_HOME}/zsh/site-functions/_rg || true" }
-ruby = "3.2"
+ruby = "latest"
 ruff = "latest"
-rust = "latest"
+rust = { version = "latest", profile = "minimal" }
 rust-analyzer = { version = "latest", depends = ["rust"] }
 shellcheck = "latest"
 stylua = "latest"
